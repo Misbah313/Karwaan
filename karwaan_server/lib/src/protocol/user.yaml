@@ -1,0 +1,8 @@
+class: User
+table: user
+fields:
+  id: int 
+  name: String 
+  email: String 
+  profileImage: String?
+  userId: int

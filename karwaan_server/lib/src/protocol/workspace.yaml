@@ -1,0 +1,8 @@
+class: Workspace
+table: workspace
+fields:
+  id: int
+  name: String
+  description: String?
+  createdAt: DateTime
+  ownerId: User?, relation
