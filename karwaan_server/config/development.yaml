@@ -33,8 +33,10 @@ database:
   port: 8090
   name: karwaan
   user: postgres
-  #requireSsl: true # defaults to false
-  #isUnixSocket: true # defaults to false
+  password: xEMHr6RAjTRj8MZLsUCZ237ah5WiIh2
+  #requireSsl: false
+  #isUnixSocket: false
+
 
 # This is the setup for Redis.
 redis:
