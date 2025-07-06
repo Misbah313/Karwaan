@@ -1,0 +1,8 @@
+class: WorkspaceMember
+table: workspace_member
+fields:
+  id: int?
+  user: int, relation(parent=user)
+  workspace: int, relation(parent=workspace)
+  role: String?
+  joinedAt: DateTime

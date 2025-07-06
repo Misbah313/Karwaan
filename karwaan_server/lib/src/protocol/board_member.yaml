@@ -1,0 +1,7 @@
+class: BoardMember
+table: board_member
+fields:
+  user: int, relation(parent=user)
+  board: int, relation(parent=board)
+  role: String?
+  joinedAt: DateTime

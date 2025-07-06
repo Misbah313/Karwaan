@@ -1,0 +1,7 @@
+class: CheckListItem
+table: checklist_item
+fields:
+  id: int?
+  checklist: int, relation(parent=check_list)
+  content: String
+  isDone: bool
