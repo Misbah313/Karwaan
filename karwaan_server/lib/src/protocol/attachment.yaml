@@ -1,0 +1,7 @@
+class: Attachment
+table: attachment
+fields:
+  id: int?
+  card: int, relation(parent=card)
+  uploadedBy: int, relation(parent=user)
+  fileName: String

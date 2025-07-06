@@ -1,0 +1,8 @@
+class: Board
+table: board
+fields:
+  name: String
+  description: String?
+  workspaceId: int, relation(parent=workspace)
+  createdBy: int, relation(parent=user)
+  createdAt: DateTime

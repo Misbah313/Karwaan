@@ -1,0 +1,7 @@
+class: CheckList
+table: check_list
+fields:
+  id: int?
+  name: String
+  card: int, relation(parent=card)
+  createdAt: DateTime

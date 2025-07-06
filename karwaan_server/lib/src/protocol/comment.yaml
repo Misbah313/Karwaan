@@ -1,0 +1,8 @@
+class: Comment
+table: comment
+fields:
+  id: int?
+  card: int, relation(parent=card)
+  author: int, relation(parent=user)
+  content: String
+  createdAt: DateTime
