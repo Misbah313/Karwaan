@@ -1,2 +1,5 @@
+user:
+  - createUser:
+  - getUserById:
 greeting:
   - hello:

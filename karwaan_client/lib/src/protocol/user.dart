@@ -16,16 +16,16 @@ abstract class User implements _i1.SerializableModel {
     this.id,
     required this.name,
     required this.email,
+    required this.password,
     this.profileImage,
-    required this.userId,
   });
 
   factory User({
     int? id,
     required String name,
     required String email,
+    required String password,
     String? profileImage,
-    required int userId,
   }) = _UserImpl;
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -33,8 +33,8 @@ abstract class User implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       email: jsonSerialization['email'] as String,
+      password: jsonSerialization['password'] as String,
       profileImage: jsonSerialization['profileImage'] as String?,
-      userId: jsonSerialization['userId'] as int,
     );
   }
 
@@ -47,9 +47,9 @@ abstract class User implements _i1.SerializableModel {
 
   String email;
 
-  String? profileImage;
+  String password;
 
-  int userId;
+  String? profileImage;
 
   /// Returns a shallow copy of this [User]
   /// with some or all fields replaced by the given arguments.
@@ -58,8 +58,8 @@ abstract class User implements _i1.SerializableModel {
     int? id,
     String? name,
     String? email,
+    String? password,
     String? profileImage,
-    int? userId,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -67,8 +67,8 @@ abstract class User implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'name': name,
       'email': email,
+      'password': password,
       if (profileImage != null) 'profileImage': profileImage,
-      'userId': userId,
     };
   }
 
@@ -85,14 +85,14 @@ class _UserImpl extends User {
     int? id,
     required String name,
     required String email,
+    required String password,
     String? profileImage,
-    required int userId,
   }) : super._(
           id: id,
           name: name,
           email: email,
+          password: password,
           profileImage: profileImage,
-          userId: userId,
         );
 
   /// Returns a shallow copy of this [User]
@@ -103,15 +103,15 @@ class _UserImpl extends User {
     Object? id = _Undefined,
     String? name,
     String? email,
+    String? password,
     Object? profileImage = _Undefined,
-    int? userId,
   }) {
     return User(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       email: email ?? this.email,
+      password: password ?? this.password,
       profileImage: profileImage is String? ? profileImage : this.profileImage,
-      userId: userId ?? this.userId,
     );
   }
 }

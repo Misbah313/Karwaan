@@ -4,5 +4,5 @@ fields:
   id: int?
   name: String 
   email: String 
+  password: String
   profileImage: String?
-  userId: int
