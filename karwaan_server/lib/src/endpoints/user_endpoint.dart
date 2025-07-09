@@ -1,17 +1,11 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
+import 'package:karwaan_server/src/endpoints/hashing_pw.dart';
 
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 class UserEndpoint extends Endpoint {
   
-  // password hash private helper
-  String _encryptPassword(String password) {
-    final bytes = utf8.encode(password);
-    final hash = sha256.convert(bytes);
-    return hash.toString();
-  }
+  
 
   // Create user
   Future<User> createUser(Session session, User user) async {
@@ -26,7 +20,7 @@ class UserEndpoint extends Endpoint {
     final newUser = User(
         name: user.name,
         email: user.email,
-        password: _encryptPassword(user.password),
+        password: encryptPassword(user.password),
         id: user.id);
 
     await User.db.insertRow(session, newUser);
@@ -57,7 +51,7 @@ class UserEndpoint extends Endpoint {
     }
     // if the update user and old user passwords don't match hash the updated password
     if (UpdatedUser.password != oldUser.password) {
-      UpdatedUser.password = _encryptPassword(UpdatedUser.password);
+      UpdatedUser.password = encryptPassword(UpdatedUser.password);
     }
 
     // updated the user row with the updatedUser
