@@ -1,0 +1,8 @@
+class: UserToken
+table: user_token
+fields:
+  id: int?
+  userId: int, relation(parent=user)
+  token: String
+  createdAt: DateTime
+  expiresAt: DateTime
