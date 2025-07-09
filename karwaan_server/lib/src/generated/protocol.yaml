@@ -1,5 +1,17 @@
+authentication:
+  - registerUser:
+token:
+  - validateToken:
+  - logout:
 user:
   - createUser:
   - getUserById:
+  - getAllUsers:
+  - updateUser:
+  - deleteUser:
+workspace:
+  - createWorkspace:
+  - getUserWorkspace:
+  - addMemberToWorkspace:
 greeting:
   - hello:
