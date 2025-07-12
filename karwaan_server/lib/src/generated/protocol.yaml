@@ -1,5 +1,13 @@
 authentication:
   - registerUser:
+  - loginUser:
+  - logoutUser:
+board:
+  - createBoard:
+  - getUserBoard:
+  - getUserBoards:
+  - updateBoard:
+  - deleteBoard:
 token:
   - validateToken:
   - logout:
@@ -13,5 +21,8 @@ workspace:
   - createWorkspace:
   - getUserWorkspace:
   - addMemberToWorkspace:
+  - removeMemFromWorkspace:
+  - updateWorkspace:
+  - deleteWorkspace:
 greeting:
   - hello:
