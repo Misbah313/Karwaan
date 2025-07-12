@@ -14,24 +14,29 @@ import 'greeting.dart' as _i2;
 import 'attachment.dart' as _i3;
 import 'auth_response.dart' as _i4;
 import 'board.dart' as _i5;
-import 'board_member.dart' as _i6;
-import 'card.dart' as _i7;
-import 'card_label.dart' as _i8;
-import 'checklist.dart' as _i9;
-import 'checklist_item.dart' as _i10;
-import 'comment.dart' as _i11;
-import 'label.dart' as _i12;
-import 'list.dart' as _i13;
-import 'user.dart' as _i14;
-import 'user_token.dart' as _i15;
-import 'workspace.dart' as _i16;
-import 'workspace_member.dart' as _i17;
-import 'package:karwaan_client/src/protocol/user.dart' as _i18;
-import 'package:karwaan_client/src/protocol/workspace.dart' as _i19;
+import 'board_details.dart' as _i6;
+import 'board_list.dart' as _i7;
+import 'board_member.dart' as _i8;
+import 'card.dart' as _i9;
+import 'card_label.dart' as _i10;
+import 'checklist.dart' as _i11;
+import 'checklist_item.dart' as _i12;
+import 'comment.dart' as _i13;
+import 'label.dart' as _i14;
+import 'list.dart' as _i15;
+import 'user.dart' as _i16;
+import 'user_token.dart' as _i17;
+import 'workspace.dart' as _i18;
+import 'workspace_member.dart' as _i19;
+import 'package:karwaan_client/src/protocol/board_details.dart' as _i20;
+import 'package:karwaan_client/src/protocol/user.dart' as _i21;
+import 'package:karwaan_client/src/protocol/workspace.dart' as _i22;
 export 'greeting.dart';
 export 'attachment.dart';
 export 'auth_response.dart';
 export 'board.dart';
+export 'board_details.dart';
+export 'board_list.dart';
 export 'board_member.dart';
 export 'card.dart';
 export 'card_label.dart';
@@ -71,41 +76,47 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i5.Board) {
       return _i5.Board.fromJson(data) as T;
     }
-    if (t == _i6.BoardMember) {
-      return _i6.BoardMember.fromJson(data) as T;
+    if (t == _i6.BoardDetails) {
+      return _i6.BoardDetails.fromJson(data) as T;
     }
-    if (t == _i7.Card) {
-      return _i7.Card.fromJson(data) as T;
+    if (t == _i7.BoardList) {
+      return _i7.BoardList.fromJson(data) as T;
     }
-    if (t == _i8.CardLabel) {
-      return _i8.CardLabel.fromJson(data) as T;
+    if (t == _i8.BoardMember) {
+      return _i8.BoardMember.fromJson(data) as T;
     }
-    if (t == _i9.CheckList) {
-      return _i9.CheckList.fromJson(data) as T;
+    if (t == _i9.Card) {
+      return _i9.Card.fromJson(data) as T;
     }
-    if (t == _i10.CheckListItem) {
-      return _i10.CheckListItem.fromJson(data) as T;
+    if (t == _i10.CardLabel) {
+      return _i10.CardLabel.fromJson(data) as T;
     }
-    if (t == _i11.Comment) {
-      return _i11.Comment.fromJson(data) as T;
+    if (t == _i11.CheckList) {
+      return _i11.CheckList.fromJson(data) as T;
     }
-    if (t == _i12.Label) {
-      return _i12.Label.fromJson(data) as T;
+    if (t == _i12.CheckListItem) {
+      return _i12.CheckListItem.fromJson(data) as T;
     }
-    if (t == _i13.ListBoard) {
-      return _i13.ListBoard.fromJson(data) as T;
+    if (t == _i13.Comment) {
+      return _i13.Comment.fromJson(data) as T;
     }
-    if (t == _i14.User) {
-      return _i14.User.fromJson(data) as T;
+    if (t == _i14.Label) {
+      return _i14.Label.fromJson(data) as T;
     }
-    if (t == _i15.UserToken) {
-      return _i15.UserToken.fromJson(data) as T;
+    if (t == _i15.ListBoard) {
+      return _i15.ListBoard.fromJson(data) as T;
     }
-    if (t == _i16.Workspace) {
-      return _i16.Workspace.fromJson(data) as T;
+    if (t == _i16.User) {
+      return _i16.User.fromJson(data) as T;
     }
-    if (t == _i17.WorkspaceMember) {
-      return _i17.WorkspaceMember.fromJson(data) as T;
+    if (t == _i17.UserToken) {
+      return _i17.UserToken.fromJson(data) as T;
+    }
+    if (t == _i18.Workspace) {
+      return _i18.Workspace.fromJson(data) as T;
+    }
+    if (t == _i19.WorkspaceMember) {
+      return _i19.WorkspaceMember.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Greeting?>()) {
       return (data != null ? _i2.Greeting.fromJson(data) : null) as T;
@@ -119,47 +130,61 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i5.Board?>()) {
       return (data != null ? _i5.Board.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.BoardMember?>()) {
-      return (data != null ? _i6.BoardMember.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.BoardDetails?>()) {
+      return (data != null ? _i6.BoardDetails.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.Card?>()) {
-      return (data != null ? _i7.Card.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.BoardList?>()) {
+      return (data != null ? _i7.BoardList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.CardLabel?>()) {
-      return (data != null ? _i8.CardLabel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.BoardMember?>()) {
+      return (data != null ? _i8.BoardMember.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.CheckList?>()) {
-      return (data != null ? _i9.CheckList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.Card?>()) {
+      return (data != null ? _i9.Card.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.CheckListItem?>()) {
-      return (data != null ? _i10.CheckListItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.CardLabel?>()) {
+      return (data != null ? _i10.CardLabel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.Comment?>()) {
-      return (data != null ? _i11.Comment.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.CheckList?>()) {
+      return (data != null ? _i11.CheckList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.Label?>()) {
-      return (data != null ? _i12.Label.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.CheckListItem?>()) {
+      return (data != null ? _i12.CheckListItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.ListBoard?>()) {
-      return (data != null ? _i13.ListBoard.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.Comment?>()) {
+      return (data != null ? _i13.Comment.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.User?>()) {
-      return (data != null ? _i14.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.Label?>()) {
+      return (data != null ? _i14.Label.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.UserToken?>()) {
-      return (data != null ? _i15.UserToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.ListBoard?>()) {
+      return (data != null ? _i15.ListBoard.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.Workspace?>()) {
-      return (data != null ? _i16.Workspace.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.User?>()) {
+      return (data != null ? _i16.User.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.WorkspaceMember?>()) {
-      return (data != null ? _i17.WorkspaceMember.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.UserToken?>()) {
+      return (data != null ? _i17.UserToken.fromJson(data) : null) as T;
     }
-    if (t == List<_i18.User>) {
-      return (data as List).map((e) => deserialize<_i18.User>(e)).toList() as T;
+    if (t == _i1.getType<_i18.Workspace?>()) {
+      return (data != null ? _i18.Workspace.fromJson(data) : null) as T;
     }
-    if (t == List<_i19.Workspace>) {
-      return (data as List).map((e) => deserialize<_i19.Workspace>(e)).toList()
+    if (t == _i1.getType<_i19.WorkspaceMember?>()) {
+      return (data != null ? _i19.WorkspaceMember.fromJson(data) : null) as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i20.BoardDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i20.BoardDetails>(e))
+          .toList() as T;
+    }
+    if (t == List<_i21.User>) {
+      return (data as List).map((e) => deserialize<_i21.User>(e)).toList() as T;
+    }
+    if (t == List<_i22.Workspace>) {
+      return (data as List).map((e) => deserialize<_i22.Workspace>(e)).toList()
           as T;
     }
     return super.deserialize<T>(data, t);
@@ -181,40 +206,46 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i5.Board) {
       return 'Board';
     }
-    if (data is _i6.BoardMember) {
+    if (data is _i6.BoardDetails) {
+      return 'BoardDetails';
+    }
+    if (data is _i7.BoardList) {
+      return 'BoardList';
+    }
+    if (data is _i8.BoardMember) {
       return 'BoardMember';
     }
-    if (data is _i7.Card) {
+    if (data is _i9.Card) {
       return 'Card';
     }
-    if (data is _i8.CardLabel) {
+    if (data is _i10.CardLabel) {
       return 'CardLabel';
     }
-    if (data is _i9.CheckList) {
+    if (data is _i11.CheckList) {
       return 'CheckList';
     }
-    if (data is _i10.CheckListItem) {
+    if (data is _i12.CheckListItem) {
       return 'CheckListItem';
     }
-    if (data is _i11.Comment) {
+    if (data is _i13.Comment) {
       return 'Comment';
     }
-    if (data is _i12.Label) {
+    if (data is _i14.Label) {
       return 'Label';
     }
-    if (data is _i13.ListBoard) {
+    if (data is _i15.ListBoard) {
       return 'ListBoard';
     }
-    if (data is _i14.User) {
+    if (data is _i16.User) {
       return 'User';
     }
-    if (data is _i15.UserToken) {
+    if (data is _i17.UserToken) {
       return 'UserToken';
     }
-    if (data is _i16.Workspace) {
+    if (data is _i18.Workspace) {
       return 'Workspace';
     }
-    if (data is _i17.WorkspaceMember) {
+    if (data is _i19.WorkspaceMember) {
       return 'WorkspaceMember';
     }
     return null;
@@ -238,41 +269,47 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Board') {
       return deserialize<_i5.Board>(data['data']);
     }
+    if (dataClassName == 'BoardDetails') {
+      return deserialize<_i6.BoardDetails>(data['data']);
+    }
+    if (dataClassName == 'BoardList') {
+      return deserialize<_i7.BoardList>(data['data']);
+    }
     if (dataClassName == 'BoardMember') {
-      return deserialize<_i6.BoardMember>(data['data']);
+      return deserialize<_i8.BoardMember>(data['data']);
     }
     if (dataClassName == 'Card') {
-      return deserialize<_i7.Card>(data['data']);
+      return deserialize<_i9.Card>(data['data']);
     }
     if (dataClassName == 'CardLabel') {
-      return deserialize<_i8.CardLabel>(data['data']);
+      return deserialize<_i10.CardLabel>(data['data']);
     }
     if (dataClassName == 'CheckList') {
-      return deserialize<_i9.CheckList>(data['data']);
+      return deserialize<_i11.CheckList>(data['data']);
     }
     if (dataClassName == 'CheckListItem') {
-      return deserialize<_i10.CheckListItem>(data['data']);
+      return deserialize<_i12.CheckListItem>(data['data']);
     }
     if (dataClassName == 'Comment') {
-      return deserialize<_i11.Comment>(data['data']);
+      return deserialize<_i13.Comment>(data['data']);
     }
     if (dataClassName == 'Label') {
-      return deserialize<_i12.Label>(data['data']);
+      return deserialize<_i14.Label>(data['data']);
     }
     if (dataClassName == 'ListBoard') {
-      return deserialize<_i13.ListBoard>(data['data']);
+      return deserialize<_i15.ListBoard>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_i14.User>(data['data']);
+      return deserialize<_i16.User>(data['data']);
     }
     if (dataClassName == 'UserToken') {
-      return deserialize<_i15.UserToken>(data['data']);
+      return deserialize<_i17.UserToken>(data['data']);
     }
     if (dataClassName == 'Workspace') {
-      return deserialize<_i16.Workspace>(data['data']);
+      return deserialize<_i18.Workspace>(data['data']);
     }
     if (dataClassName == 'WorkspaceMember') {
-      return deserialize<_i17.WorkspaceMember>(data['data']);
+      return deserialize<_i19.WorkspaceMember>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
