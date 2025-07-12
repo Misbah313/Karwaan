@@ -1,0 +1,6 @@
+class: BoardDetails
+fields:
+  id: int
+  name: String
+  description: String?
+  members: List<String>
