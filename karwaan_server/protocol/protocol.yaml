@@ -1,0 +1,7 @@
+protocol:
+  - class: board
+  - class: board_member
+  - class: board_details
+  - class: board_list
+  - class: workspace
+  - class: workspace_member

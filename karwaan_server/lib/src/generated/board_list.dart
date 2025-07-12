@@ -11,69 +11,64 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  User._({
+abstract class BoardList
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  BoardList._({
     this.id,
-    required this.name,
-    required this.email,
-    required this.password,
-    this.profileImage,
+    required this.board,
+    required this.title,
+    required this.createdAt,
   });
 
-  factory User({
+  factory BoardList({
     int? id,
-    required String name,
-    required String email,
-    required String password,
-    String? profileImage,
-  }) = _UserImpl;
+    required int board,
+    required String title,
+    required DateTime createdAt,
+  }) = _BoardListImpl;
 
-  factory User.fromJson(Map<String, dynamic> jsonSerialization) {
-    return User(
+  factory BoardList.fromJson(Map<String, dynamic> jsonSerialization) {
+    return BoardList(
       id: jsonSerialization['id'] as int?,
-      name: jsonSerialization['name'] as String,
-      email: jsonSerialization['email'] as String,
-      password: jsonSerialization['password'] as String,
-      profileImage: jsonSerialization['profileImage'] as String?,
+      board: jsonSerialization['board'] as int,
+      title: jsonSerialization['title'] as String,
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
     );
   }
 
-  static final t = UserTable();
+  static final t = BoardListTable();
 
-  static const db = UserRepository._();
+  static const db = BoardListRepository._();
 
   @override
   int? id;
 
-  String name;
+  int board;
 
-  String email;
+  String title;
 
-  String password;
-
-  String? profileImage;
+  DateTime createdAt;
 
   @override
   _i1.Table<int?> get table => t;
 
-  /// Returns a shallow copy of this [User]
+  /// Returns a shallow copy of this [BoardList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  User copyWith({
+  BoardList copyWith({
     int? id,
-    String? name,
-    String? email,
-    String? password,
-    String? profileImage,
+    int? board,
+    String? title,
+    DateTime? createdAt,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'name': name,
-      'email': email,
-      'password': password,
-      if (profileImage != null) 'profileImage': profileImage,
+      'board': board,
+      'title': title,
+      'createdAt': createdAt.toJson(),
     };
   }
 
@@ -81,33 +76,32 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'name': name,
-      'email': email,
-      'password': password,
-      if (profileImage != null) 'profileImage': profileImage,
+      'board': board,
+      'title': title,
+      'createdAt': createdAt.toJson(),
     };
   }
 
-  static UserInclude include() {
-    return UserInclude._();
+  static BoardListInclude include() {
+    return BoardListInclude._();
   }
 
-  static UserIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserTable>? where,
+  static BoardListIncludeList includeList({
+    _i1.WhereExpressionBuilder<BoardListTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserTable>? orderBy,
+    _i1.OrderByBuilder<BoardListTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserTable>? orderByList,
-    UserInclude? include,
+    _i1.OrderByListBuilder<BoardListTable>? orderByList,
+    BoardListInclude? include,
   }) {
-    return UserIncludeList._(
+    return BoardListIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(User.t),
+      orderBy: orderBy?.call(BoardList.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(User.t),
+      orderByList: orderByList?.call(BoardList.t),
       include: include,
     );
   }
@@ -120,93 +114,82 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
 class _Undefined {}
 
-class _UserImpl extends User {
-  _UserImpl({
+class _BoardListImpl extends BoardList {
+  _BoardListImpl({
     int? id,
-    required String name,
-    required String email,
-    required String password,
-    String? profileImage,
+    required int board,
+    required String title,
+    required DateTime createdAt,
   }) : super._(
           id: id,
-          name: name,
-          email: email,
-          password: password,
-          profileImage: profileImage,
+          board: board,
+          title: title,
+          createdAt: createdAt,
         );
 
-  /// Returns a shallow copy of this [User]
+  /// Returns a shallow copy of this [BoardList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  User copyWith({
+  BoardList copyWith({
     Object? id = _Undefined,
-    String? name,
-    String? email,
-    String? password,
-    Object? profileImage = _Undefined,
+    int? board,
+    String? title,
+    DateTime? createdAt,
   }) {
-    return User(
+    return BoardList(
       id: id is int? ? id : this.id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      password: password ?? this.password,
-      profileImage: profileImage is String? ? profileImage : this.profileImage,
+      board: board ?? this.board,
+      title: title ?? this.title,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }
 
-class UserTable extends _i1.Table<int?> {
-  UserTable({super.tableRelation}) : super(tableName: 'user') {
-    name = _i1.ColumnString(
-      'name',
+class BoardListTable extends _i1.Table<int?> {
+  BoardListTable({super.tableRelation}) : super(tableName: 'board_list') {
+    board = _i1.ColumnInt(
+      'board',
       this,
     );
-    email = _i1.ColumnString(
-      'email',
+    title = _i1.ColumnString(
+      'title',
       this,
     );
-    password = _i1.ColumnString(
-      'password',
-      this,
-    );
-    profileImage = _i1.ColumnString(
-      'profileImage',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
     );
   }
 
-  late final _i1.ColumnString name;
+  late final _i1.ColumnInt board;
 
-  late final _i1.ColumnString email;
+  late final _i1.ColumnString title;
 
-  late final _i1.ColumnString password;
-
-  late final _i1.ColumnString profileImage;
+  late final _i1.ColumnDateTime createdAt;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        name,
-        email,
-        password,
-        profileImage,
+        board,
+        title,
+        createdAt,
       ];
 }
 
-class UserInclude extends _i1.IncludeObject {
-  UserInclude._();
+class BoardListInclude extends _i1.IncludeObject {
+  BoardListInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => User.t;
+  _i1.Table<int?> get table => BoardList.t;
 }
 
-class UserIncludeList extends _i1.IncludeList {
-  UserIncludeList._({
-    _i1.WhereExpressionBuilder<UserTable>? where,
+class BoardListIncludeList extends _i1.IncludeList {
+  BoardListIncludeList._({
+    _i1.WhereExpressionBuilder<BoardListTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -214,20 +197,20 @@ class UserIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(User.t);
+    super.where = where?.call(BoardList.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => User.t;
+  _i1.Table<int?> get table => BoardList.t;
 }
 
-class UserRepository {
-  const UserRepository._();
+class BoardListRepository {
+  const BoardListRepository._();
 
-  /// Returns a list of [User]s matching the given query parameters.
+  /// Returns a list of [BoardList]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -249,20 +232,20 @@ class UserRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<User>> find(
+  Future<List<BoardList>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserTable>? where,
+    _i1.WhereExpressionBuilder<BoardListTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserTable>? orderBy,
+    _i1.OrderByBuilder<BoardListTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserTable>? orderByList,
+    _i1.OrderByListBuilder<BoardListTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<User>(
-      where: where?.call(User.t),
-      orderBy: orderBy?.call(User.t),
-      orderByList: orderByList?.call(User.t),
+    return session.db.find<BoardList>(
+      where: where?.call(BoardList.t),
+      orderBy: orderBy?.call(BoardList.t),
+      orderByList: orderByList?.call(BoardList.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -270,7 +253,7 @@ class UserRepository {
     );
   }
 
-  /// Returns the first matching [User] matching the given query parameters.
+  /// Returns the first matching [BoardList] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -287,136 +270,136 @@ class UserRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<User?> findFirstRow(
+  Future<BoardList?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserTable>? where,
+    _i1.WhereExpressionBuilder<BoardListTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserTable>? orderBy,
+    _i1.OrderByBuilder<BoardListTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<UserTable>? orderByList,
+    _i1.OrderByListBuilder<BoardListTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<User>(
-      where: where?.call(User.t),
-      orderBy: orderBy?.call(User.t),
-      orderByList: orderByList?.call(User.t),
+    return session.db.findFirstRow<BoardList>(
+      where: where?.call(BoardList.t),
+      orderBy: orderBy?.call(BoardList.t),
+      orderByList: orderByList?.call(BoardList.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [User] by its [id] or null if no such row exists.
-  Future<User?> findById(
+  /// Finds a single [BoardList] by its [id] or null if no such row exists.
+  Future<BoardList?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<User>(
+    return session.db.findById<BoardList>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [User]s in the list and returns the inserted rows.
+  /// Inserts all [BoardList]s in the list and returns the inserted rows.
   ///
-  /// The returned [User]s will have their `id` fields set.
+  /// The returned [BoardList]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<User>> insert(
+  Future<List<BoardList>> insert(
     _i1.Session session,
-    List<User> rows, {
+    List<BoardList> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<User>(
+    return session.db.insert<BoardList>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [User] and returns the inserted row.
+  /// Inserts a single [BoardList] and returns the inserted row.
   ///
-  /// The returned [User] will have its `id` field set.
-  Future<User> insertRow(
+  /// The returned [BoardList] will have its `id` field set.
+  Future<BoardList> insertRow(
     _i1.Session session,
-    User row, {
+    BoardList row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<User>(
+    return session.db.insertRow<BoardList>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [User]s in the list and returns the updated rows. If
+  /// Updates all [BoardList]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<User>> update(
+  Future<List<BoardList>> update(
     _i1.Session session,
-    List<User> rows, {
-    _i1.ColumnSelections<UserTable>? columns,
+    List<BoardList> rows, {
+    _i1.ColumnSelections<BoardListTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<User>(
+    return session.db.update<BoardList>(
       rows,
-      columns: columns?.call(User.t),
+      columns: columns?.call(BoardList.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [User]. The row needs to have its id set.
+  /// Updates a single [BoardList]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<User> updateRow(
+  Future<BoardList> updateRow(
     _i1.Session session,
-    User row, {
-    _i1.ColumnSelections<UserTable>? columns,
+    BoardList row, {
+    _i1.ColumnSelections<BoardListTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<User>(
+    return session.db.updateRow<BoardList>(
       row,
-      columns: columns?.call(User.t),
+      columns: columns?.call(BoardList.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [User]s in the list and returns the deleted rows.
+  /// Deletes all [BoardList]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<User>> delete(
+  Future<List<BoardList>> delete(
     _i1.Session session,
-    List<User> rows, {
+    List<BoardList> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<User>(
+    return session.db.delete<BoardList>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [User].
-  Future<User> deleteRow(
+  /// Deletes a single [BoardList].
+  Future<BoardList> deleteRow(
     _i1.Session session,
-    User row, {
+    BoardList row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<User>(
+    return session.db.deleteRow<BoardList>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<User>> deleteWhere(
+  Future<List<BoardList>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<UserTable> where,
+    required _i1.WhereExpressionBuilder<BoardListTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<User>(
-      where: where(User.t),
+    return session.db.deleteWhere<BoardList>(
+      where: where(BoardList.t),
       transaction: transaction,
     );
   }
@@ -425,12 +408,12 @@ class UserRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserTable>? where,
+    _i1.WhereExpressionBuilder<BoardListTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<User>(
-      where: where?.call(User.t),
+    return session.db.count<BoardList>(
+      where: where?.call(BoardList.t),
       limit: limit,
       transaction: transaction,
     );

@@ -1,0 +1,4 @@
+class: AuthResponse
+fields:
+  user: User
+  token: String

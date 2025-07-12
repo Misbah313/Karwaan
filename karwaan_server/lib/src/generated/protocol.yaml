@@ -1,2 +1,28 @@
+authentication:
+  - registerUser:
+  - loginUser:
+  - logoutUser:
+board:
+  - createBoard:
+  - getUserBoard:
+  - getUserBoards:
+  - updateBoard:
+  - deleteBoard:
+token:
+  - validateToken:
+  - logout:
+user:
+  - createUser:
+  - getUserById:
+  - getAllUsers:
+  - updateUser:
+  - deleteUser:
+workspace:
+  - createWorkspace:
+  - getUserWorkspace:
+  - addMemberToWorkspace:
+  - removeMemFromWorkspace:
+  - updateWorkspace:
+  - deleteWorkspace:
 greeting:
   - hello:

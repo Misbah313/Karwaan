@@ -1,0 +1,8 @@
+class: BoardList
+table: board_list
+fields:
+  id: int?
+  board: int, relation(parent=board)
+  title: String
+  createdAt: DateTime
+
