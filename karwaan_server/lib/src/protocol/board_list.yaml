@@ -5,4 +5,5 @@ fields:
   board: int, relation(parent=board)
   title: String
   createdAt: DateTime
+  createdBy: int, relation(parent=user)
 

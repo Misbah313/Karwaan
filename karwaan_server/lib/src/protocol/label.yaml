@@ -5,3 +5,4 @@ fields:
   name: String
   color: String
   board: int, relation(parent=board)
+  createdBy: int, relation(parent=user)
