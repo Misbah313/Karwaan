@@ -17,6 +17,7 @@ abstract class Label implements _i1.SerializableModel {
     required this.name,
     required this.color,
     required this.board,
+    required this.createdBy,
   });
 
   factory Label({
@@ -24,6 +25,7 @@ abstract class Label implements _i1.SerializableModel {
     required String name,
     required String color,
     required int board,
+    required int createdBy,
   }) = _LabelImpl;
 
   factory Label.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,6 +34,7 @@ abstract class Label implements _i1.SerializableModel {
       name: jsonSerialization['name'] as String,
       color: jsonSerialization['color'] as String,
       board: jsonSerialization['board'] as int,
+      createdBy: jsonSerialization['createdBy'] as int,
     );
   }
 
@@ -46,6 +49,8 @@ abstract class Label implements _i1.SerializableModel {
 
   int board;
 
+  int createdBy;
+
   /// Returns a shallow copy of this [Label]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -54,6 +59,7 @@ abstract class Label implements _i1.SerializableModel {
     String? name,
     String? color,
     int? board,
+    int? createdBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -62,6 +68,7 @@ abstract class Label implements _i1.SerializableModel {
       'name': name,
       'color': color,
       'board': board,
+      'createdBy': createdBy,
     };
   }
 
@@ -79,11 +86,13 @@ class _LabelImpl extends Label {
     required String name,
     required String color,
     required int board,
+    required int createdBy,
   }) : super._(
           id: id,
           name: name,
           color: color,
           board: board,
+          createdBy: createdBy,
         );
 
   /// Returns a shallow copy of this [Label]
@@ -95,12 +104,14 @@ class _LabelImpl extends Label {
     String? name,
     String? color,
     int? board,
+    int? createdBy,
   }) {
     return Label(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       color: color ?? this.color,
       board: board ?? this.board,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }

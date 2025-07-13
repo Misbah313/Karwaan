@@ -17,6 +17,7 @@ abstract class BoardList implements _i1.SerializableModel {
     required this.board,
     required this.title,
     required this.createdAt,
+    required this.createdBy,
   });
 
   factory BoardList({
@@ -24,6 +25,7 @@ abstract class BoardList implements _i1.SerializableModel {
     required int board,
     required String title,
     required DateTime createdAt,
+    required int createdBy,
   }) = _BoardListImpl;
 
   factory BoardList.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -33,6 +35,7 @@ abstract class BoardList implements _i1.SerializableModel {
       title: jsonSerialization['title'] as String,
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      createdBy: jsonSerialization['createdBy'] as int,
     );
   }
 
@@ -47,6 +50,8 @@ abstract class BoardList implements _i1.SerializableModel {
 
   DateTime createdAt;
 
+  int createdBy;
+
   /// Returns a shallow copy of this [BoardList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -55,6 +60,7 @@ abstract class BoardList implements _i1.SerializableModel {
     int? board,
     String? title,
     DateTime? createdAt,
+    int? createdBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -63,6 +69,7 @@ abstract class BoardList implements _i1.SerializableModel {
       'board': board,
       'title': title,
       'createdAt': createdAt.toJson(),
+      'createdBy': createdBy,
     };
   }
 
@@ -80,11 +87,13 @@ class _BoardListImpl extends BoardList {
     required int board,
     required String title,
     required DateTime createdAt,
+    required int createdBy,
   }) : super._(
           id: id,
           board: board,
           title: title,
           createdAt: createdAt,
+          createdBy: createdBy,
         );
 
   /// Returns a shallow copy of this [BoardList]
@@ -96,12 +105,14 @@ class _BoardListImpl extends BoardList {
     int? board,
     String? title,
     DateTime? createdAt,
+    int? createdBy,
   }) {
     return BoardList(
       id: id is int? ? id : this.id,
       board: board ?? this.board,
       title: title ?? this.title,
       createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }
