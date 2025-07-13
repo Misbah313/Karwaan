@@ -8,6 +8,27 @@ board:
   - getUserBoards:
   - updateBoard:
   - deleteBoard:
+boardList:
+  - createBoardList:
+  - listBoardLists:
+  - updateBoardList:
+  - deleteBoardList:
+boardMember:
+  - addMemberToBoard:
+  - removeMemberFromBoard:
+  - getBoardMembers:
+  - changeBoardMemberRole:
+  - leaveBoard:
+card:
+  - createCard:
+  - getListByCard:
+  - updateCard:
+  - deleteCard:
+label:
+  - creatLabel:
+  - getLabelsForBoard:
+  - updateLable:
+  - deleteLable:
 token:
   - validateToken:
   - logout:
@@ -20,9 +41,13 @@ user:
 workspace:
   - createWorkspace:
   - getUserWorkspace:
-  - addMemberToWorkspace:
-  - removeMemFromWorkspace:
   - updateWorkspace:
   - deleteWorkspace:
+workspaceMember:
+  - addMemeberToWorkspace:
+  - removeMemberFromWorkspace:
+  - getWorkspaceMember:
+  - changeMemberRole:
+  - leaveWorkspace:
 greeting:
   - hello:
