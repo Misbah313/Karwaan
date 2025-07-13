@@ -18,6 +18,7 @@ abstract class BoardList
     required this.board,
     required this.title,
     required this.createdAt,
+    required this.createdBy,
   });
 
   factory BoardList({
@@ -25,6 +26,7 @@ abstract class BoardList
     required int board,
     required String title,
     required DateTime createdAt,
+    required int createdBy,
   }) = _BoardListImpl;
 
   factory BoardList.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,6 +36,7 @@ abstract class BoardList
       title: jsonSerialization['title'] as String,
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      createdBy: jsonSerialization['createdBy'] as int,
     );
   }
 
@@ -50,6 +53,8 @@ abstract class BoardList
 
   DateTime createdAt;
 
+  int createdBy;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -61,6 +66,7 @@ abstract class BoardList
     int? board,
     String? title,
     DateTime? createdAt,
+    int? createdBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -69,6 +75,7 @@ abstract class BoardList
       'board': board,
       'title': title,
       'createdAt': createdAt.toJson(),
+      'createdBy': createdBy,
     };
   }
 
@@ -79,6 +86,7 @@ abstract class BoardList
       'board': board,
       'title': title,
       'createdAt': createdAt.toJson(),
+      'createdBy': createdBy,
     };
   }
 
@@ -120,11 +128,13 @@ class _BoardListImpl extends BoardList {
     required int board,
     required String title,
     required DateTime createdAt,
+    required int createdBy,
   }) : super._(
           id: id,
           board: board,
           title: title,
           createdAt: createdAt,
+          createdBy: createdBy,
         );
 
   /// Returns a shallow copy of this [BoardList]
@@ -136,12 +146,14 @@ class _BoardListImpl extends BoardList {
     int? board,
     String? title,
     DateTime? createdAt,
+    int? createdBy,
   }) {
     return BoardList(
       id: id is int? ? id : this.id,
       board: board ?? this.board,
       title: title ?? this.title,
       createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }
@@ -160,6 +172,10 @@ class BoardListTable extends _i1.Table<int?> {
       'createdAt',
       this,
     );
+    createdBy = _i1.ColumnInt(
+      'createdBy',
+      this,
+    );
   }
 
   late final _i1.ColumnInt board;
@@ -168,12 +184,15 @@ class BoardListTable extends _i1.Table<int?> {
 
   late final _i1.ColumnDateTime createdAt;
 
+  late final _i1.ColumnInt createdBy;
+
   @override
   List<_i1.Column> get columns => [
         id,
         board,
         title,
         createdAt,
+        createdBy,
       ];
 }
 

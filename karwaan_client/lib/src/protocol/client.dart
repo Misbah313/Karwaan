@@ -15,9 +15,17 @@ import 'package:karwaan_client/src/protocol/user.dart' as _i3;
 import 'package:karwaan_client/src/protocol/auth_response.dart' as _i4;
 import 'package:karwaan_client/src/protocol/board.dart' as _i5;
 import 'package:karwaan_client/src/protocol/board_details.dart' as _i6;
-import 'package:karwaan_client/src/protocol/workspace.dart' as _i7;
-import 'package:karwaan_client/src/protocol/greeting.dart' as _i8;
-import 'protocol.dart' as _i9;
+import 'package:karwaan_client/src/protocol/board_list.dart' as _i7;
+import 'package:karwaan_client/src/protocol/board_member.dart' as _i8;
+import 'package:karwaan_client/src/endpoints/board_member_details.dart' as _i9;
+import 'package:karwaan_client/src/protocol/card.dart' as _i10;
+import 'package:karwaan_client/src/protocol/label.dart' as _i11;
+import 'package:karwaan_client/src/protocol/workspace.dart' as _i12;
+import 'package:karwaan_client/src/protocol/workspace_member.dart' as _i13;
+import 'package:karwaan_client/src/endpoints/workspace_member_details.dart'
+    as _i14;
+import 'package:karwaan_client/src/protocol/greeting.dart' as _i15;
+import 'protocol.dart' as _i16;
 
 /// {@category Endpoint}
 class EndpointAuthentication extends _i1.EndpointRef {
@@ -137,6 +145,289 @@ class EndpointBoard extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointBoardList extends _i1.EndpointRef {
+  EndpointBoardList(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'boardList';
+
+  _i2.Future<_i7.BoardList> createBoardList(
+    int boardId,
+    String token,
+    String title,
+  ) =>
+      caller.callServerEndpoint<_i7.BoardList>(
+        'boardList',
+        'createBoardList',
+        {
+          'boardId': boardId,
+          'token': token,
+          'title': title,
+        },
+      );
+
+  _i2.Future<List<_i7.BoardList>> listBoardLists(
+    int boardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i7.BoardList>>(
+        'boardList',
+        'listBoardLists',
+        {
+          'boardId': boardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i7.BoardList> updateBoardList(
+    int listId,
+    String token,
+    String newTitle,
+  ) =>
+      caller.callServerEndpoint<_i7.BoardList>(
+        'boardList',
+        'updateBoardList',
+        {
+          'listId': listId,
+          'token': token,
+          'newTitle': newTitle,
+        },
+      );
+
+  _i2.Future<bool> deleteBoardList(
+    int listId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'boardList',
+        'deleteBoardList',
+        {
+          'listId': listId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointBoardMember extends _i1.EndpointRef {
+  EndpointBoardMember(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'boardMember';
+
+  _i2.Future<_i8.BoardMember> addMemberToBoard(
+    int boardId,
+    int userToAddId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i8.BoardMember>(
+        'boardMember',
+        'addMemberToBoard',
+        {
+          'boardId': boardId,
+          'userToAddId': userToAddId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<void> removeMemberFromBoard(
+    int boardId,
+    int userToRemoveId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'boardMember',
+        'removeMemberFromBoard',
+        {
+          'boardId': boardId,
+          'userToRemoveId': userToRemoveId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<List<_i9.BoardMemberDetails>> getBoardMembers(
+    int boardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i9.BoardMemberDetails>>(
+        'boardMember',
+        'getBoardMembers',
+        {
+          'boardId': boardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i8.BoardMember> changeBoardMemberRole(
+    int boardId,
+    String token,
+    int userToChangeRole,
+    String newRole,
+  ) =>
+      caller.callServerEndpoint<_i8.BoardMember>(
+        'boardMember',
+        'changeBoardMemberRole',
+        {
+          'boardId': boardId,
+          'token': token,
+          'userToChangeRole': userToChangeRole,
+          'newRole': newRole,
+        },
+      );
+
+  _i2.Future<void> leaveBoard(
+    int boardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'boardMember',
+        'leaveBoard',
+        {
+          'boardId': boardId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointCard extends _i1.EndpointRef {
+  EndpointCard(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'card';
+
+  _i2.Future<_i10.Card> createCard(
+    int boardListId,
+    String token,
+    String title, {
+    String? dec,
+  }) =>
+      caller.callServerEndpoint<_i10.Card>(
+        'card',
+        'createCard',
+        {
+          'boardListId': boardListId,
+          'token': token,
+          'title': title,
+          'dec': dec,
+        },
+      );
+
+  _i2.Future<List<_i10.Card>> getListByCard(
+    int boardListId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i10.Card>>(
+        'card',
+        'getListByCard',
+        {
+          'boardListId': boardListId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i10.Card> updateCard(
+    int cardId,
+    String token,
+    String newTitle,
+    String? newDec,
+    bool? completed,
+  ) =>
+      caller.callServerEndpoint<_i10.Card>(
+        'card',
+        'updateCard',
+        {
+          'cardId': cardId,
+          'token': token,
+          'newTitle': newTitle,
+          'newDec': newDec,
+          'completed': completed,
+        },
+      );
+
+  _i2.Future<bool> deleteCard(
+    int cardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'card',
+        'deleteCard',
+        {
+          'cardId': cardId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointLabel extends _i1.EndpointRef {
+  EndpointLabel(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'label';
+
+  _i2.Future<_i11.Label> creatLabel(
+    int boardId,
+    String token,
+    String title,
+    String color,
+  ) =>
+      caller.callServerEndpoint<_i11.Label>(
+        'label',
+        'creatLabel',
+        {
+          'boardId': boardId,
+          'token': token,
+          'title': title,
+          'color': color,
+        },
+      );
+
+  _i2.Future<List<_i11.Label>> getLabelsForBoard(
+    int boardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i11.Label>>(
+        'label',
+        'getLabelsForBoard',
+        {
+          'boardId': boardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i11.Label> updateLable(
+    int labelId,
+    String token, {
+    String? newTitle,
+    String? newColor,
+  }) =>
+      caller.callServerEndpoint<_i11.Label>(
+        'label',
+        'updateLable',
+        {
+          'labelId': labelId,
+          'token': token,
+          'newTitle': newTitle,
+          'newColor': newColor,
+        },
+      );
+
+  _i2.Future<bool> deleteLable(
+    int labelId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'label',
+        'deleteLable',
+        {
+          'labelId': labelId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
 class EndpointToken extends _i1.EndpointRef {
   EndpointToken(_i1.EndpointCaller caller) : super(caller);
 
@@ -206,12 +497,12 @@ class EndpointWorkspace extends _i1.EndpointRef {
   @override
   String get name => 'workspace';
 
-  _i2.Future<_i7.Workspace> createWorkspace(
+  _i2.Future<_i12.Workspace> createWorkspace(
     String name,
     String? description,
     String token,
   ) =>
-      caller.callServerEndpoint<_i7.Workspace>(
+      caller.callServerEndpoint<_i12.Workspace>(
         'workspace',
         'createWorkspace',
         {
@@ -221,52 +512,20 @@ class EndpointWorkspace extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i7.Workspace>> getUserWorkspace(String token) =>
-      caller.callServerEndpoint<List<_i7.Workspace>>(
+  _i2.Future<List<_i12.Workspace>> getUserWorkspace(String token) =>
+      caller.callServerEndpoint<List<_i12.Workspace>>(
         'workspace',
         'getUserWorkspace',
         {'token': token},
       );
 
-  _i2.Future<void> addMemberToWorkspace(
-    int workspaceId,
-    int userToAddId,
-    String role,
-    String token,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'workspace',
-        'addMemberToWorkspace',
-        {
-          'workspaceId': workspaceId,
-          'userToAddId': userToAddId,
-          'role': role,
-          'token': token,
-        },
-      );
-
-  _i2.Future<void> removeMemFromWorkspace(
-    int workspaceId,
-    int userToRemoveId,
-    String token,
-  ) =>
-      caller.callServerEndpoint<void>(
-        'workspace',
-        'removeMemFromWorkspace',
-        {
-          'workspaceId': workspaceId,
-          'userToRemoveId': userToRemoveId,
-          'token': token,
-        },
-      );
-
-  _i2.Future<_i7.Workspace> updateWorkspace(
+  _i2.Future<_i12.Workspace> updateWorkspace(
     int workspaceId,
     String token, {
     String? newName,
     String? newDes,
   }) =>
-      caller.callServerEndpoint<_i7.Workspace>(
+      caller.callServerEndpoint<_i12.Workspace>(
         'workspace',
         'updateWorkspace',
         {
@@ -291,6 +550,87 @@ class EndpointWorkspace extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointWorkspaceMember extends _i1.EndpointRef {
+  EndpointWorkspaceMember(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'workspaceMember';
+
+  _i2.Future<_i13.WorkspaceMember> addMemeberToWorkspace(
+    int userToAddId,
+    int workspaceId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i13.WorkspaceMember>(
+        'workspaceMember',
+        'addMemeberToWorkspace',
+        {
+          'userToAddId': userToAddId,
+          'workspaceId': workspaceId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<void> removeMemberFromWorkspace(
+    int workspaceId,
+    int userToRemoveId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'workspaceMember',
+        'removeMemberFromWorkspace',
+        {
+          'workspaceId': workspaceId,
+          'userToRemoveId': userToRemoveId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<List<_i14.WorkspaceMemberDetails>> getWorkspaceMember(
+    int workspaceId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i14.WorkspaceMemberDetails>>(
+        'workspaceMember',
+        'getWorkspaceMember',
+        {
+          'workspaceId': workspaceId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i13.WorkspaceMember> changeMemberRole(
+    int workspaceId,
+    String token,
+    int targetUserId,
+    String newRole,
+  ) =>
+      caller.callServerEndpoint<_i13.WorkspaceMember>(
+        'workspaceMember',
+        'changeMemberRole',
+        {
+          'workspaceId': workspaceId,
+          'token': token,
+          'targetUserId': targetUserId,
+          'newRole': newRole,
+        },
+      );
+
+  _i2.Future<void> leaveWorkspace(
+    int workspaceId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'workspaceMember',
+        'leaveWorkspace',
+        {
+          'workspaceId': workspaceId,
+          'token': token,
+        },
+      );
+}
+
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
@@ -301,8 +641,8 @@ class EndpointGreeting extends _i1.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i8.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i8.Greeting>(
+  _i2.Future<_i15.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i15.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -325,7 +665,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i9.Protocol(),
+          _i16.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -337,9 +677,14 @@ class Client extends _i1.ServerpodClientShared {
         ) {
     authentication = EndpointAuthentication(this);
     board = EndpointBoard(this);
+    boardList = EndpointBoardList(this);
+    boardMember = EndpointBoardMember(this);
+    card = EndpointCard(this);
+    label = EndpointLabel(this);
     token = EndpointToken(this);
     user = EndpointUser(this);
     workspace = EndpointWorkspace(this);
+    workspaceMember = EndpointWorkspaceMember(this);
     greeting = EndpointGreeting(this);
   }
 
@@ -347,11 +692,21 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointBoard board;
 
+  late final EndpointBoardList boardList;
+
+  late final EndpointBoardMember boardMember;
+
+  late final EndpointCard card;
+
+  late final EndpointLabel label;
+
   late final EndpointToken token;
 
   late final EndpointUser user;
 
   late final EndpointWorkspace workspace;
+
+  late final EndpointWorkspaceMember workspaceMember;
 
   late final EndpointGreeting greeting;
 
@@ -359,9 +714,14 @@ class Client extends _i1.ServerpodClientShared {
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'authentication': authentication,
         'board': board,
+        'boardList': boardList,
+        'boardMember': boardMember,
+        'card': card,
+        'label': label,
         'token': token,
         'user': user,
         'workspace': workspace,
+        'workspaceMember': workspaceMember,
         'greeting': greeting,
       };
 

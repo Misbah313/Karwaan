@@ -24,14 +24,19 @@ import 'checklist.dart' as _i12;
 import 'checklist_item.dart' as _i13;
 import 'comment.dart' as _i14;
 import 'label.dart' as _i15;
-import 'list.dart' as _i16;
-import 'user.dart' as _i17;
-import 'user_token.dart' as _i18;
-import 'workspace.dart' as _i19;
-import 'workspace_member.dart' as _i20;
-import 'package:karwaan_server/src/generated/board_details.dart' as _i21;
-import 'package:karwaan_server/src/generated/user.dart' as _i22;
-import 'package:karwaan_server/src/generated/workspace.dart' as _i23;
+import 'user.dart' as _i16;
+import 'user_token.dart' as _i17;
+import 'workspace.dart' as _i18;
+import 'workspace_member.dart' as _i19;
+import 'package:karwaan_server/src/generated/board_details.dart' as _i20;
+import 'package:karwaan_server/src/generated/board_list.dart' as _i21;
+import 'package:karwaan_server/src/endpoints/board_member_details.dart' as _i22;
+import 'package:karwaan_server/src/generated/card.dart' as _i23;
+import 'package:karwaan_server/src/generated/label.dart' as _i24;
+import 'package:karwaan_server/src/generated/user.dart' as _i25;
+import 'package:karwaan_server/src/generated/workspace.dart' as _i26;
+import 'package:karwaan_server/src/endpoints/workspace_member_details.dart'
+    as _i27;
 export 'greeting.dart';
 export 'attachment.dart';
 export 'auth_response.dart';
@@ -45,7 +50,6 @@ export 'checklist.dart';
 export 'checklist_item.dart';
 export 'comment.dart';
 export 'label.dart';
-export 'list.dart';
 export 'user.dart';
 export 'user_token.dart';
 export 'workspace.dart';
@@ -244,6 +248,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'DateTime',
         ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -255,7 +265,17 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.noAction,
           matchType: null,
-        )
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'board_list_fk_1',
+          columns: ['createdBy'],
+          referenceTable: 'user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -421,7 +441,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'card_fk_1',
           columns: ['list'],
-          referenceTable: 'listboard',
+          referenceTable: 'board_list',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -741,6 +761,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'int',
         ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -752,88 +778,9 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.noAction,
           matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'lable_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'listboard',
-      dartName: 'ListBoard',
-      schema: 'public',
-      module: 'karwaan',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'listboard_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'board',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdBy',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          dartType: 'DateTime',
-        ),
-        _i2.ColumnDefinition(
-          name: 'isArcheived',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-        ),
-        _i2.ColumnDefinition(
-          name: 'position',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'listboard_fk_0',
-          columns: ['board'],
-          referenceTable: 'board',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.noAction,
-          matchType: null,
         ),
         _i2.ForeignKeyDefinition(
-          constraintName: 'listboard_fk_1',
+          constraintName: 'lable_fk_1',
           columns: ['createdBy'],
           referenceTable: 'user',
           referenceTableSchema: 'public',
@@ -845,7 +792,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'listboard_pkey',
+          indexName: 'lable_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -1175,20 +1122,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i15.Label) {
       return _i15.Label.fromJson(data) as T;
     }
-    if (t == _i16.ListBoard) {
-      return _i16.ListBoard.fromJson(data) as T;
+    if (t == _i16.User) {
+      return _i16.User.fromJson(data) as T;
     }
-    if (t == _i17.User) {
-      return _i17.User.fromJson(data) as T;
+    if (t == _i17.UserToken) {
+      return _i17.UserToken.fromJson(data) as T;
     }
-    if (t == _i18.UserToken) {
-      return _i18.UserToken.fromJson(data) as T;
+    if (t == _i18.Workspace) {
+      return _i18.Workspace.fromJson(data) as T;
     }
-    if (t == _i19.Workspace) {
-      return _i19.Workspace.fromJson(data) as T;
-    }
-    if (t == _i20.WorkspaceMember) {
-      return _i20.WorkspaceMember.fromJson(data) as T;
+    if (t == _i19.WorkspaceMember) {
+      return _i19.WorkspaceMember.fromJson(data) as T;
     }
     if (t == _i1.getType<_i3.Greeting?>()) {
       return (data != null ? _i3.Greeting.fromJson(data) : null) as T;
@@ -1229,35 +1173,53 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i15.Label?>()) {
       return (data != null ? _i15.Label.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.ListBoard?>()) {
-      return (data != null ? _i16.ListBoard.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.User?>()) {
+      return (data != null ? _i16.User.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.User?>()) {
-      return (data != null ? _i17.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.UserToken?>()) {
+      return (data != null ? _i17.UserToken.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.UserToken?>()) {
-      return (data != null ? _i18.UserToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.Workspace?>()) {
+      return (data != null ? _i18.Workspace.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.Workspace?>()) {
-      return (data != null ? _i19.Workspace.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.WorkspaceMember?>()) {
-      return (data != null ? _i20.WorkspaceMember.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.WorkspaceMember?>()) {
+      return (data != null ? _i19.WorkspaceMember.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i21.BoardDetails>) {
+    if (t == List<_i20.BoardDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i21.BoardDetails>(e))
+          .map((e) => deserialize<_i20.BoardDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i22.User>) {
-      return (data as List).map((e) => deserialize<_i22.User>(e)).toList() as T;
-    }
-    if (t == List<_i23.Workspace>) {
-      return (data as List).map((e) => deserialize<_i23.Workspace>(e)).toList()
+    if (t == List<_i21.BoardList>) {
+      return (data as List).map((e) => deserialize<_i21.BoardList>(e)).toList()
           as T;
+    }
+    if (t == List<_i22.BoardMemberDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i22.BoardMemberDetails>(e))
+          .toList() as T;
+    }
+    if (t == List<_i23.Card>) {
+      return (data as List).map((e) => deserialize<_i23.Card>(e)).toList() as T;
+    }
+    if (t == List<_i24.Label>) {
+      return (data as List).map((e) => deserialize<_i24.Label>(e)).toList()
+          as T;
+    }
+    if (t == List<_i25.User>) {
+      return (data as List).map((e) => deserialize<_i25.User>(e)).toList() as T;
+    }
+    if (t == List<_i26.Workspace>) {
+      return (data as List).map((e) => deserialize<_i26.Workspace>(e)).toList()
+          as T;
+    }
+    if (t == List<_i27.WorkspaceMemberDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i27.WorkspaceMemberDetails>(e))
+          .toList() as T;
     }
     try {
       return _i2.Protocol().deserialize<T>(data, t);
@@ -1308,19 +1270,16 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i15.Label) {
       return 'Label';
     }
-    if (data is _i16.ListBoard) {
-      return 'ListBoard';
-    }
-    if (data is _i17.User) {
+    if (data is _i16.User) {
       return 'User';
     }
-    if (data is _i18.UserToken) {
+    if (data is _i17.UserToken) {
       return 'UserToken';
     }
-    if (data is _i19.Workspace) {
+    if (data is _i18.Workspace) {
       return 'Workspace';
     }
-    if (data is _i20.WorkspaceMember) {
+    if (data is _i19.WorkspaceMember) {
       return 'WorkspaceMember';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1375,20 +1334,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Label') {
       return deserialize<_i15.Label>(data['data']);
     }
-    if (dataClassName == 'ListBoard') {
-      return deserialize<_i16.ListBoard>(data['data']);
-    }
     if (dataClassName == 'User') {
-      return deserialize<_i17.User>(data['data']);
+      return deserialize<_i16.User>(data['data']);
     }
     if (dataClassName == 'UserToken') {
-      return deserialize<_i18.UserToken>(data['data']);
+      return deserialize<_i17.UserToken>(data['data']);
     }
     if (dataClassName == 'Workspace') {
-      return deserialize<_i19.Workspace>(data['data']);
+      return deserialize<_i18.Workspace>(data['data']);
     }
     if (dataClassName == 'WorkspaceMember') {
-      return deserialize<_i20.WorkspaceMember>(data['data']);
+      return deserialize<_i19.WorkspaceMember>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1426,16 +1382,14 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i14.Comment.t;
       case _i15.Label:
         return _i15.Label.t;
-      case _i16.ListBoard:
-        return _i16.ListBoard.t;
-      case _i17.User:
-        return _i17.User.t;
-      case _i18.UserToken:
-        return _i18.UserToken.t;
-      case _i19.Workspace:
-        return _i19.Workspace.t;
-      case _i20.WorkspaceMember:
-        return _i20.WorkspaceMember.t;
+      case _i16.User:
+        return _i16.User.t;
+      case _i17.UserToken:
+        return _i17.UserToken.t;
+      case _i18.Workspace:
+        return _i18.Workspace.t;
+      case _i19.WorkspaceMember:
+        return _i19.WorkspaceMember.t;
     }
     return null;
   }
