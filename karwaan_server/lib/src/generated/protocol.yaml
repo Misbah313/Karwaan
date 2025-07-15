@@ -1,3 +1,7 @@
+attachment:
+  - uploadAttachment:
+  - listAttachments:
+  - deleteAttachment:
 authentication:
   - registerUser:
   - loginUser:
@@ -24,11 +28,32 @@ card:
   - getListByCard:
   - updateCard:
   - deleteCard:
+cardLabel:
+  - assignLableToCard:
+  - removeLabelFromCard:
+  - getLabelForCard:
+  - getCardForLabel:
+checklist:
+  - createChecklist:
+  - listChecklist:
+  - updateChecklist:
+  - deleteChecklist:
+checklistItem:
+  - createChecklistItem:
+  - listChecklistItems:
+  - updateChecklistItem:
+  - toggleChecklistItemStatus:
+  - deleteChecklistItem:
+comment:
+  - createComment:
+  - getCommentsForCard:
+  - updateComment:
+  - deleteComment:
 label:
-  - creatLabel:
+  - createLabel:
   - getLabelsForBoard:
-  - updateLable:
-  - deleteLable:
+  - updateLabel:
+  - deleteLabel:
 token:
   - validateToken:
   - logout:
@@ -44,7 +69,7 @@ workspace:
   - updateWorkspace:
   - deleteWorkspace:
 workspaceMember:
-  - addMemeberToWorkspace:
+  - addMemberToWorkspace:
   - removeMemberFromWorkspace:
   - getWorkspaceMember:
   - changeMemberRole:

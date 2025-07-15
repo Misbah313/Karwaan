@@ -18,6 +18,7 @@ abstract class CheckListItem
     required this.checklist,
     required this.content,
     required this.isDone,
+    required this.createdBy,
   });
 
   factory CheckListItem({
@@ -25,6 +26,7 @@ abstract class CheckListItem
     required int checklist,
     required String content,
     required bool isDone,
+    required int createdBy,
   }) = _CheckListItemImpl;
 
   factory CheckListItem.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -33,6 +35,7 @@ abstract class CheckListItem
       checklist: jsonSerialization['checklist'] as int,
       content: jsonSerialization['content'] as String,
       isDone: jsonSerialization['isDone'] as bool,
+      createdBy: jsonSerialization['createdBy'] as int,
     );
   }
 
@@ -49,6 +52,8 @@ abstract class CheckListItem
 
   bool isDone;
 
+  int createdBy;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -60,6 +65,7 @@ abstract class CheckListItem
     int? checklist,
     String? content,
     bool? isDone,
+    int? createdBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -68,6 +74,7 @@ abstract class CheckListItem
       'checklist': checklist,
       'content': content,
       'isDone': isDone,
+      'createdBy': createdBy,
     };
   }
 
@@ -78,6 +85,7 @@ abstract class CheckListItem
       'checklist': checklist,
       'content': content,
       'isDone': isDone,
+      'createdBy': createdBy,
     };
   }
 
@@ -119,11 +127,13 @@ class _CheckListItemImpl extends CheckListItem {
     required int checklist,
     required String content,
     required bool isDone,
+    required int createdBy,
   }) : super._(
           id: id,
           checklist: checklist,
           content: content,
           isDone: isDone,
+          createdBy: createdBy,
         );
 
   /// Returns a shallow copy of this [CheckListItem]
@@ -135,12 +145,14 @@ class _CheckListItemImpl extends CheckListItem {
     int? checklist,
     String? content,
     bool? isDone,
+    int? createdBy,
   }) {
     return CheckListItem(
       id: id is int? ? id : this.id,
       checklist: checklist ?? this.checklist,
       content: content ?? this.content,
       isDone: isDone ?? this.isDone,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }
@@ -160,6 +172,10 @@ class CheckListItemTable extends _i1.Table<int?> {
       'isDone',
       this,
     );
+    createdBy = _i1.ColumnInt(
+      'createdBy',
+      this,
+    );
   }
 
   late final _i1.ColumnInt checklist;
@@ -168,12 +184,15 @@ class CheckListItemTable extends _i1.Table<int?> {
 
   late final _i1.ColumnBool isDone;
 
+  late final _i1.ColumnInt createdBy;
+
   @override
   List<_i1.Column> get columns => [
         id,
         checklist,
         content,
         isDone,
+        createdBy,
       ];
 }
 

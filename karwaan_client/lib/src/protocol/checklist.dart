@@ -14,25 +14,28 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class CheckList implements _i1.SerializableModel {
   CheckList._({
     this.id,
-    required this.name,
+    required this.title,
     required this.card,
     required this.createdAt,
+    required this.createdBy,
   });
 
   factory CheckList({
     int? id,
-    required String name,
+    required String title,
     required int card,
     required DateTime createdAt,
+    required int createdBy,
   }) = _CheckListImpl;
 
   factory CheckList.fromJson(Map<String, dynamic> jsonSerialization) {
     return CheckList(
       id: jsonSerialization['id'] as int?,
-      name: jsonSerialization['name'] as String,
+      title: jsonSerialization['title'] as String,
       card: jsonSerialization['card'] as int,
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      createdBy: jsonSerialization['createdBy'] as int,
     );
   }
 
@@ -41,28 +44,32 @@ abstract class CheckList implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  String name;
+  String title;
 
   int card;
 
   DateTime createdAt;
+
+  int createdBy;
 
   /// Returns a shallow copy of this [CheckList]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   CheckList copyWith({
     int? id,
-    String? name,
+    String? title,
     int? card,
     DateTime? createdAt,
+    int? createdBy,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'name': name,
+      'title': title,
       'card': card,
       'createdAt': createdAt.toJson(),
+      'createdBy': createdBy,
     };
   }
 
@@ -77,14 +84,16 @@ class _Undefined {}
 class _CheckListImpl extends CheckList {
   _CheckListImpl({
     int? id,
-    required String name,
+    required String title,
     required int card,
     required DateTime createdAt,
+    required int createdBy,
   }) : super._(
           id: id,
-          name: name,
+          title: title,
           card: card,
           createdAt: createdAt,
+          createdBy: createdBy,
         );
 
   /// Returns a shallow copy of this [CheckList]
@@ -93,15 +102,17 @@ class _CheckListImpl extends CheckList {
   @override
   CheckList copyWith({
     Object? id = _Undefined,
-    String? name,
+    String? title,
     int? card,
     DateTime? createdAt,
+    int? createdBy,
   }) {
     return CheckList(
       id: id is int? ? id : this.id,
-      name: name ?? this.name,
+      title: title ?? this.title,
       card: card ?? this.card,
       createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }

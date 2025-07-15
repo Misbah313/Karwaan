@@ -1,3 +1,4 @@
+import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -24,7 +25,7 @@ class BoardEndpoint extends Endpoint {
         where: (m) =>
             m.user.equals(currentUser.id!) & m.workspace.equals(workspaceId));
     if (membership == null) {
-      throw Exception('You/re not member of this workspace!');
+      throw Exception('You are not member of this workspace!');
     }
 
     // check and trim the board name
@@ -44,27 +45,32 @@ class BoardEndpoint extends Endpoint {
           "A board with that name already exists in this workspace.");
     }
 
-    // create a board
-    final createdBoard = Board(
-        name: name.trim(),
-        workspaceId: workspaceId,
-        createdBy: currentUser.id!,
-        createdAt: DateTime.now(),
-        description: description);
+    try {
+      // create a board
+      final createdBoard = Board(
+          name: name.trim(),
+          workspaceId: workspaceId,
+          createdBy: currentUser.id!,
+          createdAt: DateTime.now(),
+          description: description);
 
-    // board member
-    final boardmember = BoardMember(
-        user: currentUser.id!,
-        board: createdBoard.id!,
-        joinedAt: DateTime.now(),
-        role: 'Owner');
+      // insert the created board to db
+      await Board.db.insertRow(session, createdBoard);
 
-    // insert the created board to db
-    await Board.db.insertRow(session, createdBoard);
-    // insert the new member to board members
-    await BoardMember.db.insertRow(session, boardmember);
+      // board member
+      final boardmember = BoardMember(
+          user: currentUser.id!,
+          board: createdBoard.id!,
+          joinedAt: DateTime.now(),
+          role: Roles.owner);
 
-    return createdBoard;
+      // insert the new member to board members
+      await BoardMember.db.insertRow(session, boardmember);
+
+      return createdBoard;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // Get user boards
@@ -89,29 +95,34 @@ class BoardEndpoint extends Endpoint {
       throw Exception("Board not found!");
     }
 
-    // find all members in this board
-    final members = await BoardMember.db.find(
-      session,
-      where: (m) => m.board.equals(boardId),
-    );
+    try {
+      // find all members in this board
+      final members = await BoardMember.db.find(
+        session,
+        where: (m) => m.board.equals(boardId),
+      );
 
-    // Extract user IDs
-    final userId = members.map((e) => e.user).toSet();
+      // Extract user IDs
+      final userId = members.map((e) => e.user).toSet();
 
-    // Fetch user obj for those IDs
-    final users = await User.db.find(session, where: (u) => u.id.inSet(userId));
+      // Fetch user obj for those IDs
+      final users =
+          await User.db.find(session, where: (u) => u.id.inSet(userId));
 
-    // Extract just member names
-    final memberNames = users.map((e) => e.name).toList();
+      // Extract just member names
+      final memberNames = users.map((e) => e.name).toList();
 
-    // assemble board details
-    final boardDetails = BoardDetails(
-        id: board.id!,
-        name: board.name,
-        members: memberNames,
-        description: board.description);
+      // assemble board details
+      final boardDetails = BoardDetails(
+          id: board.id!,
+          name: board.name,
+          members: memberNames,
+          description: board.description);
 
-    return boardDetails;
+      return boardDetails;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // Get all boards where user is a member
@@ -123,54 +134,58 @@ class BoardEndpoint extends Endpoint {
       throw Exception('No user or invalid token!');
     }
 
-    // 2. Find all board memberships for this user
-    final memberships = await BoardMember.db.find(
-      session,
-      where: (bm) => bm.user.equals(currentUser.id!),
-    );
+    try {
+      // 2. Find all board memberships for this user
+      final memberships = await BoardMember.db.find(
+        session,
+        where: (bm) => bm.user.equals(currentUser.id!),
+      );
 
-    // 3. Extract board IDs
-    final boardIds = memberships.map((m) => m.board).toSet();
+      // 3. Extract board IDs
+      final boardIds = memberships.map((m) => m.board).toSet();
 
-    if (boardIds.isEmpty) {
-      // 4. Return empty list if no boards
-      return [];
+      if (boardIds.isEmpty) {
+        // 4. Return empty list if no boards
+        return [];
+      }
+
+      // 5. Fetch boards by IDs
+      final boards = await Board.db.find(
+        session,
+        where: (b) => b.id.inSet(boardIds),
+      );
+
+      // 6. For each board, fetch members and assemble details
+      List<BoardDetails> boardDetailsList = [];
+
+      for (final board in boards) {
+        // Find members of this board
+        final members = memberships.where((m) => m.board == board.id).toList();
+
+        // Extract user IDs for members of this board
+        final userIds = members.map((m) => m.user).toSet();
+
+        // Fetch user objects
+        final users =
+            await User.db.find(session, where: (u) => u.id.inSet(userIds));
+
+        // Extract member names
+        final memberNames = users.map((u) => u.name).toList();
+
+        // Create board details
+        boardDetailsList.add(BoardDetails(
+          id: board.id!,
+          name: board.name,
+          members: memberNames,
+          description: board.description,
+        ));
+      }
+
+      // 7. Return list of board details
+      return boardDetailsList;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    // 5. Fetch boards by IDs
-    final boards = await Board.db.find(
-      session,
-      where: (b) => b.id.inSet(boardIds),
-    );
-
-    // 6. For each board, fetch members and assemble details
-    List<BoardDetails> boardDetailsList = [];
-
-    for (final board in boards) {
-      // Find members of this board
-      final members = memberships.where((m) => m.board == board.id).toList();
-
-      // Extract user IDs for members of this board
-      final userIds = members.map((m) => m.user).toSet();
-
-      // Fetch user objects
-      final users =
-          await User.db.find(session, where: (u) => u.id.inSet(userIds));
-
-      // Extract member names
-      final memberNames = users.map((u) => u.name).toList();
-
-      // Create board details
-      boardDetailsList.add(BoardDetails(
-        id: board.id!,
-        name: board.name,
-        members: memberNames,
-        description: board.description,
-      ));
-    }
-
-    // 7. Return list of board details
-    return boardDetailsList;
   }
 
   // updated board
@@ -196,9 +211,13 @@ class BoardEndpoint extends Endpoint {
     if (member == null) {
       throw Exception('You are not a member!');
     }
-    if (member.role != 'Owner' && member.role != 'Admin') {
+    if (member.role != Roles.owner && member.role != Roles.admin) {
       throw Exception('Only owner and admin can update the board!!');
     }
+
+    // Store original values before changes
+    final originalName = board.name;
+    final originalDec = board.description;
 
     // validate new values
     if (newName != null) {
@@ -227,10 +246,19 @@ class BoardEndpoint extends Endpoint {
       board.description = newDec.trim();
     }
 
-    // persists changes
-    await Board.db.updateRow(session, board);
+    // No-op guard: check if anything actually changed
+    if (board.name == originalName && board.description == originalDec) {
+      return board; // Nothing to update
+    }
 
-    return board;
+    try {
+      // persists changes
+      await Board.db.updateRow(session, board);
+
+      return board;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // delete board
@@ -255,20 +283,23 @@ class BoardEndpoint extends Endpoint {
     if (member == null) {
       throw Exception('You are not a member!');
     }
-    if (member.role != 'Owner') {
+    if (member.role != Roles.owner && member.role != Roles.admin) {
       throw Exception('Only owner and admin can delete a board!!');
     }
 
-    // perform  member deletion
-    await BoardMember.db
-        .deleteWhere(session, where: (i) => i.board.equals(boardId));
+    try {
+      // perform  member deletion
+      await BoardMember.db
+          .deleteWhere(session, where: (i) => i.board.equals(boardId));
 
-    // perform board deletion
-    await Board.db.deleteRow(session, board);
+      // perform board deletion
+      await Board.db.deleteRow(session, board);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
-
 }
 
  /*

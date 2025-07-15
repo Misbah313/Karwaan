@@ -33,19 +33,23 @@ class CardLabelEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    // avoid duplicated assigns
-    final duplicate = await CardLabel.db.findFirstRow(
-      session,
-      where: (c) => c.card.equals(cardId) & c.label.equals(labelId),
-    );
-    if (duplicate != null) {
-      throw Exception('Label already assigned to this card!');
-    }
+    try {
+      // avoid duplicated assigns
+      final duplicate = await CardLabel.db.findFirstRow(
+        session,
+        where: (c) => c.card.equals(cardId) & c.label.equals(labelId),
+      );
+      if (duplicate != null) {
+        throw Exception('Label already assigned to this card!');
+      }
 
-    // insert the label
-    final link = CardLabel(card: cardId, label: labelId);
-    await CardLabel.db.insertRow(session, link);
-    return link;
+      // insert the label
+      final link = CardLabel(card: cardId, label: labelId);
+      await CardLabel.db.insertRow(session, link);
+      return link;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // remove label from card
@@ -88,8 +92,12 @@ class CardLabelEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    // delete
-    await CardLabel.db.deleteRow(session, fetched);
+    try {
+      // delete
+      await CardLabel.db.deleteRow(session, fetched);
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // get labels for card
@@ -118,21 +126,25 @@ class CardLabelEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    // fetch links
-    final links = await CardLabel.db.find(
-      session,
-      where: (c) => c.card.equals(cardId),
-    );
-    if (links.isEmpty) return [];
+    try {
+      // fetch links
+      final links = await CardLabel.db.find(
+        session,
+        where: (c) => c.card.equals(cardId),
+      );
+      if (links.isEmpty) return [];
 
-    // fetch labels
-    final labelIds = links.map((e) => e.label).toSet();
-    final labels = await Label.db.find(
-      session,
-      where: (l) => l.id.inSet(labelIds),
-      orderBy: (l) => l.name,
-    );
-    return labels;
+      // fetch labels
+      final labelIds = links.map((e) => e.label).toSet();
+      final labels = await Label.db.find(
+        session,
+        where: (l) => l.id.inSet(labelIds),
+        orderBy: (l) => l.name,
+      );
+      return labels;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // get cards for label
@@ -159,21 +171,25 @@ class CardLabelEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    // get all card label with this label id
-    final cardLabel = await CardLabel.db.find(
-      session,
-      where: (c) => c.label.equals(labelId),
-    );
+    try {
+      // get all card label with this label id
+      final cardLabel = await CardLabel.db.find(
+        session,
+        where: (c) => c.label.equals(labelId),
+      );
 
-    // extract card ids
-    final extracted = cardLabel.map((e) => e.card).toSet();
+      // extract card ids
+      final extracted = cardLabel.map((e) => e.card).toSet();
 
-    // fetch cards
-    final cards = await Card.db.find(
-      session,
-      where: (c) => c.id.inSet(extracted),
-    );
-    return cards;
+      // fetch cards
+      final cards = await Card.db.find(
+        session,
+        where: (c) => c.id.inSet(extracted),
+      );
+      return cards;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }
 

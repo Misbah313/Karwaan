@@ -17,6 +17,7 @@ abstract class CheckListItem implements _i1.SerializableModel {
     required this.checklist,
     required this.content,
     required this.isDone,
+    required this.createdBy,
   });
 
   factory CheckListItem({
@@ -24,6 +25,7 @@ abstract class CheckListItem implements _i1.SerializableModel {
     required int checklist,
     required String content,
     required bool isDone,
+    required int createdBy,
   }) = _CheckListItemImpl;
 
   factory CheckListItem.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,6 +34,7 @@ abstract class CheckListItem implements _i1.SerializableModel {
       checklist: jsonSerialization['checklist'] as int,
       content: jsonSerialization['content'] as String,
       isDone: jsonSerialization['isDone'] as bool,
+      createdBy: jsonSerialization['createdBy'] as int,
     );
   }
 
@@ -46,6 +49,8 @@ abstract class CheckListItem implements _i1.SerializableModel {
 
   bool isDone;
 
+  int createdBy;
+
   /// Returns a shallow copy of this [CheckListItem]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -54,6 +59,7 @@ abstract class CheckListItem implements _i1.SerializableModel {
     int? checklist,
     String? content,
     bool? isDone,
+    int? createdBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -62,6 +68,7 @@ abstract class CheckListItem implements _i1.SerializableModel {
       'checklist': checklist,
       'content': content,
       'isDone': isDone,
+      'createdBy': createdBy,
     };
   }
 
@@ -79,11 +86,13 @@ class _CheckListItemImpl extends CheckListItem {
     required int checklist,
     required String content,
     required bool isDone,
+    required int createdBy,
   }) : super._(
           id: id,
           checklist: checklist,
           content: content,
           isDone: isDone,
+          createdBy: createdBy,
         );
 
   /// Returns a shallow copy of this [CheckListItem]
@@ -95,12 +104,14 @@ class _CheckListItemImpl extends CheckListItem {
     int? checklist,
     String? content,
     bool? isDone,
+    int? createdBy,
   }) {
     return CheckListItem(
       id: id is int? ? id : this.id,
       checklist: checklist ?? this.checklist,
       content: content ?? this.content,
       isDone: isDone ?? this.isDone,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }

@@ -1,10 +1,11 @@
+import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 class LabelEndpoint extends Endpoint {
   // create a label
-  Future<Label> creatLabel(Session session, int boardId, String token,
+  Future<Label> createLabel(Session session, int boardId, String token,
       String title, String color) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
@@ -27,34 +28,38 @@ class LabelEndpoint extends Endpoint {
       throw Exception('You are not a member of this board!');
     }
 
-    // Trim & validate name / color
-    final trimmedTitle = title.trim();
-    final trimmedColor = color.trim();
-    if (trimmedTitle.isEmpty) throw Exception('Label name cannot be empty!');
-    // Very simple hex‑color check (#RRGGBB)
-    final hexRegex = RegExp(r'^#[0-9A-Fa-f]{6}$');
-    if (!hexRegex.hasMatch(trimmedColor)) {
-      throw Exception('Color must be a hex value like #FF0000');
+    try {
+      // Trim & validate name / color
+      final trimmedTitle = title.trim();
+      final trimmedColor = color.trim();
+      if (trimmedTitle.isEmpty) throw Exception('Label name cannot be empty!');
+      // Very simple hex‑color check (#RRGGBB)
+      final hexRegex = RegExp(r'^#[0-9A-Fa-f]{6}$');
+      if (!hexRegex.hasMatch(trimmedColor)) {
+        throw Exception('Color must be a hex value like #FF0000');
+      }
+
+      // check duplicate label name on the same board
+      final duplicate = await Label.db.findFirstRow(
+        session,
+        where: (l) => l.board.equals(boardId) & l.name.equals(trimmedTitle),
+      );
+      if (duplicate != null) {
+        throw Exception('A label with that title already exists!');
+      }
+
+      // create and insert label
+      final label = Label(
+          name: trimmedTitle,
+          color: trimmedColor,
+          board: boardId,
+          createdBy: currentUser.id!);
+
+      await Label.db.insertRow(session, label);
+      return label;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    // check duplicate label name on the same board
-    final duplicate = await Label.db.findFirstRow(
-      session,
-      where: (l) => l.board.equals(boardId) & l.name.equals(trimmedTitle),
-    );
-    if (duplicate != null) {
-      throw Exception('A label with that title already exists!');
-    }
-
-    // create and insert label
-    final label = Label(
-        name: trimmedTitle,
-        color: trimmedColor,
-        board: boardId,
-        createdBy: currentUser.id!);
-
-    await Label.db.insertRow(session, label);
-    return label;
   }
 
   // get all labels for a board
@@ -81,18 +86,22 @@ class LabelEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    // fetch all label
-    final labels = await Label.db.find(
-      session,
-      where: (l) => l.board.equals(boardId),
-      orderBy: (l) => l.name,
-    );
+    try {
+      // fetch all label
+      final labels = await Label.db.find(
+        session,
+        where: (l) => l.board.equals(boardId),
+        orderBy: (l) => l.name,
+      );
 
-    return labels;
+      return labels;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // update a label (name or color)
-  Future<Label> updateLable(Session session, int labelId, String token,
+  Future<Label> updateLabel(Session session, int labelId, String token,
       {String? newTitle, String? newColor}) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
@@ -116,40 +125,44 @@ class LabelEndpoint extends Endpoint {
       throw Exception('You are not a member of parent board!');
     }
 
-    // validate new values
-    if (newTitle != null) {
-      final name = newTitle.trim();
-      if (name.isEmpty) {
-        throw Exception("Label titles can't be empty");
+    try {
+      // validate new values
+      if (newTitle != null) {
+        final name = newTitle.trim();
+        if (name.isEmpty) {
+          throw Exception("Label titles can't be empty");
+        }
+
+        final duplicate = await Label.db.findFirstRow(
+          session,
+          where: (l) =>
+              l.board.equals(label.board) &
+              l.name.equals(name) &
+              l.id.notEquals(labelId),
+        );
+        if (duplicate != null) {
+          throw Exception('A label with that title already exists!');
+        }
+
+        label.name = name;
       }
 
-      final duplicate = await Label.db.findFirstRow(
-        session,
-        where: (l) =>
-            l.board.equals(label.board) &
-            l.name.equals(name) &
-            l.id.notEquals(labelId),
-      );
-      if (duplicate != null) {
-        throw Exception('A label with that title already exists!');
+      if (newColor != null) {
+        final color = newColor.trim();
+        final hex = RegExp(r'^#[0-9A-Fa-f]{6}$');
+        if (!hex.hasMatch(color)) throw Exception('Color must be #RRGGBB');
+        label.color = color;
       }
 
-      label.name = name;
+      await Label.db.updateRow(session, label);
+      return label;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    if (newColor != null) {
-      final color = newColor.trim();
-      final hex = RegExp(r'^#[0-9A-Fa-f]{6}$');
-      if (!hex.hasMatch(color)) throw Exception('Color must be #RRGGBB');
-      label.color = color;
-    }
-
-    await Label.db.updateRow(session, label);
-    return label;
   }
 
   // delete a lable
-  Future<bool> deleteLable(Session session, int labelId, String token) async {
+  Future<bool> deleteLabel(Session session, int labelId, String token) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
@@ -172,27 +185,31 @@ class LabelEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    final isOwnerOrAdmin =
-        membership.role == 'Owner' || membership.role == 'Admin';
+    try {
+      final isOwnerOrAdmin =
+          membership.role == Roles.owner || membership.role == Roles.admin;
 
-    final isCreator = label.createdBy == currentUser.id!;
+      final isCreator = label.createdBy == currentUser.id!;
 
-    if (!isOwnerOrAdmin && !isCreator) {
-      throw Exception(
-          'Only owners, admins, or the label creator can delete it!');
+      if (!isOwnerOrAdmin && !isCreator) {
+        throw Exception(
+            'Only owners, admins, or the label creator can delete it!');
+      }
+
+      // check if the label is in use
+      final inUse = await CardLabel.db.findFirstRow(
+        session,
+        where: (l) => l.label.equals(labelId),
+      );
+      if (inUse != null) {
+        throw Exception('Label is still assigned to one or more cards!');
+      }
+
+      await Label.db.deleteRow(session, label);
+      return true;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    // check if the label is in use
-    final inUse = await CardLabel.db.findFirstRow(
-      session,
-      where: (l) => l.label.equals(labelId),
-    );
-    if (inUse != null) {
-      throw Exception('Label is still assigned to one or more cards!');
-    }
-
-    await Label.db.deleteRow(session, label);
-    return true;
   }
 }
 

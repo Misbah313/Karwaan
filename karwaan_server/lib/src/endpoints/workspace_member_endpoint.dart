@@ -1,3 +1,4 @@
+import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/endpoints/workspace_member_details.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
@@ -5,7 +6,7 @@ import 'package:serverpod/serverpod.dart';
 
 class WorkspaceMemberEndpoint extends Endpoint {
   // add members to workspace
-  Future<WorkspaceMember> addMemeberToWorkspace(
+  Future<WorkspaceMember> addMemberToWorkspace(
       Session session, int userToAddId, int workspaceId, String token) async {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
@@ -22,7 +23,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     if (member == null) {
       throw Exception('You are not a member of this workspace!');
     }
-    if (member.role != 'Owner' && member.role != 'Admin') {
+    if (member.role != Roles.owner && member.role != Roles.admin) {
       throw Exception('Only owner and admin can add members!!');
     }
 
@@ -44,7 +45,10 @@ class WorkspaceMemberEndpoint extends Endpoint {
 
     // create and insert workspace member row for the new user
     final newWorkspaceMember = WorkspaceMember(
-        user: newUser.id!, workspace: workspaceId, joinedAt: DateTime.now());
+        user: newUser.id!,
+        workspace: workspaceId,
+        joinedAt: DateTime.now(),
+        role: Roles.member);
 
     await WorkspaceMember.db.insertRow(session, newWorkspaceMember);
 
@@ -69,7 +73,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     if (membership == null) {
       throw Exception('You are not a member of this workspace!');
     }
-    if (membership.role != 'Owner') {
+    if (membership.role != Roles.owner) {
       throw Exception('Only owners can remove members!');
     }
 
@@ -84,16 +88,23 @@ class WorkspaceMemberEndpoint extends Endpoint {
     }
 
     // check if the target member is not an owner
-    if (targetMember.role == 'Owner') {
+    if (targetMember.role == Roles.owner) {
       // count all owners in this workspace
       final countOwner = await WorkspaceMember.db.count(
         session,
-        where: (c) => c.workspace.equals(workspaceId) & c.role.equals('Owner'),
+        where: (c) =>
+            c.workspace.equals(workspaceId) & c.role.equals(Roles.owner),
       );
       if (countOwner <= 1) {
         throw Exception('Cannot remove the last owner from the workspace!');
       }
     }
+
+    if (userToRemoveId == currentUser.id) {
+      throw Exception(
+          "You cannot remove yourself. Use 'leave workspace' instead.");
+    }
+
     // safely remove the target owner
     await WorkspaceMember.db.deleteRow(session, targetMember);
   }
@@ -167,8 +178,8 @@ class WorkspaceMemberEndpoint extends Endpoint {
     }
 
     // check current user role
-    if (currentMemberCheck.role != 'Owner' &&
-        currentMemberCheck.role != 'Admin') {
+    if (currentMemberCheck.role != Roles.owner &&
+        currentMemberCheck.role != Roles.admin) {
       throw Exception('Only owner and admin can change the member roles!!');
     }
 
@@ -184,15 +195,22 @@ class WorkspaceMemberEndpoint extends Endpoint {
 
     // prevent role change that would remove the last owner
     // check if the target member is not an owner
-    if (targetMember.role == 'Owner') {
+    if (targetMember.role == Roles.owner) {
       // count all owners in this workspace
       final countOwner = await WorkspaceMember.db.count(
         session,
-        where: (c) => c.workspace.equals(workspaceId) & c.role.equals('Owner'),
+        where: (c) =>
+            c.workspace.equals(workspaceId) & c.role.equals(Roles.owner),
       );
       if (countOwner <= 1) {
         throw Exception('Cannot remove the last owner from the workspace!');
       }
+    }
+
+    // valid new role
+    final validRoles = [Roles.owner, Roles.admin, Roles.member];
+    if (!validRoles.contains(newRole)) {
+      throw Exception('Invalid role provided!');
     }
 
     // assgin the new role to the target user
@@ -230,10 +248,11 @@ class WorkspaceMemberEndpoint extends Endpoint {
     }
 
     // last owner protection
-    if (requestor.role == 'Owner') {
+    if (requestor.role == Roles.owner) {
       final count = await WorkspaceMember.db.count(
         session,
-        where: (c) => c.workspace.equals(workspaceId) & c.role.equals('Owner'),
+        where: (c) =>
+            c.workspace.equals(workspaceId) & c.role.equals(Roles.owner),
       );
       if (count <= 1) {
         throw Exception(

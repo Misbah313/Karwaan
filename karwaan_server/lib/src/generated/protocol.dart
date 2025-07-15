@@ -28,15 +28,19 @@ import 'user.dart' as _i16;
 import 'user_token.dart' as _i17;
 import 'workspace.dart' as _i18;
 import 'workspace_member.dart' as _i19;
-import 'package:karwaan_server/src/generated/board_details.dart' as _i20;
-import 'package:karwaan_server/src/generated/board_list.dart' as _i21;
-import 'package:karwaan_server/src/endpoints/board_member_details.dart' as _i22;
-import 'package:karwaan_server/src/generated/card.dart' as _i23;
-import 'package:karwaan_server/src/generated/label.dart' as _i24;
-import 'package:karwaan_server/src/generated/user.dart' as _i25;
-import 'package:karwaan_server/src/generated/workspace.dart' as _i26;
+import 'package:karwaan_server/src/generated/attachment.dart' as _i20;
+import 'package:karwaan_server/src/generated/board_details.dart' as _i21;
+import 'package:karwaan_server/src/generated/board_list.dart' as _i22;
+import 'package:karwaan_server/src/endpoints/board_member_details.dart' as _i23;
+import 'package:karwaan_server/src/generated/card.dart' as _i24;
+import 'package:karwaan_server/src/generated/label.dart' as _i25;
+import 'package:karwaan_server/src/generated/checklist.dart' as _i26;
+import 'package:karwaan_server/src/generated/checklist_item.dart' as _i27;
+import 'package:karwaan_server/src/generated/comment.dart' as _i28;
+import 'package:karwaan_server/src/generated/user.dart' as _i29;
+import 'package:karwaan_server/src/generated/workspace.dart' as _i30;
 import 'package:karwaan_server/src/endpoints/workspace_member_details.dart'
-    as _i27;
+    as _i31;
 export 'greeting.dart';
 export 'attachment.dart';
 export 'auth_response.dart';
@@ -545,7 +549,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'check_list_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'name',
+          name: 'title',
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
@@ -562,6 +566,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'DateTime',
         ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -573,7 +583,17 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.noAction,
           matchType: null,
-        )
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'check_list_fk_1',
+          columns: ['createdBy'],
+          referenceTable: 'user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -623,6 +643,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'bool',
         ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -634,7 +660,17 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.noAction,
           matchType: null,
-        )
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'checklist_item_fk_1',
+          columns: ['createdBy'],
+          referenceTable: 'user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -1188,37 +1224,54 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i20.BoardDetails>) {
+    if (t == List<_i20.Attachment>) {
+      return (data as List).map((e) => deserialize<_i20.Attachment>(e)).toList()
+          as T;
+    }
+    if (t == List<_i21.BoardDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i20.BoardDetails>(e))
+          .map((e) => deserialize<_i21.BoardDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i21.BoardList>) {
-      return (data as List).map((e) => deserialize<_i21.BoardList>(e)).toList()
+    if (t == List<_i22.BoardList>) {
+      return (data as List).map((e) => deserialize<_i22.BoardList>(e)).toList()
           as T;
     }
-    if (t == List<_i22.BoardMemberDetails>) {
+    if (t == List<_i23.BoardMemberDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i22.BoardMemberDetails>(e))
+          .map((e) => deserialize<_i23.BoardMemberDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i23.Card>) {
-      return (data as List).map((e) => deserialize<_i23.Card>(e)).toList() as T;
+    if (t == List<_i24.Card>) {
+      return (data as List).map((e) => deserialize<_i24.Card>(e)).toList() as T;
     }
-    if (t == List<_i24.Label>) {
-      return (data as List).map((e) => deserialize<_i24.Label>(e)).toList()
+    if (t == List<_i25.Label>) {
+      return (data as List).map((e) => deserialize<_i25.Label>(e)).toList()
           as T;
     }
-    if (t == List<_i25.User>) {
-      return (data as List).map((e) => deserialize<_i25.User>(e)).toList() as T;
-    }
-    if (t == List<_i26.Workspace>) {
-      return (data as List).map((e) => deserialize<_i26.Workspace>(e)).toList()
+    if (t == List<_i26.CheckList>) {
+      return (data as List).map((e) => deserialize<_i26.CheckList>(e)).toList()
           as T;
     }
-    if (t == List<_i27.WorkspaceMemberDetails>) {
+    if (t == List<_i27.CheckListItem>) {
       return (data as List)
-          .map((e) => deserialize<_i27.WorkspaceMemberDetails>(e))
+          .map((e) => deserialize<_i27.CheckListItem>(e))
+          .toList() as T;
+    }
+    if (t == List<_i28.Comment>) {
+      return (data as List).map((e) => deserialize<_i28.Comment>(e)).toList()
+          as T;
+    }
+    if (t == List<_i29.User>) {
+      return (data as List).map((e) => deserialize<_i29.User>(e)).toList() as T;
+    }
+    if (t == List<_i30.Workspace>) {
+      return (data as List).map((e) => deserialize<_i30.Workspace>(e)).toList()
+          as T;
+    }
+    if (t == List<_i31.WorkspaceMemberDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i31.WorkspaceMemberDetails>(e))
           .toList() as T;
     }
     try {

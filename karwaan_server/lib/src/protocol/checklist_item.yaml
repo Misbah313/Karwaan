@@ -5,3 +5,4 @@ fields:
   checklist: int, relation(parent=check_list)
   content: String
   isDone: bool
+  createdBy: int, relation(parent=user)
