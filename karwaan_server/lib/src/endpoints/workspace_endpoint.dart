@@ -1,3 +1,4 @@
+import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -25,7 +26,7 @@ class WorkspaceEndpoint extends Endpoint {
 
       final ownerMember = WorkspaceMember(
           user: user.id!,
-          role: 'Owner',
+          role: Roles.owner,
           workspace: createdWorkspace.id!,
           joinedAt: DateTime.now());
 
@@ -80,11 +81,11 @@ class WorkspaceEndpoint extends Endpoint {
           c.user.equals(currentUser.id) & c.workspace.equals(workspaceId),
     );
     if (membership == null) {
-      throw Exception('Your are not a member of this workspace!');
+      throw Exception('You are not a member of this workspace!');
     }
 
     // check the current user role in the workspace
-    if (membership.role != 'Owner') {
+    if (membership.role != Roles.owner && membership.role != Roles.admin) {
       throw Exception('Only Owner/Admin can update workspace.');
     }
 
@@ -141,7 +142,7 @@ class WorkspaceEndpoint extends Endpoint {
     }
 
     // is the user owner of this workspace
-    if (member.role != 'Owner') {
+    if (member.role != Roles.owner) {
       throw Exception('Only owners can delete workspace!');
     }
     try {

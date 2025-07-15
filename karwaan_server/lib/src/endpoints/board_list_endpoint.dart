@@ -1,3 +1,4 @@
+import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -27,31 +28,35 @@ class BoardListEndpoint extends Endpoint {
       throw Exception('You are not member!!');
     }
 
-    // trim and make sure the title is not empty
-    final trimmedTitle = title.trim();
-    if (trimmedTitle.isEmpty) {
-      throw Exception("List title can't be empty!!");
+    try {
+      // trim and make sure the title is not empty
+      final trimmedTitle = title.trim();
+      if (trimmedTitle.isEmpty) {
+        throw Exception("List title can't be empty!!");
+      }
+
+      // make sure there is no duplicated title name
+      final duplicated = await BoardList.db.findFirstRow(
+        session,
+        where: (d) => d.board.equals(boardId) & d.title.equals(trimmedTitle),
+      );
+      if (duplicated != null) {
+        throw Exception('A ListBoard with that title already exists!!');
+      }
+
+      // insert the new board list
+      final newList = BoardList(
+          board: boardId,
+          title: trimmedTitle,
+          createdAt: DateTime.now(),
+          createdBy: currentUser.id!);
+
+      await BoardList.db.insertRow(session, newList);
+
+      return newList;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    // make sure there is no duplicated title name
-    final duplicated = await BoardList.db.findFirstRow(
-      session,
-      where: (d) => d.board.equals(boardId) & d.title.equals(trimmedTitle),
-    );
-    if (duplicated != null) {
-      throw Exception('A ListBoard with that title already exists!!');
-    }
-
-    // insert the new board list
-    final newList = BoardList(
-        board: boardId,
-        title: trimmedTitle,
-        createdAt: DateTime.now(),
-        createdBy: currentUser.id!);
-
-    await BoardList.db.insertRow(session, newList);
-
-    return newList;
   }
 
   // get board list
@@ -78,14 +83,18 @@ class BoardListEndpoint extends Endpoint {
       throw Exception('You are not a member of the board!!');
     }
 
-    // fetch all lists belonging to the board
-    final lists = await BoardList.db.find(
-      session,
-      where: (l) => l.board.equals(boardId),
-      orderBy: (c) => c.createdAt,
-    );
+    try {
+      // fetch all lists belonging to the board
+      final lists = await BoardList.db.find(
+        session,
+        where: (l) => l.board.equals(boardId),
+        orderBy: (c) => c.createdAt,
+      );
 
-    return lists;
+      return lists;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // update board list
@@ -113,31 +122,38 @@ class BoardListEndpoint extends Endpoint {
       throw Exception('You are not a member of this board!');
     }
 
-    // validate the new title
-    final trimmedNewTitle = newTitle.trim();
-    if (trimmedNewTitle.isEmpty) {
-      throw Exception('Title cannot be empty!');
+    try {
+      // validate the new title
+      final trimmedNewTitle = newTitle.trim();
+      if (trimmedNewTitle.isEmpty) {
+        throw Exception('Title cannot be empty!');
+      }
+
+      // check for duplicated title within the same board
+      final duplicated = await BoardList.db.findFirstRow(
+        session,
+        where: (b) =>
+            b.board.equals(boardList.board) &
+            b.title.equals(trimmedNewTitle) &
+            b.id.notEquals(listId),
+      );
+      if (duplicated != null) {
+        throw Exception(
+            'Another list with that title already exists in the board!');
+      }
+
+      // ✅ Only update if it's different
+      if (boardList.title == trimmedNewTitle) return boardList;
+
+      boardList.title = trimmedNewTitle;
+
+      // save and insert the upated row
+      await BoardList.db.updateRow(session, boardList);
+
+      return boardList;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    // check for duplicated title within the same board
-    final duplicated = await BoardList.db.findFirstRow(
-      session,
-      where: (b) =>
-          b.board.equals(boardList.board) &
-          b.title.equals(trimmedNewTitle) &
-          b.id.notEquals(listId),
-    );
-    if (duplicated != null) {
-      throw Exception(
-          'Another list with that title already exists in the board!');
-    }
-
-    boardList.title = trimmedNewTitle;
-
-    // save and insert the upated row
-    await BoardList.db.updateRow(session, boardList);
-
-    return boardList;
   }
 
   // delete board list
@@ -164,14 +180,17 @@ class BoardListEndpoint extends Endpoint {
     if (member == null) {
       throw Exception('You are not a member to that board!');
     }
-    if (member.role != 'Owner' && member.role != 'Admin') {
+    if (member.role != Roles.owner && member.role != Roles.admin) {
       throw Exception('Only owner and admin can delete the board list!');
     }
 
-    //
-    await BoardList.db.deleteRow(session, boardList);
+    try {
+      await BoardList.db.deleteRow(session, boardList);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }
    

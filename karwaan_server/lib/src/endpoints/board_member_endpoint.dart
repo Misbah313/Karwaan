@@ -1,4 +1,5 @@
 import 'package:karwaan_server/src/endpoints/board_member_details.dart';
+import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -27,7 +28,7 @@ class BoardMemberEndpoint extends Endpoint {
     if (membership == null) {
       throw Exception('You are not a member of this board!');
     }
-    if (membership.role != 'Owner' && membership.role != 'Admin') {
+    if (membership.role != Roles.owner && membership.role != Roles.admin) {
       throw Exception('Only owner and admins can add members!');
     }
 
@@ -56,16 +57,20 @@ class BoardMemberEndpoint extends Endpoint {
       throw Exception('That user is already a member!');
     }
 
-    // create and insert board member row for the new user
-    final newBoardMember = BoardMember(
-        user: userToAddId,
-        board: boardId,
-        joinedAt: DateTime.now(),
-        role: 'Member');
+    try {
+      // create and insert board member row for the new user
+      final newBoardMember = BoardMember(
+          user: userToAddId,
+          board: boardId,
+          joinedAt: DateTime.now(),
+          role: 'Member');
 
-    await BoardMember.db.insertRow(session, newBoardMember);
+      await BoardMember.db.insertRow(session, newBoardMember);
 
-    return newBoardMember;
+      return newBoardMember;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // remove member from board
@@ -91,7 +96,7 @@ class BoardMemberEndpoint extends Endpoint {
     if (boardMemberShip == null) {
       throw Exception('You are not a member of this board!');
     }
-    if (boardMemberShip.role != 'Owner') {
+    if (boardMemberShip.role != Roles.owner) {
       throw Exception('Only owners can remove board members!');
     }
 
@@ -112,19 +117,23 @@ class BoardMemberEndpoint extends Endpoint {
     }
 
     // protect owner
-    if (targetMember.role == 'Owner') {
+    if (targetMember.role == Roles.owner) {
       // count how many owners are in this board
       final count = await BoardMember.db.count(
         session,
-        where: (o) => o.board.equals(boardId) & o.role.equals('Owner'),
+        where: (o) => o.board.equals(boardId) & o.role.equals(Roles.owner),
       );
       if (count <= 1) {
         throw Exception('Cannot remove the last board owner!');
       }
     }
 
-    // delete membership row
-    await BoardMember.db.deleteRow(session, targetMember);
+    try {
+      // delete membership row
+      await BoardMember.db.deleteRow(session, targetMember);
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // get board members
@@ -151,34 +160,38 @@ class BoardMemberEndpoint extends Endpoint {
       throw Exception('You are not a member of this board!');
     }
 
-    // fetch all board member row
-    final fetchedBoard = await BoardMember.db.find(
-      session,
-      where: (f) => f.board.equals(boardId),
-    );
+    try {
+      // fetch all board member row
+      final fetchedBoard = await BoardMember.db.find(
+        session,
+        where: (f) => f.board.equals(boardId),
+      );
 
-    // fetch all related user rows
-    final userIds = fetchedBoard.map((e) => e.user).toSet();
+      // fetch all related user rows
+      final userIds = fetchedBoard.map((e) => e.user).toSet();
 
-    final users = await User.db.find(
-      session,
-      where: (u) => u.id.inSet(userIds),
-    );
+      final users = await User.db.find(
+        session,
+        where: (u) => u.id.inSet(userIds),
+      );
 
-    List<BoardMemberDetails> detailedMembers = [];
+      List<BoardMemberDetails> detailedMembers = [];
 
-    for (final member in fetchedBoard) {
-      final user = users.firstWhere((element) => element.id == member.user);
+      for (final member in fetchedBoard) {
+        final user = users.firstWhere((element) => element.id == member.user);
 
-      detailedMembers.add(BoardMemberDetails(
-          userId: user.id!,
-          userName: user.name,
-          role: member.role!,
-          joinedAt: member.joinedAt,
-          email: user.email));
+        detailedMembers.add(BoardMemberDetails(
+            userId: user.id!,
+            userName: user.name,
+            role: member.role!,
+            joinedAt: member.joinedAt,
+            email: user.email));
+      }
+
+      return detailedMembers;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    return detailedMembers;
   }
 
   // change board member roles
@@ -204,7 +217,7 @@ class BoardMemberEndpoint extends Endpoint {
     if (requestor == null) {
       throw Exception('You are not a member of this board!');
     }
-    if (requestor.role != 'Owner' && requestor.role != 'Admin') {
+    if (requestor.role != Roles.owner && requestor.role != Roles.admin) {
       throw Exception('Only owner and admins can change members role!');
     }
 
@@ -218,30 +231,36 @@ class BoardMemberEndpoint extends Endpoint {
     }
 
     // protect owners
-    if (targetMember.role == 'Owner' && newRole != 'Owner') {
+    if (targetMember.role == Roles.owner && newRole != Roles.owner) {
       // count owner
       final count = await BoardMember.db.count(
         session,
-        where: (o) => o.board.equals(boardId) & o.role.equals('Owner'),
+        where: (o) => o.board.equals(boardId) & o.role.equals(Roles.owner),
       );
       if (count <= 1) {
         throw Exception('Cannot demote the last board owner!');
       }
     }
 
-    // Validate newRole is one of the allowed strings ('Owner', 'Admin', 'Member')
-    const allowedRoles = {'Owner', 'Admin', 'Member'};
-    if (!allowedRoles.contains(newRole)) {
-      throw Exception('Invalid role.');
+    try {
+      // Validate newRole is one of the allowed strings ('Owner', 'Admin', 'Member')
+      const allowedRoles = {Roles.owner, Roles.admin, Roles.member};
+      if (!allowedRoles.contains(newRole)) {
+        throw Exception('Invalid role.');
+      }
+
+      // assign the new role
+      if (targetMember.role == newRole) return targetMember;
+
+      targetMember.role = newRole;
+
+      // persist changes
+      await BoardMember.db.updateRow(session, targetMember);
+
+      return targetMember;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    // assign the new role
-    if (targetMember.role == newRole) return targetMember;
-
-    // persist changes
-    await BoardMember.db.updateRow(session, targetMember);
-
-    return targetMember;
   }
 
   // leave board
@@ -266,10 +285,10 @@ class BoardMemberEndpoint extends Endpoint {
     }
 
     // prevent the last owner from leaving
-    if (memberShip.role == 'Owner') {
+    if (memberShip.role == Roles.owner) {
       final count = await BoardMember.db.count(
         session,
-        where: (b) => b.board.equals(boardId) & b.role.equals('Owner'),
+        where: (b) => b.board.equals(boardId) & b.role.equals(Roles.owner),
       );
       if (count <= 1) {
         throw Exception(
@@ -277,8 +296,12 @@ class BoardMemberEndpoint extends Endpoint {
       }
     }
 
-    // delete membership(leave board)
-    await BoardMember.db.deleteRow(session, memberShip);
+    try {
+      // delete membership(leave board)
+      await BoardMember.db.deleteRow(session, memberShip);
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }
 

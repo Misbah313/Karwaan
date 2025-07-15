@@ -48,8 +48,8 @@ class AuthenticationEndpoint extends Endpoint {
 
     try {
       // generate a secure token for user login
-      final uuid = Uuid();
-      final token = uuid.v4();
+      final _uuid = Uuid();
+      final token = _uuid.v4();
 
       // delete old token for this user
       await UserToken.db.deleteWhere(session,

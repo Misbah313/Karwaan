@@ -1,3 +1,4 @@
+import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -19,25 +20,29 @@ class CardEndpoint extends Endpoint {
       throw Exception('No BoardList exists!');
     }
 
-    // validate card data
-    final trimmedTitle = title.trim();
-    if (trimmedTitle.isEmpty) {
-      throw Exception('Card title cannot be empty!');
+    try {
+      // validate card data
+      final trimmedTitle = title.trim();
+      if (trimmedTitle.isEmpty) {
+        throw Exception('Card title cannot be empty!');
+      }
+
+      // set the required fields and create the card obj
+      final card = Card(
+        title: trimmedTitle,
+        createdBy: currentUser.id!,
+        description: dec?.trim(),
+        list: boardListId,
+        createdAt: DateTime.now(),
+        isCompleted: false,
+      );
+
+      // insert the created card into the db
+      final insertedCard = await Card.db.insertRow(session, card);
+      return insertedCard;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    // set the required fields and create the card obj
-    final card = Card(
-      title: trimmedTitle,
-      createdBy: currentUser.id!,
-      description: dec?.trim(),
-      list: boardListId,
-      createdAt: DateTime.now(),
-      isCompleted: false,
-    );
-
-    // insert the created card into the db
-    final insertedCard = await Card.db.insertRow(session, card);
-    return insertedCard;
   }
 
   // get cards by list
@@ -66,15 +71,19 @@ class CardEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    // Query all cards linked to this board list
-    // fetch all card
-    final fetch = await Card.db.find(
-      session,
-      where: (c) => c.list.equals(boardListId),
-      orderBy: (c) => c.createdAt,
-    );
+    try {
+      // Query all cards linked to this board list
+      // fetch all card
+      final fetch = await Card.db.find(
+        session,
+        where: (c) => c.list.equals(boardListId),
+        orderBy: (c) => c.createdAt,
+      );
 
-    return fetch;
+      return fetch;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // upadate cards
@@ -114,25 +123,29 @@ class CardEndpoint extends Endpoint {
 
     // validate the updated data
 
-    // make sure title is not empty
-    final trimmedTitle = newTitle.trim();
-    if (trimmedTitle.isEmpty) {
-      throw Exception('Card title cannot be empty!');
-    }
+    try {
+      // make sure title is not empty
+      final trimmedTitle = newTitle.trim();
+      if (trimmedTitle.isEmpty) {
+        throw Exception('Card title cannot be empty!');
+      }
 
-    card.title = trimmedTitle;
+      card.title = trimmedTitle;
 
-    // validate other fields
-    if (newDec != null) {
-      card.description = newDec.trim();
-    }
-    if (completed != null) {
-      card.isCompleted = completed;
-    }
+      // validate other fields
+      if (newDec != null) {
+        card.description = newDec.trim();
+      }
+      if (completed != null) {
+        card.isCompleted = completed;
+      }
 
-    // save the changes
-    await Card.db.updateRow(session, card);
-    return card;
+      // save the changes
+      await Card.db.updateRow(session, card);
+      return card;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   // delete cards
@@ -166,16 +179,76 @@ class CardEndpoint extends Endpoint {
       throw Exception('You are not a member of the parent board!');
     }
 
-    // check if the user role allow deleting
-    if (membership.role == 'Owner' ||
-        membership.role == 'Admin' ||
-        card.createdBy == currentUser.id!) {
-      // allow deletion
+    try {
+      // check if the user role allow deleting
+      if (membership.role == Roles.owner ||
+          membership.role == Roles.admin ||
+          card.createdBy == currentUser.id!) {
+        // allow deletion
 
-      await Card.db.deleteRow(session, card);
-      return true;
-    } else {
-      throw Exception("You don't have the permission to delete this card!");
+        await Card.db.deleteRow(session, card);
+        return true;
+      } else {
+        throw Exception("You don't have the permission to delete this card!");
+      }
+    } catch (e) {
+      throw Exception(e);
     }
   }
 }
+
+/*
+  Add Later:
+  ----------
+
+    // ✅ Reorder Cards in a List (Drag & Drop)
+      - Add `position` field to Card model
+      - Allow updating `position` to reorder cards in a list
+
+    // ✅ Archive / Unarchive Card
+      - Add `isArchived` field
+      - Add endpoints to archive or unarchive a card instead of deleting
+
+    // ✅ Move Card to Another List
+      - Allow changing `card.list` with permission checks
+
+    // ✅ Clone/Duplicate Card
+      - Copy a card and its checklists, labels, and attachments to the same or another list
+
+    // ✅ Card Activity Log
+      - Track and return actions like create, update, move, assign, complete, etc.
+
+    // ✅ Assign Users to Card
+      - Add `assignedUserIds` list or many-to-many link table
+      - Allow assigning/removing users
+
+    // ✅ Due Date & Reminder
+      - Add `dueDate` and `reminderTime` fields
+      - Schedule reminders using background job/notifications
+
+    // ✅ Attachments to Cards
+      - Link files using `AttachmentEndpoint`
+      - Allow upload, preview, delete
+
+    // ✅ Toggle Card Completion (Separate Endpoint)
+      - Simple endpoint to flip `isCompleted`
+
+    // ✅ Paginated Get Cards
+      - Add pagination to `getListByCard` with limit & offset
+
+    // ✅ Search Cards by Title/Description
+      - Allow text search across a list or board
+
+    // ✅ Tag/Label Filtering
+      - Return cards that match specific label(s)
+
+    // ✅ Get Card Summary
+      - Return total checklists, items, completion %, assigned users
+
+    // ✅ Card Sharing (read-only link)
+      - Generate tokenized links to allow external viewing
+
+    // ✅ Card Color or Priority Field
+      - Add optional color tag or priority level (Low, Medium, High)
+      
+*/
