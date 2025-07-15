@@ -11,21 +11,75 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:karwaan_client/src/protocol/user.dart' as _i3;
-import 'package:karwaan_client/src/protocol/auth_response.dart' as _i4;
-import 'package:karwaan_client/src/protocol/board.dart' as _i5;
-import 'package:karwaan_client/src/protocol/board_details.dart' as _i6;
-import 'package:karwaan_client/src/protocol/board_list.dart' as _i7;
-import 'package:karwaan_client/src/protocol/board_member.dart' as _i8;
-import 'package:karwaan_client/src/endpoints/board_member_details.dart' as _i9;
-import 'package:karwaan_client/src/protocol/card.dart' as _i10;
-import 'package:karwaan_client/src/protocol/label.dart' as _i11;
-import 'package:karwaan_client/src/protocol/workspace.dart' as _i12;
-import 'package:karwaan_client/src/protocol/workspace_member.dart' as _i13;
+import 'package:karwaan_client/src/protocol/attachment.dart' as _i3;
+import 'package:karwaan_client/src/protocol/user.dart' as _i4;
+import 'package:karwaan_client/src/protocol/auth_response.dart' as _i5;
+import 'package:karwaan_client/src/protocol/board.dart' as _i6;
+import 'package:karwaan_client/src/protocol/board_details.dart' as _i7;
+import 'package:karwaan_client/src/protocol/board_list.dart' as _i8;
+import 'package:karwaan_client/src/protocol/board_member.dart' as _i9;
+import 'package:karwaan_client/src/endpoints/board_member_details.dart' as _i10;
+import 'package:karwaan_client/src/protocol/card.dart' as _i11;
+import 'package:karwaan_client/src/protocol/card_label.dart' as _i12;
+import 'package:karwaan_client/src/protocol/label.dart' as _i13;
+import 'package:karwaan_client/src/protocol/checklist.dart' as _i14;
+import 'package:karwaan_client/src/protocol/checklist_item.dart' as _i15;
+import 'package:karwaan_client/src/protocol/comment.dart' as _i16;
+import 'package:karwaan_client/src/protocol/workspace.dart' as _i17;
+import 'package:karwaan_client/src/protocol/workspace_member.dart' as _i18;
 import 'package:karwaan_client/src/endpoints/workspace_member_details.dart'
-    as _i14;
-import 'package:karwaan_client/src/protocol/greeting.dart' as _i15;
-import 'protocol.dart' as _i16;
+    as _i19;
+import 'package:karwaan_client/src/protocol/greeting.dart' as _i20;
+import 'protocol.dart' as _i21;
+
+/// {@category Endpoint}
+class EndpointAttachment extends _i1.EndpointRef {
+  EndpointAttachment(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'attachment';
+
+  _i2.Future<_i3.Attachment> uploadAttachment(
+    int cardId,
+    String fileName,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i3.Attachment>(
+        'attachment',
+        'uploadAttachment',
+        {
+          'cardId': cardId,
+          'fileName': fileName,
+          'token': token,
+        },
+      );
+
+  _i2.Future<List<_i3.Attachment>> listAttachments(
+    int cardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i3.Attachment>>(
+        'attachment',
+        'listAttachments',
+        {
+          'cardId': cardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<bool> deleteAttachment(
+    int attachmentId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'attachment',
+        'deleteAttachment',
+        {
+          'attachmentId': attachmentId,
+          'token': token,
+        },
+      );
+}
 
 /// {@category Endpoint}
 class EndpointAuthentication extends _i1.EndpointRef {
@@ -34,12 +88,12 @@ class EndpointAuthentication extends _i1.EndpointRef {
   @override
   String get name => 'authentication';
 
-  _i2.Future<_i3.User> registerUser(
+  _i2.Future<_i4.User> registerUser(
     String userName,
     String userEmail,
     String userPw,
   ) =>
-      caller.callServerEndpoint<_i3.User>(
+      caller.callServerEndpoint<_i4.User>(
         'authentication',
         'registerUser',
         {
@@ -49,11 +103,11 @@ class EndpointAuthentication extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i4.AuthResponse> loginUser(
+  _i2.Future<_i5.AuthResponse> loginUser(
     String email,
     String pw,
   ) =>
-      caller.callServerEndpoint<_i4.AuthResponse>(
+      caller.callServerEndpoint<_i5.AuthResponse>(
         'authentication',
         'loginUser',
         {
@@ -76,13 +130,13 @@ class EndpointBoard extends _i1.EndpointRef {
   @override
   String get name => 'board';
 
-  _i2.Future<_i5.Board> createBoard(
+  _i2.Future<_i6.Board> createBoard(
     int workspaceId,
     String name,
     String? description,
     String token,
   ) =>
-      caller.callServerEndpoint<_i5.Board>(
+      caller.callServerEndpoint<_i6.Board>(
         'board',
         'createBoard',
         {
@@ -93,11 +147,11 @@ class EndpointBoard extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i6.BoardDetails> getUserBoard(
+  _i2.Future<_i7.BoardDetails> getUserBoard(
     int boardId,
     String token,
   ) =>
-      caller.callServerEndpoint<_i6.BoardDetails>(
+      caller.callServerEndpoint<_i7.BoardDetails>(
         'board',
         'getUserBoard',
         {
@@ -106,20 +160,20 @@ class EndpointBoard extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i6.BoardDetails>> getUserBoards(String token) =>
-      caller.callServerEndpoint<List<_i6.BoardDetails>>(
+  _i2.Future<List<_i7.BoardDetails>> getUserBoards(String token) =>
+      caller.callServerEndpoint<List<_i7.BoardDetails>>(
         'board',
         'getUserBoards',
         {'token': token},
       );
 
-  _i2.Future<_i5.Board> updateBoard(
+  _i2.Future<_i6.Board> updateBoard(
     int boardId,
     String token, {
     String? newName,
     String? newDec,
   }) =>
-      caller.callServerEndpoint<_i5.Board>(
+      caller.callServerEndpoint<_i6.Board>(
         'board',
         'updateBoard',
         {
@@ -151,12 +205,12 @@ class EndpointBoardList extends _i1.EndpointRef {
   @override
   String get name => 'boardList';
 
-  _i2.Future<_i7.BoardList> createBoardList(
+  _i2.Future<_i8.BoardList> createBoardList(
     int boardId,
     String token,
     String title,
   ) =>
-      caller.callServerEndpoint<_i7.BoardList>(
+      caller.callServerEndpoint<_i8.BoardList>(
         'boardList',
         'createBoardList',
         {
@@ -166,11 +220,11 @@ class EndpointBoardList extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i7.BoardList>> listBoardLists(
+  _i2.Future<List<_i8.BoardList>> listBoardLists(
     int boardId,
     String token,
   ) =>
-      caller.callServerEndpoint<List<_i7.BoardList>>(
+      caller.callServerEndpoint<List<_i8.BoardList>>(
         'boardList',
         'listBoardLists',
         {
@@ -179,12 +233,12 @@ class EndpointBoardList extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i7.BoardList> updateBoardList(
+  _i2.Future<_i8.BoardList> updateBoardList(
     int listId,
     String token,
     String newTitle,
   ) =>
-      caller.callServerEndpoint<_i7.BoardList>(
+      caller.callServerEndpoint<_i8.BoardList>(
         'boardList',
         'updateBoardList',
         {
@@ -215,12 +269,12 @@ class EndpointBoardMember extends _i1.EndpointRef {
   @override
   String get name => 'boardMember';
 
-  _i2.Future<_i8.BoardMember> addMemberToBoard(
+  _i2.Future<_i9.BoardMember> addMemberToBoard(
     int boardId,
     int userToAddId,
     String token,
   ) =>
-      caller.callServerEndpoint<_i8.BoardMember>(
+      caller.callServerEndpoint<_i9.BoardMember>(
         'boardMember',
         'addMemberToBoard',
         {
@@ -245,11 +299,11 @@ class EndpointBoardMember extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i9.BoardMemberDetails>> getBoardMembers(
+  _i2.Future<List<_i10.BoardMemberDetails>> getBoardMembers(
     int boardId,
     String token,
   ) =>
-      caller.callServerEndpoint<List<_i9.BoardMemberDetails>>(
+      caller.callServerEndpoint<List<_i10.BoardMemberDetails>>(
         'boardMember',
         'getBoardMembers',
         {
@@ -258,13 +312,13 @@ class EndpointBoardMember extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i8.BoardMember> changeBoardMemberRole(
+  _i2.Future<_i9.BoardMember> changeBoardMemberRole(
     int boardId,
     String token,
     int userToChangeRole,
     String newRole,
   ) =>
-      caller.callServerEndpoint<_i8.BoardMember>(
+      caller.callServerEndpoint<_i9.BoardMember>(
         'boardMember',
         'changeBoardMemberRole',
         {
@@ -296,13 +350,13 @@ class EndpointCard extends _i1.EndpointRef {
   @override
   String get name => 'card';
 
-  _i2.Future<_i10.Card> createCard(
+  _i2.Future<_i11.Card> createCard(
     int boardListId,
     String token,
     String title, {
     String? dec,
   }) =>
-      caller.callServerEndpoint<_i10.Card>(
+      caller.callServerEndpoint<_i11.Card>(
         'card',
         'createCard',
         {
@@ -313,11 +367,11 @@ class EndpointCard extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i10.Card>> getListByCard(
+  _i2.Future<List<_i11.Card>> getListByCard(
     int boardListId,
     String token,
   ) =>
-      caller.callServerEndpoint<List<_i10.Card>>(
+      caller.callServerEndpoint<List<_i11.Card>>(
         'card',
         'getListByCard',
         {
@@ -326,14 +380,14 @@ class EndpointCard extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i10.Card> updateCard(
+  _i2.Future<_i11.Card> updateCard(
     int cardId,
     String token,
     String newTitle,
     String? newDec,
     bool? completed,
   ) =>
-      caller.callServerEndpoint<_i10.Card>(
+      caller.callServerEndpoint<_i11.Card>(
         'card',
         'updateCard',
         {
@@ -360,21 +414,292 @@ class EndpointCard extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointCardLabel extends _i1.EndpointRef {
+  EndpointCardLabel(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'cardLabel';
+
+  _i2.Future<_i12.CardLabel> assignLableToCard(
+    int labelId,
+    int cardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i12.CardLabel>(
+        'cardLabel',
+        'assignLableToCard',
+        {
+          'labelId': labelId,
+          'cardId': cardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<void> removeLabelFromCard(
+    int cardId,
+    int labelId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'cardLabel',
+        'removeLabelFromCard',
+        {
+          'cardId': cardId,
+          'labelId': labelId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<List<_i13.Label>> getLabelForCard(
+    int cardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i13.Label>>(
+        'cardLabel',
+        'getLabelForCard',
+        {
+          'cardId': cardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<List<_i11.Card>> getCardForLabel(
+    int labelId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i11.Card>>(
+        'cardLabel',
+        'getCardForLabel',
+        {
+          'labelId': labelId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointChecklist extends _i1.EndpointRef {
+  EndpointChecklist(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'checklist';
+
+  _i2.Future<_i14.CheckList> createChecklist(
+    int cardId,
+    String title,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i14.CheckList>(
+        'checklist',
+        'createChecklist',
+        {
+          'cardId': cardId,
+          'title': title,
+          'token': token,
+        },
+      );
+
+  _i2.Future<List<_i14.CheckList>> listChecklist(
+    int cardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i14.CheckList>>(
+        'checklist',
+        'listChecklist',
+        {
+          'cardId': cardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i14.CheckList> updateChecklist(
+    int checklistId,
+    String newTitle,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i14.CheckList>(
+        'checklist',
+        'updateChecklist',
+        {
+          'checklistId': checklistId,
+          'newTitle': newTitle,
+          'token': token,
+        },
+      );
+
+  _i2.Future<void> deleteChecklist(
+    int checklistId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'checklist',
+        'deleteChecklist',
+        {
+          'checklistId': checklistId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointChecklistItem extends _i1.EndpointRef {
+  EndpointChecklistItem(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'checklistItem';
+
+  _i2.Future<_i15.CheckListItem> createChecklistItem(
+    int checklistId,
+    String content,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i15.CheckListItem>(
+        'checklistItem',
+        'createChecklistItem',
+        {
+          'checklistId': checklistId,
+          'content': content,
+          'token': token,
+        },
+      );
+
+  _i2.Future<List<_i15.CheckListItem>> listChecklistItems(
+    int checklistId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i15.CheckListItem>>(
+        'checklistItem',
+        'listChecklistItems',
+        {
+          'checklistId': checklistId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i15.CheckListItem> updateChecklistItem(
+    int checklistItemId,
+    int checklistId,
+    String newContent,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i15.CheckListItem>(
+        'checklistItem',
+        'updateChecklistItem',
+        {
+          'checklistItemId': checklistItemId,
+          'checklistId': checklistId,
+          'newContent': newContent,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i15.CheckListItem> toggleChecklistItemStatus(
+    int checklistItemId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i15.CheckListItem>(
+        'checklistItem',
+        'toggleChecklistItemStatus',
+        {
+          'checklistItemId': checklistItemId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<void> deleteChecklistItem(
+    int checklistItemId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'checklistItem',
+        'deleteChecklistItem',
+        {
+          'checklistItemId': checklistItemId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointComment extends _i1.EndpointRef {
+  EndpointComment(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'comment';
+
+  _i2.Future<_i16.Comment> createComment(
+    String token,
+    int cardId,
+    String content,
+  ) =>
+      caller.callServerEndpoint<_i16.Comment>(
+        'comment',
+        'createComment',
+        {
+          'token': token,
+          'cardId': cardId,
+          'content': content,
+        },
+      );
+
+  _i2.Future<List<_i16.Comment>> getCommentsForCard(
+    int cardId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i16.Comment>>(
+        'comment',
+        'getCommentsForCard',
+        {
+          'cardId': cardId,
+          'token': token,
+        },
+      );
+
+  _i2.Future<_i16.Comment> updateComment(
+    int commentId,
+    String newContent,
+    String token,
+  ) =>
+      caller.callServerEndpoint<_i16.Comment>(
+        'comment',
+        'updateComment',
+        {
+          'commentId': commentId,
+          'newContent': newContent,
+          'token': token,
+        },
+      );
+
+  _i2.Future<bool> deleteComment(
+    int commentId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'comment',
+        'deleteComment',
+        {
+          'commentId': commentId,
+          'token': token,
+        },
+      );
+}
+
+/// {@category Endpoint}
 class EndpointLabel extends _i1.EndpointRef {
   EndpointLabel(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'label';
 
-  _i2.Future<_i11.Label> creatLabel(
+  _i2.Future<_i13.Label> createLabel(
     int boardId,
     String token,
     String title,
     String color,
   ) =>
-      caller.callServerEndpoint<_i11.Label>(
+      caller.callServerEndpoint<_i13.Label>(
         'label',
-        'creatLabel',
+        'createLabel',
         {
           'boardId': boardId,
           'token': token,
@@ -383,11 +708,11 @@ class EndpointLabel extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i11.Label>> getLabelsForBoard(
+  _i2.Future<List<_i13.Label>> getLabelsForBoard(
     int boardId,
     String token,
   ) =>
-      caller.callServerEndpoint<List<_i11.Label>>(
+      caller.callServerEndpoint<List<_i13.Label>>(
         'label',
         'getLabelsForBoard',
         {
@@ -396,15 +721,15 @@ class EndpointLabel extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i11.Label> updateLable(
+  _i2.Future<_i13.Label> updateLabel(
     int labelId,
     String token, {
     String? newTitle,
     String? newColor,
   }) =>
-      caller.callServerEndpoint<_i11.Label>(
+      caller.callServerEndpoint<_i13.Label>(
         'label',
-        'updateLable',
+        'updateLabel',
         {
           'labelId': labelId,
           'token': token,
@@ -413,13 +738,13 @@ class EndpointLabel extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<bool> deleteLable(
+  _i2.Future<bool> deleteLabel(
     int labelId,
     String token,
   ) =>
       caller.callServerEndpoint<bool>(
         'label',
-        'deleteLable',
+        'deleteLabel',
         {
           'labelId': labelId,
           'token': token,
@@ -434,8 +759,8 @@ class EndpointToken extends _i1.EndpointRef {
   @override
   String get name => 'token';
 
-  _i2.Future<_i3.User?> validateToken(String token) =>
-      caller.callServerEndpoint<_i3.User?>(
+  _i2.Future<_i4.User?> validateToken(String token) =>
+      caller.callServerEndpoint<_i4.User?>(
         'token',
         'validateToken',
         {'token': token},
@@ -455,32 +780,32 @@ class EndpointUser extends _i1.EndpointRef {
   @override
   String get name => 'user';
 
-  _i2.Future<_i3.User> createUser(_i3.User user) =>
-      caller.callServerEndpoint<_i3.User>(
+  _i2.Future<_i4.User> createUser(_i4.User user) =>
+      caller.callServerEndpoint<_i4.User>(
         'user',
         'createUser',
         {'user': user},
       );
 
-  _i2.Future<_i3.User?> getUserById(int userId) =>
-      caller.callServerEndpoint<_i3.User?>(
+  _i2.Future<_i4.User?> getUserById(int userId) =>
+      caller.callServerEndpoint<_i4.User?>(
         'user',
         'getUserById',
         {'userId': userId},
       );
 
-  _i2.Future<List<_i3.User>> getAllUsers() =>
-      caller.callServerEndpoint<List<_i3.User>>(
+  _i2.Future<List<_i4.User>> getAllUsers() =>
+      caller.callServerEndpoint<List<_i4.User>>(
         'user',
         'getAllUsers',
         {},
       );
 
-  _i2.Future<_i3.User> updateUser(_i3.User UpdatedUser) =>
-      caller.callServerEndpoint<_i3.User>(
+  _i2.Future<_i4.User> updateUser(_i4.User updatedUser) =>
+      caller.callServerEndpoint<_i4.User>(
         'user',
         'updateUser',
-        {'UpdatedUser': UpdatedUser},
+        {'updatedUser': updatedUser},
       );
 
   _i2.Future<bool> deleteUser(int id) => caller.callServerEndpoint<bool>(
@@ -497,12 +822,12 @@ class EndpointWorkspace extends _i1.EndpointRef {
   @override
   String get name => 'workspace';
 
-  _i2.Future<_i12.Workspace> createWorkspace(
+  _i2.Future<_i17.Workspace> createWorkspace(
     String name,
     String? description,
     String token,
   ) =>
-      caller.callServerEndpoint<_i12.Workspace>(
+      caller.callServerEndpoint<_i17.Workspace>(
         'workspace',
         'createWorkspace',
         {
@@ -512,20 +837,20 @@ class EndpointWorkspace extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i12.Workspace>> getUserWorkspace(String token) =>
-      caller.callServerEndpoint<List<_i12.Workspace>>(
+  _i2.Future<List<_i17.Workspace>> getUserWorkspace(String token) =>
+      caller.callServerEndpoint<List<_i17.Workspace>>(
         'workspace',
         'getUserWorkspace',
         {'token': token},
       );
 
-  _i2.Future<_i12.Workspace> updateWorkspace(
+  _i2.Future<_i17.Workspace> updateWorkspace(
     int workspaceId,
     String token, {
     String? newName,
     String? newDes,
   }) =>
-      caller.callServerEndpoint<_i12.Workspace>(
+      caller.callServerEndpoint<_i17.Workspace>(
         'workspace',
         'updateWorkspace',
         {
@@ -557,14 +882,14 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
   @override
   String get name => 'workspaceMember';
 
-  _i2.Future<_i13.WorkspaceMember> addMemeberToWorkspace(
+  _i2.Future<_i18.WorkspaceMember> addMemberToWorkspace(
     int userToAddId,
     int workspaceId,
     String token,
   ) =>
-      caller.callServerEndpoint<_i13.WorkspaceMember>(
+      caller.callServerEndpoint<_i18.WorkspaceMember>(
         'workspaceMember',
-        'addMemeberToWorkspace',
+        'addMemberToWorkspace',
         {
           'userToAddId': userToAddId,
           'workspaceId': workspaceId,
@@ -587,11 +912,11 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i14.WorkspaceMemberDetails>> getWorkspaceMember(
+  _i2.Future<List<_i19.WorkspaceMemberDetails>> getWorkspaceMember(
     int workspaceId,
     String token,
   ) =>
-      caller.callServerEndpoint<List<_i14.WorkspaceMemberDetails>>(
+      caller.callServerEndpoint<List<_i19.WorkspaceMemberDetails>>(
         'workspaceMember',
         'getWorkspaceMember',
         {
@@ -600,13 +925,13 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i13.WorkspaceMember> changeMemberRole(
+  _i2.Future<_i18.WorkspaceMember> changeMemberRole(
     int workspaceId,
     String token,
     int targetUserId,
     String newRole,
   ) =>
-      caller.callServerEndpoint<_i13.WorkspaceMember>(
+      caller.callServerEndpoint<_i18.WorkspaceMember>(
         'workspaceMember',
         'changeMemberRole',
         {
@@ -641,8 +966,8 @@ class EndpointGreeting extends _i1.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i15.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i15.Greeting>(
+  _i2.Future<_i20.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i20.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -665,7 +990,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i16.Protocol(),
+          _i21.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -675,11 +1000,16 @@ class Client extends _i1.ServerpodClientShared {
           disconnectStreamsOnLostInternetConnection:
               disconnectStreamsOnLostInternetConnection,
         ) {
+    attachment = EndpointAttachment(this);
     authentication = EndpointAuthentication(this);
     board = EndpointBoard(this);
     boardList = EndpointBoardList(this);
     boardMember = EndpointBoardMember(this);
     card = EndpointCard(this);
+    cardLabel = EndpointCardLabel(this);
+    checklist = EndpointChecklist(this);
+    checklistItem = EndpointChecklistItem(this);
+    comment = EndpointComment(this);
     label = EndpointLabel(this);
     token = EndpointToken(this);
     user = EndpointUser(this);
@@ -687,6 +1017,8 @@ class Client extends _i1.ServerpodClientShared {
     workspaceMember = EndpointWorkspaceMember(this);
     greeting = EndpointGreeting(this);
   }
+
+  late final EndpointAttachment attachment;
 
   late final EndpointAuthentication authentication;
 
@@ -697,6 +1029,14 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointBoardMember boardMember;
 
   late final EndpointCard card;
+
+  late final EndpointCardLabel cardLabel;
+
+  late final EndpointChecklist checklist;
+
+  late final EndpointChecklistItem checklistItem;
+
+  late final EndpointComment comment;
 
   late final EndpointLabel label;
 
@@ -712,11 +1052,16 @@ class Client extends _i1.ServerpodClientShared {
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'attachment': attachment,
         'authentication': authentication,
         'board': board,
         'boardList': boardList,
         'boardMember': boardMember,
         'card': card,
+        'cardLabel': cardLabel,
+        'checklist': checklist,
+        'checklistItem': checklistItem,
+        'comment': comment,
         'label': label,
         'token': token,
         'user': user,

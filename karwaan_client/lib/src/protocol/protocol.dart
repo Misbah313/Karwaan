@@ -27,15 +27,19 @@ import 'user.dart' as _i15;
 import 'user_token.dart' as _i16;
 import 'workspace.dart' as _i17;
 import 'workspace_member.dart' as _i18;
-import 'package:karwaan_client/src/protocol/board_details.dart' as _i19;
-import 'package:karwaan_client/src/protocol/board_list.dart' as _i20;
-import 'package:karwaan_client/src/endpoints/board_member_details.dart' as _i21;
-import 'package:karwaan_client/src/protocol/card.dart' as _i22;
-import 'package:karwaan_client/src/protocol/label.dart' as _i23;
-import 'package:karwaan_client/src/protocol/user.dart' as _i24;
-import 'package:karwaan_client/src/protocol/workspace.dart' as _i25;
+import 'package:karwaan_client/src/protocol/attachment.dart' as _i19;
+import 'package:karwaan_client/src/protocol/board_details.dart' as _i20;
+import 'package:karwaan_client/src/protocol/board_list.dart' as _i21;
+import 'package:karwaan_client/src/endpoints/board_member_details.dart' as _i22;
+import 'package:karwaan_client/src/protocol/card.dart' as _i23;
+import 'package:karwaan_client/src/protocol/label.dart' as _i24;
+import 'package:karwaan_client/src/protocol/checklist.dart' as _i25;
+import 'package:karwaan_client/src/protocol/checklist_item.dart' as _i26;
+import 'package:karwaan_client/src/protocol/comment.dart' as _i27;
+import 'package:karwaan_client/src/protocol/user.dart' as _i28;
+import 'package:karwaan_client/src/protocol/workspace.dart' as _i29;
 import 'package:karwaan_client/src/endpoints/workspace_member_details.dart'
-    as _i26;
+    as _i30;
 export 'greeting.dart';
 export 'attachment.dart';
 export 'auth_response.dart';
@@ -173,37 +177,54 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i19.BoardDetails>) {
+    if (t == List<_i19.Attachment>) {
+      return (data as List).map((e) => deserialize<_i19.Attachment>(e)).toList()
+          as T;
+    }
+    if (t == List<_i20.BoardDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i19.BoardDetails>(e))
+          .map((e) => deserialize<_i20.BoardDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i20.BoardList>) {
-      return (data as List).map((e) => deserialize<_i20.BoardList>(e)).toList()
+    if (t == List<_i21.BoardList>) {
+      return (data as List).map((e) => deserialize<_i21.BoardList>(e)).toList()
           as T;
     }
-    if (t == List<_i21.BoardMemberDetails>) {
+    if (t == List<_i22.BoardMemberDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i21.BoardMemberDetails>(e))
+          .map((e) => deserialize<_i22.BoardMemberDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i22.Card>) {
-      return (data as List).map((e) => deserialize<_i22.Card>(e)).toList() as T;
+    if (t == List<_i23.Card>) {
+      return (data as List).map((e) => deserialize<_i23.Card>(e)).toList() as T;
     }
-    if (t == List<_i23.Label>) {
-      return (data as List).map((e) => deserialize<_i23.Label>(e)).toList()
+    if (t == List<_i24.Label>) {
+      return (data as List).map((e) => deserialize<_i24.Label>(e)).toList()
           as T;
     }
-    if (t == List<_i24.User>) {
-      return (data as List).map((e) => deserialize<_i24.User>(e)).toList() as T;
-    }
-    if (t == List<_i25.Workspace>) {
-      return (data as List).map((e) => deserialize<_i25.Workspace>(e)).toList()
+    if (t == List<_i25.CheckList>) {
+      return (data as List).map((e) => deserialize<_i25.CheckList>(e)).toList()
           as T;
     }
-    if (t == List<_i26.WorkspaceMemberDetails>) {
+    if (t == List<_i26.CheckListItem>) {
       return (data as List)
-          .map((e) => deserialize<_i26.WorkspaceMemberDetails>(e))
+          .map((e) => deserialize<_i26.CheckListItem>(e))
+          .toList() as T;
+    }
+    if (t == List<_i27.Comment>) {
+      return (data as List).map((e) => deserialize<_i27.Comment>(e)).toList()
+          as T;
+    }
+    if (t == List<_i28.User>) {
+      return (data as List).map((e) => deserialize<_i28.User>(e)).toList() as T;
+    }
+    if (t == List<_i29.Workspace>) {
+      return (data as List).map((e) => deserialize<_i29.Workspace>(e)).toList()
+          as T;
+    }
+    if (t == List<_i30.WorkspaceMemberDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i30.WorkspaceMemberDetails>(e))
           .toList() as T;
     }
     return super.deserialize<T>(data, t);
