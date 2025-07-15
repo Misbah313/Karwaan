@@ -15,25 +15,28 @@ abstract class CheckList
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   CheckList._({
     this.id,
-    required this.name,
+    required this.title,
     required this.card,
     required this.createdAt,
+    required this.createdBy,
   });
 
   factory CheckList({
     int? id,
-    required String name,
+    required String title,
     required int card,
     required DateTime createdAt,
+    required int createdBy,
   }) = _CheckListImpl;
 
   factory CheckList.fromJson(Map<String, dynamic> jsonSerialization) {
     return CheckList(
       id: jsonSerialization['id'] as int?,
-      name: jsonSerialization['name'] as String,
+      title: jsonSerialization['title'] as String,
       card: jsonSerialization['card'] as int,
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      createdBy: jsonSerialization['createdBy'] as int,
     );
   }
 
@@ -44,11 +47,13 @@ abstract class CheckList
   @override
   int? id;
 
-  String name;
+  String title;
 
   int card;
 
   DateTime createdAt;
+
+  int createdBy;
 
   @override
   _i1.Table<int?> get table => t;
@@ -58,17 +63,19 @@ abstract class CheckList
   @_i1.useResult
   CheckList copyWith({
     int? id,
-    String? name,
+    String? title,
     int? card,
     DateTime? createdAt,
+    int? createdBy,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'name': name,
+      'title': title,
       'card': card,
       'createdAt': createdAt.toJson(),
+      'createdBy': createdBy,
     };
   }
 
@@ -76,9 +83,10 @@ abstract class CheckList
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'name': name,
+      'title': title,
       'card': card,
       'createdAt': createdAt.toJson(),
+      'createdBy': createdBy,
     };
   }
 
@@ -117,14 +125,16 @@ class _Undefined {}
 class _CheckListImpl extends CheckList {
   _CheckListImpl({
     int? id,
-    required String name,
+    required String title,
     required int card,
     required DateTime createdAt,
+    required int createdBy,
   }) : super._(
           id: id,
-          name: name,
+          title: title,
           card: card,
           createdAt: createdAt,
+          createdBy: createdBy,
         );
 
   /// Returns a shallow copy of this [CheckList]
@@ -133,23 +143,25 @@ class _CheckListImpl extends CheckList {
   @override
   CheckList copyWith({
     Object? id = _Undefined,
-    String? name,
+    String? title,
     int? card,
     DateTime? createdAt,
+    int? createdBy,
   }) {
     return CheckList(
       id: id is int? ? id : this.id,
-      name: name ?? this.name,
+      title: title ?? this.title,
       card: card ?? this.card,
       createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
     );
   }
 }
 
 class CheckListTable extends _i1.Table<int?> {
   CheckListTable({super.tableRelation}) : super(tableName: 'check_list') {
-    name = _i1.ColumnString(
-      'name',
+    title = _i1.ColumnString(
+      'title',
       this,
     );
     card = _i1.ColumnInt(
@@ -160,20 +172,27 @@ class CheckListTable extends _i1.Table<int?> {
       'createdAt',
       this,
     );
+    createdBy = _i1.ColumnInt(
+      'createdBy',
+      this,
+    );
   }
 
-  late final _i1.ColumnString name;
+  late final _i1.ColumnString title;
 
   late final _i1.ColumnInt card;
 
   late final _i1.ColumnDateTime createdAt;
 
+  late final _i1.ColumnInt createdBy;
+
   @override
   List<_i1.Column> get columns => [
         id,
-        name,
+        title,
         card,
         createdAt,
+        createdBy,
       ];
 }
 
