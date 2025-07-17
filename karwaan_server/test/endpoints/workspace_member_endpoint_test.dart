@@ -146,7 +146,6 @@ void main() {
     });
 
     test('removeMemberFromWorkspace - fails if removing last owner', () async {
-      final session = sessionBuilder.build();
 
       // Try to remove the owner themselves (should fail)
       expect(
@@ -180,7 +179,6 @@ void main() {
     });
 
     test('changeMemberRole - owner can change member role', () async {
-      final session = sessionBuilder.build();
 
       final changedMember = await endpoints.workspaceMember.changeMemberRole(
         sessionBuilder,
@@ -212,7 +210,6 @@ void main() {
     });
 
     test('leaveWorkspace - owner cannot leave if last owner', () async {
-      final session = sessionBuilder.build();
 
       // Try to leave as last owner (should throw)
       expect(
