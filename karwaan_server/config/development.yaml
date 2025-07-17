@@ -30,10 +30,10 @@ webServer:
 # This is the database setup for your server.
 database:
   host: localhost
-  port: 8090
+  port: 5432
   name: karwaan
   user: postgres
-  password: xEMHr6RAjTRj8MZLsUCZ237ah5WiIh2
+  password: karwaan123
   #requireSsl: false
   #isUnixSocket: false
 
