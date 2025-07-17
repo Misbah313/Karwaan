@@ -87,6 +87,11 @@ class WorkspaceMemberEndpoint extends Endpoint {
       throw Exception("That user is not a member of this workspace");
     }
 
+    if (userToRemoveId == currentUser.id) {
+      throw Exception(
+          "You cannot remove yourself. Use 'leave workspace' instead.");
+    }
+
     // check if the target member is not an owner
     if (targetMember.role == Roles.owner) {
       // count all owners in this workspace
@@ -98,11 +103,6 @@ class WorkspaceMemberEndpoint extends Endpoint {
       if (countOwner <= 1) {
         throw Exception('Cannot remove the last owner from the workspace!');
       }
-    }
-
-    if (userToRemoveId == currentUser.id) {
-      throw Exception(
-          "You cannot remove yourself. Use 'leave workspace' instead.");
     }
 
     // safely remove the target owner
