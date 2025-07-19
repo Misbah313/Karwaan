@@ -30,12 +30,12 @@ webServer:
 # This is the database setup for your server.
 database:
   host: localhost
-  port: 5432
+  port: 8090
   name: karwaan
   user: postgres
-  password: karwaan123
-  #requireSsl: false
-  #isUnixSocket: false
+  password: postgres123
+  requireSsl: false
+  isUnixSocket: false
 
 
 # This is the setup for Redis.
