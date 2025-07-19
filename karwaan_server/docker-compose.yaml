@@ -2,12 +2,13 @@ services:
   # Development services
   postgres:
     image: pgvector/pgvector:pg16
+    restart: always
     ports:
       - "8090:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: karwaan
-      POSTGRES_PASSWORD: "xEMHr6RAjTRj8MZLsUCZ237ah5WiIh2F"
+      POSTGRES_PASSWORD: postgres123
     volumes:
       - karwaan_data:/var/lib/postgresql/data
 

@@ -10,9 +10,10 @@ dependencies:
   serverpod: 2.9.1
   crypto: ^3.0.6
   uuid: ^4.5.1
+  test: ^1.26.2
+  mocktail: ^1.0.4
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  test: '^1.24.2'
   serverpod_test: 2.9.1
 
