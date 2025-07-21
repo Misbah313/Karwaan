@@ -1,4 +1,3 @@
-import 'package:karwaan_server/src/endpoints/board_member_details.dart';
 import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';

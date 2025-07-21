@@ -18,7 +18,7 @@ import 'package:karwaan_client/src/protocol/board.dart' as _i6;
 import 'package:karwaan_client/src/protocol/board_details.dart' as _i7;
 import 'package:karwaan_client/src/protocol/board_list.dart' as _i8;
 import 'package:karwaan_client/src/protocol/board_member.dart' as _i9;
-import 'package:karwaan_client/src/endpoints/board_member_details.dart' as _i10;
+import 'package:karwaan_client/src/protocol/board_member_details.dart' as _i10;
 import 'package:karwaan_client/src/protocol/card.dart' as _i11;
 import 'package:karwaan_client/src/protocol/card_label.dart' as _i12;
 import 'package:karwaan_client/src/protocol/label.dart' as _i13;
@@ -27,7 +27,7 @@ import 'package:karwaan_client/src/protocol/checklist_item.dart' as _i15;
 import 'package:karwaan_client/src/protocol/comment.dart' as _i16;
 import 'package:karwaan_client/src/protocol/workspace.dart' as _i17;
 import 'package:karwaan_client/src/protocol/workspace_member.dart' as _i18;
-import 'package:karwaan_client/src/endpoints/workspace_member_details.dart'
+import 'package:karwaan_client/src/protocol/workspace_member_details.dart'
     as _i19;
 import 'package:karwaan_client/src/protocol/greeting.dart' as _i20;
 import 'protocol.dart' as _i21;
