@@ -21,7 +21,7 @@ import 'package:karwaan_server/src/generated/board.dart' as _i7;
 import 'package:karwaan_server/src/generated/board_details.dart' as _i8;
 import 'package:karwaan_server/src/generated/board_list.dart' as _i9;
 import 'package:karwaan_server/src/generated/board_member.dart' as _i10;
-import 'package:karwaan_server/src/endpoints/board_member_details.dart' as _i11;
+import 'package:karwaan_server/src/generated/board_member_details.dart' as _i11;
 import 'package:karwaan_server/src/generated/card.dart' as _i12;
 import 'package:karwaan_server/src/generated/card_label.dart' as _i13;
 import 'package:karwaan_server/src/generated/label.dart' as _i14;
@@ -30,7 +30,7 @@ import 'package:karwaan_server/src/generated/checklist_item.dart' as _i16;
 import 'package:karwaan_server/src/generated/comment.dart' as _i17;
 import 'package:karwaan_server/src/generated/workspace.dart' as _i18;
 import 'package:karwaan_server/src/generated/workspace_member.dart' as _i19;
-import 'package:karwaan_server/src/endpoints/workspace_member_details.dart'
+import 'package:karwaan_server/src/generated/workspace_member_details.dart'
     as _i20;
 import 'package:karwaan_server/src/generated/greeting.dart' as _i21;
 import 'package:karwaan_server/src/generated/protocol.dart';
