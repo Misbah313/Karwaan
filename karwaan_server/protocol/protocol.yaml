@@ -5,3 +5,5 @@ protocol:
   - class: board_list
   - class: workspace
   - class: workspace_member
+  - class: boardmemberdetails
+  - class: workspacememberdetails

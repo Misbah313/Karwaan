@@ -1,0 +1,9 @@
+class: WorkspaceMemberDetails
+table: workspacememberdetails
+fields:
+  userId: int, relation(parent=user)
+  userName: String
+  email: String?
+  avatarUrl: String?
+  role: String
+  joinedAt: DateTime

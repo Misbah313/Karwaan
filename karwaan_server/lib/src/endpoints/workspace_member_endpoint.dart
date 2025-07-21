@@ -1,6 +1,5 @@
 import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
-import 'package:karwaan_server/src/endpoints/workspace_member_details.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 

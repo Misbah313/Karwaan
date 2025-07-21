@@ -1,0 +1,8 @@
+class: BoardMemberDetails
+table: boardmemberdetails
+fields:
+  userId: int, relation(parent=user)
+  userName: String
+  email: String?
+  role: String
+  joinedAt: DateTime
