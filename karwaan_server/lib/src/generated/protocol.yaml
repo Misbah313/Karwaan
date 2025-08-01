@@ -58,7 +58,6 @@ token:
   - validateToken:
   - logout:
 user:
-  - createUser:
   - getUserById:
   - getAllUsers:
   - updateUser:
