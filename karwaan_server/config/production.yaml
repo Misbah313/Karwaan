@@ -60,3 +60,12 @@ sessionLogs:
 #futureCall:
 #  concurrencyLimit: 1 # Defaults to 1, a negative or null value removes the limit
 #  scanInterval: 5000 # Unit in milliseconds, defaults to 5000
+
+
+cors:
+  allowOrigins:
+    - 'http://localhost:5173'         # Flutter web local dev (Vite or similar)
+    - 'http://127.0.0.1:5500'         # Live Server (VS Code)
+    - 'http://localhost:5000'         # Firebase local hosting
+    - 'https://karwaan-app.web.app'   # Firebase Hosting (once deployed)
+    - 'https://your-domain.com'       # Replace with your custom domain if used

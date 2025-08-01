@@ -780,13 +780,6 @@ class EndpointUser extends _i1.EndpointRef {
   @override
   String get name => 'user';
 
-  _i2.Future<_i4.User> createUser(_i4.User user) =>
-      caller.callServerEndpoint<_i4.User>(
-        'user',
-        'createUser',
-        {'user': user},
-      );
-
   _i2.Future<_i4.User?> getUserById(int userId) =>
       caller.callServerEndpoint<_i4.User?>(
         'user',
