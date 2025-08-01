@@ -1,0 +1,205 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "boardmemberdetails",
+        "dartName": "BoardMemberDetails",
+        "module": "karwaan",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('boardmemberdetails_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "userId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "userName",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "email",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "role",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "joinedAt",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "boardmemberdetails_fk_0",
+            "columns": [
+              "userId"
+            ],
+            "referenceTable": "user",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "boardmemberdetails_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "user",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [
+          "profileImage"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "type": "columnDropped",
+            "message": "Column \"profileImage\" of table \"user\" will be dropped.",
+            "table": "user",
+            "columns": [
+              "profileImage"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "workspacememberdetails",
+        "dartName": "WorkspaceMemberDetails",
+        "module": "karwaan",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('workspacememberdetails_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "userId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "userName",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "email",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "avatarUrl",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "role",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "joinedAt",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "workspacememberdetails_fk_0",
+            "columns": [
+              "userId"
+            ],
+            "referenceTable": "user",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "workspacememberdetails_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column \"profileImage\" of table \"user\" will be dropped.",
+      "table": "user",
+      "columns": [
+        "profileImage"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}
