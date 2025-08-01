@@ -1,5 +1,4 @@
 import 'package:karwaan_server/src/endpoints/hashing_pw.dart';
-import 'package:karwaan_server/src/endpoints/user_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -14,7 +13,7 @@ class AuthenticationEndpoint extends Endpoint {
     );
 
     if (existingUser != null) {
-      throw Exception('User already exists with that email.');
+      throw Exception('Email exists!');
     }
 
     try {
@@ -22,11 +21,14 @@ class AuthenticationEndpoint extends Endpoint {
       final newUser = User(
           name: userName, email: userEmail, password: encryptPassword(userPw));
 
-      await UserEndpoint().createUser(session, newUser);
+      final insertedUser = await User.db.insertRow(session, newUser);
 
-      return newUser;
-    } catch (e) {
-      throw Exception('Failed to register: $e');
+      session.log('Created User id: ${insertedUser.id}');
+
+      return insertedUser;
+    } catch (e, stack) {
+     session.log('Registeration failed', exception: e, stackTrace: stack);
+     throw Exception('Registeration error. Please try different credentials.');
     }
   }
 
