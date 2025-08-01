@@ -7,6 +7,7 @@
 
 */
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthTokenStorageHelper {
@@ -25,6 +26,24 @@ class AuthTokenStorageHelper {
 
   // delete token
   Future<void> deleteToken() async {
-    await _storage.delete(key: _key);
+    try {
+      debugPrint('Deleting token...');
+      await _storage.delete(key: _key);
+
+      // force clear web cache
+      if (kIsWeb) {
+        await _storage.write(
+            key: 'cache_buster', value: DateTime.now().toString());
+        await _storage.delete(key: 'cache_buster');
+      }
+
+      // verify deletion
+      final verify = await _storage.read(key: _key);
+      assert(verify == null, 'Token still exists after deletion!');
+      debugPrint('TOKEN DELETION VERIFIED: ${verify ?? "Null"}');
+    } catch (e) {
+      debugPrint('Token Deletion Failed: $e');
+      rethrow;
+    }
   }
 }
