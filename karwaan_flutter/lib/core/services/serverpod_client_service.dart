@@ -11,10 +11,10 @@ class ServerpodClientService {
 
   ServerpodClientService(this._authTokenStorage);
 
-  // initialize serverpod client service
+  // initialize serverpod client service (Long-term: Switch to .env before deploying (even to test servers).1: add flutter_dotenv package, 2:Create .env(SERVERPOD_URL=http://10.226.253.89:8080/) 3: Load it in main.dart(void main() aysnc { await dotev.load(fileName: '.env'); final serverpodUrl = dotenv.get('Serverpo Url')}), 4: update serverpod clinet(Client(serverpodUrl)));
   Future<void> initialize() async {
     client = Client(
-      'http://localhost:8090',
+      'http://10.226.253.89:8080/',
     )..connectivityMonitor = FlutterConnectivityMonitor();
 
     final storedToken = await _authTokenStorage.getToken();
@@ -54,6 +54,8 @@ class ServerpodClientService {
       // authenticate with my custom endpoint
       final authResponse = await client.authentication.loginUser(email, pw);
 
+      await client.token.validateToken(authResponse.token);
+
       // save the token securly
       await _authTokenStorage.saveToken(authResponse.token);
 
@@ -64,15 +66,23 @@ class ServerpodClientService {
   }
 
   // logout
-  Future<bool> logoutUser(String token) async {
+  Future<void> logoutUser(String token) async {
     try {
+      debugPrint('A. Starting server logout');
       await client.authentication.logoutUser(token);
-
-      // delete the token
+      debugPrint('B. Deleting local token');
       await _authTokenStorage.deleteToken();
+      await Future.delayed(Duration(milliseconds: 100));
 
-      return true;
+      final verifyDeletion = await _authTokenStorage.getToken();
+      debugPrint('C. Token after deletion: ${verifyDeletion ?? "Null"}');
+
+      if(verifyDeletion != null) {
+        throw Exception('Token was not deleted properly!');
+      }
     } catch (e) {
+      debugPrint('D. Force deleting token due to error: $e');
+      await _authTokenStorage.deleteToken();
       rethrow;
     }
   }
@@ -91,11 +101,123 @@ class ServerpodClientService {
   }
 
   // Is user logged in
-  Future<bool> get isLoggedIn async{
+  Future<bool> get isLoggedIn async {
     final token = await _authTokenStorage.getToken();
     return token != null && token.isNotEmpty;
   }
 
   // refresh token(will add later: it avoid forcing user to login again when access token expires(note: you've set the token for 30 days)).
 
+  // get token
+  Future<String?> getToken() async {
+    final token = await _authTokenStorage.getToken();
+
+    return token;
+  }
+
+  // delete user
+  Future<void> deleteUser(int userId) async {
+    try {
+      await _authTokenStorage.deleteToken();
+      await client.user.deleteUser(userId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update user
+
+  // create workspace
+  Future<Workspace> createWorkspace(
+      String workspaceName, String workspaceDec) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      final workspace = await client.workspace
+          .createWorkspace(workspaceName, workspaceDec, token!);
+
+      return workspace;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get user workspace
+  Future<List<Workspace>> getUserWorkspace() async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      final workspace = await client.workspace.getUserWorkspace(token!);
+
+      return workspace;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update workspace
+  Future<Workspace> updateWorkspace(int workspaceId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      final update =
+          await client.workspace.updateWorkspace(workspaceId, token!);
+
+      return update;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete workspace
+  Future<bool> deleteWorkspace(int workspaceId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      await client.workspace.deleteWorkspace(workspaceId, token!);
+
+      return true;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // add member to workspace
+  Future<WorkspaceMember> addMemberToWorkspace(
+      int workspaceId, int userToAddId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      final workspaceMember = await client.workspaceMember
+          .addMemberToWorkspace(userToAddId, workspaceId, token!);
+
+      return workspaceMember;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // remove member from workspace
+  Future<void> removeMemberFromWorkspace(
+      int workspaceId, int userToRemoveId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      final workspaceMember = await client.workspaceMember
+          .removeMemberFromWorkspace(workspaceId, userToRemoveId, token!);
+
+      return workspaceMember;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get workspace member(later)
+
+  // change member role(later)
+
+  // leave workspace
+  Future<void> leaveWorkspace(int workspaceId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+
+      await client.workspaceMember.leaveWorkspace(workspaceId, token!);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
