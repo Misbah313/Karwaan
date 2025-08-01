@@ -9,7 +9,7 @@
 # Configuration for the main API server.
 apiServer:
   port: 8080
-  publicHost: localhost
+  publicHost: 0.0.0.0
   publicPort: 8080
   publicScheme: http
 
@@ -26,6 +26,7 @@ webServer:
   publicHost: localhost
   publicPort: 8082
   publicScheme: http
+  corsOriginRegex: 'http://localhost:[\d]*|http://10.226.253.89:[\d]*|http://192.168.\d+.\d+:[\d]*'
 
 # This is the database setup for your server.
 database:

@@ -4,7 +4,7 @@ import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 class UserEndpoint extends Endpoint {
-  // Create user
+  /* Create user
   Future<User> createUser(Session session, User user) async {
     User? existingUser = await User.db.findFirstRow(
       session,
@@ -26,6 +26,7 @@ class UserEndpoint extends Endpoint {
       throw Exception(e);
     }
   }
+  */
 
   // Get user by Id
   Future<User?> getUserById(Session session, int userId) async {
@@ -75,12 +76,18 @@ class UserEndpoint extends Endpoint {
   // Delete user
   Future<bool> deleteUser(Session session, int id) async {
     try {
+      session.log('Attemping to delete user with id: $id');
       User? user = await User.db.findById(session, id);
       try {
         if (user == null) {
           return false;
         } else {
+          await UserToken.db.deleteWhere(
+            session,
+            where: (p0) => p0.userId.equals(id),
+          );
           await User.db.deleteRow(session, user);
+          session.log('User deleted successfully');
           return true;
         }
       } catch (e) {
