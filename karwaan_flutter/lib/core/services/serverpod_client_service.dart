@@ -132,8 +132,11 @@ class ServerpodClientService {
       String workspaceName, String workspaceDec) async {
     try {
       final token = await _authTokenStorage.getToken();
+      if(token == null) {
+        throw Exception('Please login before preforming this action.');
+      }
       final workspace = await client.workspace
-          .createWorkspace(workspaceName, workspaceDec, token!);
+          .createWorkspace(workspaceName, workspaceDec, token);
 
       return workspace;
     } catch (e) {
@@ -145,7 +148,10 @@ class ServerpodClientService {
   Future<List<Workspace>> getUserWorkspace() async {
     try {
       final token = await _authTokenStorage.getToken();
-      final workspace = await client.workspace.getUserWorkspace(token!);
+      if(token == null) {
+        throw Exception('Please login before preforming this action.');
+      }
+      final workspace = await client.workspace.getUserWorkspace(token);
 
       return workspace;
     } catch (e) {
@@ -154,11 +160,14 @@ class ServerpodClientService {
   }
 
   // update workspace
-  Future<Workspace> updateWorkspace(int workspaceId) async {
+  Future<Workspace> updateWorkspace(String newName,String newDec,int workspaceId) async {
     try {
       final token = await _authTokenStorage.getToken();
+      if(token == null) {
+        throw Exception('Please login before preforming this action.');
+      }
       final update =
-          await client.workspace.updateWorkspace(workspaceId, token!);
+          await client.workspace.updateWorkspace(workspaceId, token, newName: newName, newDes: newDec);
 
       return update;
     } catch (e) {
@@ -170,7 +179,10 @@ class ServerpodClientService {
   Future<bool> deleteWorkspace(int workspaceId) async {
     try {
       final token = await _authTokenStorage.getToken();
-      await client.workspace.deleteWorkspace(workspaceId, token!);
+      if(token == null) {
+        throw Exception('Please login before preforming this action.');
+      }
+      await client.workspace.deleteWorkspace(workspaceId, token);
 
       return true;
     } catch (e) {
@@ -183,8 +195,11 @@ class ServerpodClientService {
       int workspaceId, int userToAddId) async {
     try {
       final token = await _authTokenStorage.getToken();
+      if(token == null) {
+        throw Exception('Please login before preforming this action.');
+      }
       final workspaceMember = await client.workspaceMember
-          .addMemberToWorkspace(userToAddId, workspaceId, token!);
+          .addMemberToWorkspace(userToAddId, workspaceId, token);
 
       return workspaceMember;
     } catch (e) {
@@ -197,8 +212,11 @@ class ServerpodClientService {
       int workspaceId, int userToRemoveId) async {
     try {
       final token = await _authTokenStorage.getToken();
+      if(token == null) {
+        throw Exception('Please login before preforming this action.');
+      }
       final workspaceMember = await client.workspaceMember
-          .removeMemberFromWorkspace(workspaceId, userToRemoveId, token!);
+          .removeMemberFromWorkspace(workspaceId, userToRemoveId, token);
 
       return workspaceMember;
     } catch (e) {
@@ -214,8 +232,11 @@ class ServerpodClientService {
   Future<void> leaveWorkspace(int workspaceId) async {
     try {
       final token = await _authTokenStorage.getToken();
+      if(token == null) {
+        throw Exception('Please login before preforming this action.');
+      }
 
-      await client.workspaceMember.leaveWorkspace(workspaceId, token!);
+      await client.workspaceMember.leaveWorkspace(workspaceId, token);
     } catch (e) {
       rethrow;
     }
