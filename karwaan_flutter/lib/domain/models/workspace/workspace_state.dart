@@ -6,9 +6,15 @@ class WorkspaceInitial extends WorkspaceState {}
 
 class WorkspaceLoading extends WorkspaceState {}
 
-class WorkspaceLoaded extends WorkspaceState {
+class SingleWorkspaceLoaded extends WorkspaceState {
   final Workspace workspace;
-  WorkspaceLoaded(this.workspace);
+  SingleWorkspaceLoaded(this.workspace);
+}
+
+class WorkspaceListLoaded extends WorkspaceState {
+  final List<Workspace> workspaces;
+
+  WorkspaceListLoaded(this.workspaces);
 }
 
 class SuccessAction extends WorkspaceState {

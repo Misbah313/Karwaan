@@ -1,9 +1,9 @@
 class WorkspaceMemberModel {
   final int id;
   final int workspaceId;
-  final int usersId;
+  final int userId;
 
   WorkspaceMemberModel(
-      {required this.id, required this.workspaceId, required this.usersId});
+      {required this.id, required this.workspaceId, required this.userId});
 }
 

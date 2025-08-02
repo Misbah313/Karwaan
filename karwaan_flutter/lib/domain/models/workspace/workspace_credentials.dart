@@ -4,5 +4,7 @@ class WorkspaceCredential {
   final String workspaceDescription;
 
   WorkspaceCredential(
-      {required this.id,required this.workspaceName, required this.workspaceDescription});
+      {required this.id,
+      required this.workspaceName,
+      required this.workspaceDescription});
 }
