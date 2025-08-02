@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/login_page.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/auth/login_page.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:lottie/lottie.dart';
 import 'package:slide_to_act/slide_to_act.dart';
@@ -17,13 +17,13 @@ class IntroPage extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const SizedBox(height: 24),
+              middleSizedBox,
               // App Logo/Illustration
               Lottie.asset(
-                'asset/ani/development.json', 
+                'asset/ani/development.json',
               ),
 
-              const SizedBox(height: 32),
+              heighSizedBox,
 
               // Welcome Message
               Text(
@@ -36,7 +36,7 @@ class IntroPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 12),
+              middleSizedBox,
 
               // Subtitle
               Text(
@@ -49,17 +49,17 @@ class IntroPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 40),
+              supperHeighSizedbox,
 
               // Feature Icons Row
               _buildFeatureRow(),
 
-              const SizedBox(height: 40),
+              supperHeighSizedbox,
 
               // Slide to Continue
               _buildSlideAction(context),
 
-              const SizedBox(height: 24),
+              middleSizedBox,
 
               // Legal Text
               _buildLegalText(),
@@ -171,20 +171,27 @@ class IntroPage extends StatelessWidget {
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 600),
-        pageBuilder: (_, __, ___) => const LoginPage(),
-        transitionsBuilder: (_, animation, __, child) {
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const LoginPage(),
+        transitionsBuilder: (
+          context,
+          animation,
+          secondaryAnimation,
+          child,
+        ) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.easeOut;
+
+          final tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
+          final offsetAnimation = animation.drive(tween);
+
           return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 0.5),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutQuad,
-            )),
-            child: FadeTransition(
-              opacity: animation,
-              child: child,
-            ),
+            position: offsetAnimation,
+            child: child,
           );
         },
       ),

@@ -6,7 +6,7 @@ import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_gate.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/login_page.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/auth/login_page.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/button.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
@@ -39,8 +39,21 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
       );
+      return;
+    }
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('All fields must be filled!'),
+        backgroundColor: Colors.red,
+      ));
       return;
     }
 
@@ -93,7 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                const SizedBox(height: 20),
+                middleSizedBox,
                 Container(
                   height: 50,
                   width: MediaQuery.of(context).size.width * 0.8,
@@ -125,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                lowSizedBox,
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
@@ -156,7 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                lowSizedBox,
                 Text(
                   'With your email and password',
                   style: GoogleFonts.poppins(
@@ -211,10 +224,39 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
-                      ),
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 600),
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const LoginPage(),
+                            transitionsBuilder: (
+                              context,
+                              animation,
+                              secondaryAnimation,
+                              child,
+                            ) {
+                              const begin = Offset(0.0, 1.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeOut;
+
+                              final tween = Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: curve));
+                              final offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
                       child: Text(
                         "Log In",
                         style: GoogleFonts.poppins(

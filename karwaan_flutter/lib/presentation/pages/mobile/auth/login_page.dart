@@ -6,7 +6,7 @@ import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_error_handler.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_gate.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/register_page.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/auth/register_page.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/button.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Image.asset('asset/images/background.png'),
 
-                const SizedBox(height: 20),
+                middleSizedBox,
 
                 Container(
                   height: 50,
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                   )),
                 ),
 
-                const SizedBox(height: 10),
+                lowSizedBox,
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                lowSizedBox,
                 Text(
                   'With your email and password.',
                   style: GoogleFonts.poppins(
@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                const SizedBox(height: 13),
+                lowSizedBox,
 
                 // Don't have any account sign up
                 Row(

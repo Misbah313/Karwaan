@@ -44,6 +44,16 @@ var title = GoogleFonts.poppins(
 var lowSizedBox = const SizedBox(height: 13);
 var middleSizedBox = const SizedBox(height: 20);
 var heighSizedBox = const SizedBox(height: 30);
+var supperHeighSizedbox = const SizedBox(height: 40);
 
  var accentBlue = Color(0xFF2196F3);
  var primaryBlue = Color(0xFF1976D2);
+
+ var mainPaddingall =  const Padding(padding: EdgeInsets.all(20));
+ var mainPaddingSy = const Padding(padding: EdgeInsets.symmetric(horizontal: 20));
+
+ var lowPaddingall = const Padding(padding: EdgeInsets.all(10));
+ var lowPaddingSy = const Padding(padding: EdgeInsets.symmetric(horizontal: 10));
+
+ var heighPaddingall = const Padding(padding: EdgeInsets.all(30));
+ var heighPaddingSy = const Padding(padding: EdgeInsets.symmetric(horizontal: 30));
