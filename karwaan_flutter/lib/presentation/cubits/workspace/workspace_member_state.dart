@@ -12,11 +12,10 @@ class MemberLoadedState extends WorkspaceMemberState {
   MemberLoadedState(this.workspaceMember);
 }
 
-class MemberSuccessState extends WorkspaceMemberState {
-  final int userAddedId;
-  final int workspaceId;
+class AddMemberSuccess extends WorkspaceMemberState {
+  final WorkspaceMemberModel member;
 
-  MemberSuccessState(this.userAddedId, this.workspaceId);
+  AddMemberSuccess(this.member);
 }
 
 class MemberDeletionSuccess extends WorkspaceMemberState {
@@ -27,10 +26,10 @@ class MemberDeletionSuccess extends WorkspaceMemberState {
 
 class MemberNotLoaded extends WorkspaceMemberState {}
 
-class MemberErroState extends WorkspaceMemberState {
+class MemberErrorState extends WorkspaceMemberState {
   final String error;
 
-  MemberErroState(this.error);
+  MemberErrorState(this.error);
 }
 
 class MemberLeavedSuccessfully extends WorkspaceMemberState {
