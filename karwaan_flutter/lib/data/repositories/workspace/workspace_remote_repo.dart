@@ -1,7 +1,10 @@
+import 'package:flutter/widgets.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
+import 'package:karwaan_flutter/domain/models/workspace/workspace_member_model.dart';
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 
 class WorkspaceRemoteRepo extends WorkspaceRepo {
@@ -11,7 +14,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
 
   @override
   Future<Workspace> createWorkspace(
-      WorkspaceCredential workspaceCredential) async {
+      CreateWorkspaceCredentials workspaceCredential) async {
     try {
       final workspace = await _clientService.createWorkspace(
           workspaceCredential.workspaceName,
@@ -21,26 +24,51 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
       }
 
       return Workspace(
-          id: workspace.ownerId,
+          id: workspace.id!,
           workspaceName: workspace.name,
-          workspaceDescription: workspace.description!);
+          workspaceDescription: workspace.description ?? '');
     } catch (e) {
+      debugPrint(
+          'Failed to create workspace form remote repo: ${e.toString()}');
       rethrow;
     }
   }
 
   @override
-  Future<List<Workspace>> getUserWorkspace() {
-    // TODO: implement getUserWorkspace
-    throw UnimplementedError();
+  Future<List<Workspace>> getUserWorkspace() async {
+    try {
+      final workspaces = await _clientService.getUserWorkspace();
+      return workspaces
+          .map(
+            (e) => Workspace(
+                id: e.id!,
+                workspaceName: e.name,
+                workspaceDescription: e.description ?? ''),
+          )
+          .toList();
+    } catch (e) {
+      debugPrint(
+          'Failed to get user workspace form remote repo: ${e.toString()}');
+      rethrow;
+    }
   }
 
   @override
-  Future<bool> updateWorkspace(int workspaceId) async {
+  Future<Workspace> updateWorkspace(
+      WorkspaceCredential workspaceCredential) async {
     try {
-      await _clientService.updateWorkspace(workspaceId);
-      return true;
+      final updatedWorkspace = await _clientService.updateWorkspace(
+          workspaceCredential.workspaceName,
+          workspaceCredential.workspaceDescription,
+          workspaceCredential.id);
+
+      return Workspace(
+          id: updatedWorkspace.id!,
+          workspaceName: updatedWorkspace.name,
+          workspaceDescription: updatedWorkspace.description ?? '');
     } catch (e) {
+      debugPrint(
+          'Failed to update workspace form remote repo: ${e.toString()}');
       rethrow;
     }
   }
@@ -50,19 +78,24 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
     try {
       await _clientService.deleteWorkspace(workspaceId);
     } catch (e) {
+      debugPrint(
+          'Failed to delete workspace form remote repo: ${e.toString()}');
       rethrow;
     }
   }
 
   @override
-  Future<bool> addMemberToWorkspace(
+  Future<WorkspaceMemberModel> addMemberToWorkspace(
       WorkspaceMemberCredential workspaceMemberCredential) async {
     try {
-      await _clientService.addMemberToWorkspace(
+      final member = await _clientService.addMemberToWorkspace(
           workspaceMemberCredential.workspaceId,
           workspaceMemberCredential.userId);
-      return true;
+      return WorkspaceMemberModel(
+          id: member.id!, workspaceId: member.workspace, userId: member.user);
     } catch (e) {
+      debugPrint(
+          'Failed to add member to workspace form remote repo: ${e.toString()}');
       rethrow;
     }
   }
@@ -70,9 +103,15 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
   @override
   Future<void> removeMemberFromWorkspace(
       WorkspaceMemberCredential workspaceMemberCredential) async {
-    await _clientService.removeMemberFromWorkspace(
-        workspaceMemberCredential.workspaceId,
-        workspaceMemberCredential.userId);
+    try {
+      await _clientService.removeMemberFromWorkspace(
+          workspaceMemberCredential.workspaceId,
+          workspaceMemberCredential.userId);
+    } catch (e) {
+      debugPrint(
+          'Failed to remove meber from workspace from remote repo: ${e.toString()}');
+      rethrow;
+    }
   }
 
   @override
@@ -80,6 +119,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
     try {
       await _clientService.leaveWorkspace(workspaceId);
     } catch (e) {
+      debugPrint('Failed to leave workspace form remote repo: ${e.toString()}');
       rethrow;
     }
   }
