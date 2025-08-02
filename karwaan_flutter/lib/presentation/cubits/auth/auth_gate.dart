@@ -7,8 +7,8 @@ import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_page.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/home_page.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/login_page.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/auth/home_page.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/auth/login_page.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:lottie/lottie.dart';
 
@@ -168,12 +168,39 @@ class _AuthGateState extends State<AuthGate> {
                       ),
                     const SizedBox(height: 16),
                     TextButton(
-                      onPressed: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AuthPage(authRepo: widget.authRepo),
-                        ),
-                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 600),
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const HomePage(),
+                            transitionsBuilder: (
+                              context,
+                              animation,
+                              secondaryAnimation,
+                              child,
+                            ) {
+                              const begin = Offset(0.0, 1.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeOut;
+
+                              final tween = Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: curve));
+                              final offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
                       child: const Text('Return to Login'),
                     ),
                   ],
@@ -192,8 +219,7 @@ class _AuthGateState extends State<AuthGate> {
 
   Widget _buildRegistrationSuccessScreen() {
     return Scaffold(
-      backgroundColor:
-          myDeafultBackgroundColor, 
+      backgroundColor: myDeafultBackgroundColor,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -202,7 +228,7 @@ class _AuthGateState extends State<AuthGate> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Lottie.asset(
-                  'asset/ani/success.json', 
+                  'asset/ani/success.json',
                   width: 250,
                   height: 250,
                   repeat: false,
@@ -236,12 +262,38 @@ class _AuthGateState extends State<AuthGate> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () => Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => LoginPage(),
-                      ),
-                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 600),
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const LoginPage(),
+                          transitionsBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
+                            const begin = Offset(0.0, 1.0);
+                            const end = Offset.zero;
+                            const curve = Curves.easeOut;
+
+                            final tween = Tween(
+                              begin: begin,
+                              end: end,
+                            ).chain(CurveTween(curve: curve));
+                            final offsetAnimation = animation.drive(tween);
+
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
                     child: Text(
                       'Continue to Login',
                       style: GoogleFonts.poppins(

@@ -73,7 +73,6 @@ flutter:
      - asset/ani/loading.json
      - asset/ani/loading1.json
      - asset/ani/prof.json
-     - asset/ani/push.json
      - asset/ani/sunny.json
      - asset/ani/development.json
      - asset/ani/workspace.json
