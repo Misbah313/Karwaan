@@ -1,14 +1,16 @@
+import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
+import 'package:karwaan_flutter/domain/models/workspace/workspace_member_model.dart';
 
 abstract class WorkspaceRepo {
 
-   Future<Workspace> createWorkspace(WorkspaceCredential workspaceCredential);
+   Future<Workspace> createWorkspace(CreateWorkspaceCredentials createworkspaceCredential);
    Future<List<Workspace>> getUserWorkspace();
-   Future<bool> updateWorkspace(int workspaceId);
+   Future<Workspace> updateWorkspace(WorkspaceCredential workspaceCredential);
    Future<void> deleteWorkspace(int workspaceId);
-   Future<bool> addMemberToWorkspace(WorkspaceMemberCredential workspaceMemberCredential);
+   Future<WorkspaceMemberModel> addMemberToWorkspace(WorkspaceMemberCredential workspaceMemberCredential);
    Future<void> removeMemberFromWorkspace(WorkspaceMemberCredential workspaceMemberCredential);
    Future<void> leaveWorkspace(int workspaceId);
 }
