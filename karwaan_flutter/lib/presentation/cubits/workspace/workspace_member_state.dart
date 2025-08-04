@@ -1,3 +1,4 @@
+import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_model.dart';
 
 abstract class WorkspaceMemberState {}
@@ -7,9 +8,9 @@ class MemberIntialState extends WorkspaceMemberState {}
 class MemberLoadingState extends WorkspaceMemberState {}
 
 class MemberLoadedState extends WorkspaceMemberState {
-  final WorkspaceMemberModel workspaceMember;
+  final List<WorkspaceMemberDetail> members;
 
-  MemberLoadedState(this.workspaceMember);
+  MemberLoadedState(this.members);
 }
 
 class AddMemberSuccess extends WorkspaceMemberState {
