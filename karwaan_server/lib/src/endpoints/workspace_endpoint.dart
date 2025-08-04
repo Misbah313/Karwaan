@@ -15,23 +15,37 @@ class WorkspaceEndpoint extends Endpoint {
     }
 
     try {
+      final now = DateTime.now();
+
       final createdWorkspace = Workspace(
         name: name,
         description: description,
-        createdAt: DateTime.now(),
+        createdAt: now,
         ownerId: user.id!,
       );
 
       await Workspace.db.insertRow(session, createdWorkspace);
 
+      final insertedWorkspace = (await Workspace.db.findFirstRow(
+        session,
+        where: (p0) =>
+            p0.name.equals(name) &
+            p0.ownerId.equals(user.id!) &
+            p0.createdAt.equals(now),
+      ));
+
+      if (insertedWorkspace == null) {
+        throw Exception('Failed to retrieve inserted worksapce.');
+      }
+
       final ownerMember = WorkspaceMember(
           user: user.id!,
           role: Roles.owner,
-          workspace: createdWorkspace.id!,
-          joinedAt: DateTime.now());
+          workspace: insertedWorkspace.id!,
+          joinedAt: now);
 
       await WorkspaceMember.db.insertRow(session, ownerMember);
-      return createdWorkspace;
+      return insertedWorkspace;
     } catch (e) {
       throw Exception('Failed to create Workspace: $e');
     }
