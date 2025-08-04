@@ -4,6 +4,7 @@ import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credent
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
+import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_model.dart';
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 
@@ -25,6 +26,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
 
       return Workspace(
           id: workspace.id!,
+          createdAt: workspaceCredential.createdAt,
           workspaceName: workspace.name,
           workspaceDescription: workspace.description ?? '');
     } catch (e) {
@@ -42,6 +44,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
           .map(
             (e) => Workspace(
                 id: e.id!,
+                createdAt: e.createdAt,
                 workspaceName: e.name,
                 workspaceDescription: e.description ?? ''),
           )
@@ -64,6 +67,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
 
       return Workspace(
           id: updatedWorkspace.id!,
+          createdAt: updatedWorkspace.createdAt,
           workspaceName: updatedWorkspace.name,
           workspaceDescription: updatedWorkspace.description ?? '');
     } catch (e) {
@@ -92,7 +96,10 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
           workspaceMemberCredential.workspaceId,
           workspaceMemberCredential.userId);
       return WorkspaceMemberModel(
-          id: member.id!, workspaceId: member.workspace, userId: member.user);
+        id: member.id!,
+        workspaceId: member.workspace,
+        userId: member.user,
+      );
     } catch (e) {
       debugPrint(
           'Failed to add member to workspace form remote repo: ${e.toString()}');
@@ -120,6 +127,26 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
       await _clientService.leaveWorkspace(workspaceId);
     } catch (e) {
       debugPrint('Failed to leave workspace form remote repo: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<WorkspaceMemberDetail>> getWorkspaceMembers(
+      int workspaceId) async {
+    try {
+      final members = await _clientService.getWorkspaceMembers(workspaceId);
+      return members
+          .map(
+            (e) => WorkspaceMemberDetail(
+                userId: e.userId,
+                userName: e.userName,
+                role: e.role,
+                joinedAt: e.joinedAt),
+          )
+          .toList();
+    } catch (e) {
+      debugPrint('Failed to get workspace members from remote repo.');
       rethrow;
     }
   }
