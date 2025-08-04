@@ -3,18 +3,18 @@ import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credent
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_state.dart';
 
-class WorkspaceMemberCubit extends Cubit<WorkspaceMemberState>{
+class WorkspaceMemberCubit extends Cubit<WorkspaceMemberState> {
   final WorkspaceRepo workspaceRepo;
 
   WorkspaceMemberCubit(this.workspaceRepo) : super(MemberIntialState());
 
-
-   // add member to workspace
+  // add member to workspace
   Future<void> addMemberToWorkspace(
       WorkspaceMemberCredential workspaceMemberCredential) async {
     emit(MemberLoadingState());
     try {
-      final member =await workspaceRepo.addMemberToWorkspace(workspaceMemberCredential);
+      final member =
+          await workspaceRepo.addMemberToWorkspace(workspaceMemberCredential);
       emit(AddMemberSuccess(member));
     } catch (e) {
       emit(MemberErrorState(
@@ -43,6 +43,17 @@ class WorkspaceMemberCubit extends Cubit<WorkspaceMemberState>{
       emit(MemberLeavedSuccessfully(workspaceId));
     } catch (e) {
       emit(MemberErrorState('Failed to leave workspace: ${e.toString()}'));
+    }
+  }
+
+  // get workspae members
+  Future<void> getWorkspaceMembers(int workspaceId) async {
+    emit(MemberLoadingState());
+    try {
+      final members = await workspaceRepo.getWorkspaceMembers(workspaceId);
+      emit(MemberLoadedState(members));
+    } catch (e) {
+      emit(MemberErrorState('Failed to load members : ${e.toString()}'));
     }
   }
 }
