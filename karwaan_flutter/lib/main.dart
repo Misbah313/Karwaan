@@ -41,10 +41,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: AuthGate(
-        authRepo: authRepo,
-      ),
-    );
+        debugShowCheckedModeBanner: false,
+        home: Builder(
+          builder: (context) {
+            return BlocProvider(
+              create: (context) => Injector().get<AuthCubit>(),
+              child: const AuthGate(),
+            );
+          },
+        ));
   }
 }
