@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
 import 'package:karwaan_flutter/data/repositories/auth/auth_remote_repo.dart';
+import 'package:karwaan_flutter/data/repositories/workspace/workspace_remote_repo.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
+import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_gate.dart';
 import 'package:provider/provider.dart';
@@ -17,11 +19,13 @@ void main() async {
       ServerpodClientService(AuthTokenStorageHelper());
   await serverpodClientService.initialize();
   final authRepo = AuthRemoteRepo(serverpodClientService);
+  final workspaceRepo = WorkspaceRemoteRepo(serverpodClientService);
 
   runApp(
     MultiProvider(
       providers: [
         Provider<AuthRepo>(create: (_) => authRepo), // Global AuthRepo
+        Provider<WorkspaceRepo>(create: (_) => workspaceRepo),
         BlocProvider<AuthCubit>(
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
@@ -41,14 +45,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Builder(
-          builder: (context) {
-            return BlocProvider(
-              create: (context) => Injector().get<AuthCubit>(),
-              child: const AuthGate(),
-            );
-          },
-        ));
+      debugShowCheckedModeBanner: false,
+      home: AuthGate(
+        authRepo: authRepo,
+      ),
+    );
   }
 }
