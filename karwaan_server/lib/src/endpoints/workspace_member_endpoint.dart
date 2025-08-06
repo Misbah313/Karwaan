@@ -262,6 +262,61 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // delete membership (leave workspace)
     await WorkspaceMember.db.deleteRow(session, requestor);
   }
+
+  // add member by email
+  Future<WorkspaceMember> addMemberByEmail(
+    Session session,
+    String email, // Replaces userToAddId
+    int workspaceId,
+    String token,
+    String role, // Keep role to maintain frontend compatibility
+  ) async {
+    // Step 1: Validate token + permissions (existing logic)
+    final currentUser = await TokenEndpoint().validateToken(session, token);
+    if (currentUser == null || currentUser.id == null) {
+      throw Exception('No user or expired token!');
+    }
+
+    // Step 2: Confirm current user is admin/owner (existing logic)
+    final member = await WorkspaceMember.db.findFirstRow(
+      session,
+      where: (u) =>
+          u.workspace.equals(workspaceId) & u.user.equals(currentUser.id!),
+    );
+    if (member == null ||
+        (member.role != Roles.owner && member.role != Roles.admin)) {
+      throw Exception('Permission denied!');
+    }
+
+    // Step 3: Find user by email (NEW)
+    final newUser = await User.db.findFirstRow(
+      session,
+      where: (u) => u.email.equals(email),
+    );
+    if (newUser == null) {
+      throw Exception("User with email '$email' not found!");
+    }
+
+    // Step 4: Check if user is already a member (existing logic)
+    final existingMember = await WorkspaceMember.db.findFirstRow(
+      session,
+      where: (m) =>
+          m.workspace.equals(workspaceId) & m.user.equals(newUser.id!),
+    );
+    if (existingMember != null) {
+      throw Exception('User already in workspace!');
+    }
+
+    // Step 5: Add member (existing logic)
+    final newWorkspaceMember = WorkspaceMember(
+      user: newUser.id!,
+      workspace: workspaceId,
+      role: role, // Preserve role from frontend
+      joinedAt: DateTime.now(),
+    );
+    await WorkspaceMember.db.insertRow(session, newWorkspaceMember);
+    return newWorkspaceMember;
+  }
 }
 
  /*
