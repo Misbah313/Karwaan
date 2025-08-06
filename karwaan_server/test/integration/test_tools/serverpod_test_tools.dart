@@ -2434,6 +2434,43 @@ class _WorkspaceMemberEndpoint {
       }
     });
   }
+
+  _i3.Future<_i19.WorkspaceMember> addMemberByEmail(
+    _i1.TestSessionBuilder sessionBuilder,
+    String email,
+    int workspaceId,
+    String token,
+    String role,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'workspaceMember',
+        method: 'addMemberByEmail',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'workspaceMember',
+          methodName: 'addMemberByEmail',
+          parameters: _i1.testObjectToJson({
+            'email': email,
+            'workspaceId': workspaceId,
+            'token': token,
+            'role': role,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i19.WorkspaceMember>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _GreetingEndpoint {
