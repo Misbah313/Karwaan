@@ -1842,6 +1842,43 @@ class Endpoints extends _i1.EndpointDispatch {
             params['token'],
           ),
         ),
+        'addMemberByEmail': _i1.MethodConnector(
+          name: 'addMemberByEmail',
+          params: {
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'workspaceId': _i1.ParameterDescription(
+              name: 'workspaceId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'role': _i1.ParameterDescription(
+              name: 'role',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['workspaceMember'] as _i16.WorkspaceMemberEndpoint)
+                  .addMemberByEmail(
+            session,
+            params['email'],
+            params['workspaceId'],
+            params['token'],
+            params['role'],
+          ),
+        ),
       },
     );
     connectors['greeting'] = _i1.EndpointConnector(
