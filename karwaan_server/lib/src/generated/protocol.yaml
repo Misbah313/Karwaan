@@ -74,5 +74,6 @@ workspaceMember:
   - getWorkspaceMember:
   - changeMemberRole:
   - leaveWorkspace:
+  - addMemberByEmail:
 greeting:
   - hello:
