@@ -947,6 +947,23 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
           'token': token,
         },
       );
+
+  _i2.Future<_i18.WorkspaceMember> addMemberByEmail(
+    String email,
+    int workspaceId,
+    String token,
+    String role,
+  ) =>
+      caller.callServerEndpoint<_i18.WorkspaceMember>(
+        'workspaceMember',
+        'addMemberByEmail',
+        {
+          'email': email,
+          'workspaceId': workspaceId,
+          'token': token,
+          'role': role,
+        },
+      );
 }
 
 /// This is an example endpoint that returns a greeting message through
