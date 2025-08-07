@@ -39,8 +39,8 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
     emit(WorkspaceLoading());
     try {
       await workspaceRepo.updateWorkspace(workspaceCredential);
-      emit(SuccessAction(workspaceCredential.workspaceName,
-          workspaceCredential.workspaceDescription));
+      final workspaces = await workspaceRepo.getUserWorkspace();
+      emit(WorkspaceListLoaded(workspaces));
     } catch (e) {
       emit(WorkspaceError('Failed to update workspace: ${e.toString()}'));
     }
@@ -51,7 +51,8 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
     emit(WorkspaceLoading());
     try {
       await workspaceRepo.deleteWorkspace(workspaceId);
-      emit(DeletedSuccessfully(workspaceId));
+      final workspaces = await workspaceRepo.getUserWorkspace();
+      emit(WorkspaceListLoaded(workspaces));
     } catch (e) {
       emit(WorkspaceError('Failed to delete workspace: ${e.toString()}'));
     }
