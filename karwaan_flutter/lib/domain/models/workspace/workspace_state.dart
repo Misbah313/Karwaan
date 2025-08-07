@@ -36,3 +36,7 @@ class WorkspaceError extends WorkspaceState {
   final String error;
   WorkspaceError(this.error);
 }
+
+class WorkspaceUpdated extends WorkspaceState {
+  
+}
