@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/domain/models/workspace/workspace_change_role_member_model.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_state.dart';
@@ -42,7 +44,9 @@ class WorkspaceMemberCubit extends Cubit<WorkspaceMemberState> {
       await workspaceRepo.leaveWorkspace(workspaceId);
       emit(MemberLeavedSuccessfully(workspaceId));
     } catch (e) {
-      emit(MemberErrorState('Failed to leave workspace: ${e.toString()}'));
+      final isLastOwner = e.toString().contains('last owner');
+      emit(LastOwnerError(
+          "Workspace owners can't leave the workspace!!", isLastOwner));
     }
   }
 
@@ -54,6 +58,29 @@ class WorkspaceMemberCubit extends Cubit<WorkspaceMemberState> {
       emit(MemberLoadedState(members));
     } catch (e) {
       emit(MemberErrorState('Failed to load members : ${e.toString()}'));
+    }
+  }
+
+  // change member role
+  Future<void> changeMemberRole(WorkspaceChangeRoleMemberModel update) async {
+    emit(MemberRoleChanging(update.targetUserId));
+    debugPrint('Starting change member role from cubit.');
+
+    try {
+       await workspaceRepo.changeMemberRole(update);
+      emit(MemberRoleChanged(
+        targetUserId: update.targetUserId,
+        newRole: update.newRole
+      ));
+      debugPrint('Changed member role for the ${update.newRole} from cubit');
+      // Optionally refresh members list
+      await getWorkspaceMembers(update.workspaceId);
+      debugPrint('Refreshed member list after member role changes from cubit');
+    } catch (e) {
+      emit(MemberRoleChangeError(
+        e.toString(),
+        update.targetUserId,
+      ));
     }
   }
 }
