@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
+import 'package:karwaan_flutter/domain/models/workspace/workspace_change_role_member_model.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details.dart';
@@ -92,9 +93,14 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
   Future<WorkspaceMemberModel> addMemberToWorkspace(
       WorkspaceMemberCredential workspaceMemberCredential) async {
     try {
-      final member = await _clientService.addMemberToWorkspace(
+      final member = await _clientService.addMemberByEmail(
+          workspaceMemberCredential.userName,
           workspaceMemberCredential.workspaceId,
-          workspaceMemberCredential.userId);
+          workspaceMemberCredential.userRole);
+
+      if (member.id == null) {
+        throw Exception('Server returned member without id!');
+      }
       return WorkspaceMemberModel(
         id: member.id!,
         workspaceId: member.workspace,
@@ -147,6 +153,27 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
           .toList();
     } catch (e) {
       debugPrint('Failed to get workspace members from remote repo.');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<WorkspaceMemberModel> changeMemberRole(
+      WorkspaceChangeRoleMemberModel credential) async {
+    try {
+      final member = await _clientService.changeMemberRole(
+          credential.targetUserId, credential.workspaceId, credential.newRole);
+          debugPrint('Changing member role from the remote repo!');
+
+      if (member.id == null) {
+        throw Exception('Server returned member without id!');
+      }
+
+      return WorkspaceMemberModel(
+          id: member.id!, workspaceId: member.workspace, userId: member.user);
+    } catch (e) {
+      debugPrint(
+          'Failed to change the member role from remote repo : ${e.toString()}');
       rethrow;
     }
   }
