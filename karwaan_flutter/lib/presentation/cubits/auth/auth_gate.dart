@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
+import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_page.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/auth/home_page.dart';
+import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_page.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/auth/login_page.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/workspace/home_page.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:lottie/lottie.dart';
 
@@ -176,7 +178,7 @@ class _AuthGateState extends State<AuthGate> {
                                 const Duration(milliseconds: 600),
                             pageBuilder:
                                 (context, animation, secondaryAnimation) =>
-                                    const HomePage(),
+                                    HomePage(),
                             transitionsBuilder: (
                               context,
                               animation,
@@ -376,7 +378,10 @@ class _AuthGateState extends State<AuthGate> {
             children: [
               if (showLoading) _buildLoadingScreen(),
               if (showContent) ...[
-                if (state is AuthAuthenticated) const HomePage(),
+                if (state is AuthAuthenticated)
+                  WorkspacePage(
+                      workspaceRepo: context.read<WorkspaceRepo>(),
+                      child: const HomePage()),
                 if (state is RegisterationSuccess)
                   _buildRegistrationSuccessScreen(),
                 if (state is AuthError)

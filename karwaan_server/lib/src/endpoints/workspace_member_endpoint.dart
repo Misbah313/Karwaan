@@ -206,6 +206,8 @@ class WorkspaceMemberEndpoint extends Endpoint {
       }
     }
 
+    newRole = newRole.toLowerCase();
+
     // valid new role
     final validRoles = [Roles.owner, Roles.admin, Roles.member];
     if (!validRoles.contains(newRole)) {
@@ -315,7 +317,18 @@ class WorkspaceMemberEndpoint extends Endpoint {
       joinedAt: DateTime.now(),
     );
     await WorkspaceMember.db.insertRow(session, newWorkspaceMember);
-    return newWorkspaceMember;
+
+    final insertedMember = await WorkspaceMember.db.findFirstRow(
+      session,
+      where: (p0) =>
+          p0.workspace.equals(workspaceId) & p0.user.equals(newUser.id!),
+    );
+
+    if (insertedMember == null) {
+      throw Exception('Failed to retrieve inserted member!');
+    }
+
+    return insertedMember;
   }
 }
 

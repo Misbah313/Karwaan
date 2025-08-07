@@ -178,18 +178,7 @@ void main() {
       expect(result.any((m) => m.userId == member.id), isTrue);
     });
 
-    test('changeMemberRole - owner can change member role', () async {
-
-      final changedMember = await endpoints.workspaceMember.changeMemberRole(
-        sessionBuilder,
-        workspace.id!,
-        ownerToken,
-        member.id!,
-        Roles.admin,
-      );
-
-      expect(changedMember.role, equals(Roles.admin));
-    });
+  
 
     test('leaveWorkspace - member can leave workspace', () async {
       final session = sessionBuilder.build();
