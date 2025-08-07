@@ -1,5 +1,6 @@
 import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
+import 'package:karwaan_flutter/domain/models/workspace/workspace_change_role_member_model.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details.dart';
@@ -15,4 +16,5 @@ abstract class WorkspaceRepo {
    Future<void> removeMemberFromWorkspace(WorkspaceMemberCredential workspaceMemberCredential);
    Future<List<WorkspaceMemberDetail>> getWorkspaceMembers(int workspaceId);
    Future<void> leaveWorkspace(int workspaceId);
+   Future<WorkspaceMemberModel> changeMemberRole(WorkspaceChangeRoleMemberModel credential);
 }
