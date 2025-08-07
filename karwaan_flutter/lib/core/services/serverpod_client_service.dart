@@ -208,6 +208,19 @@ class ServerpodClientService {
     }
   }
 
+  // add member by email
+  Future<WorkspaceMember> addMemberByEmail(
+      String email, int workspaceId, String role) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) throw Exception('Not Authenticated');
+      return client.workspaceMember
+          .addMemberByEmail(email, workspaceId, token, role);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // remove member from workspace
   Future<void> removeMemberFromWorkspace(
       int workspaceId, int userToRemoveId) async {
@@ -243,6 +256,23 @@ class ServerpodClientService {
   }
 
   // change member role(later)
+  Future<WorkspaceMember> changeMemberRole(
+    int targetUserId,
+    int workspaceId,
+    String newRole,
+  ) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) throw Exception('Not Authenticated!');
+
+      // Correct parameter order to match endpoint:
+      // 1. workspaceId, 2. token, 3. targetUserId, 4. newRole
+      return client.workspaceMember
+          .changeMemberRole(workspaceId, token, targetUserId, newRole);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   // leave workspace
   Future<void> leaveWorkspace(int workspaceId) async {
