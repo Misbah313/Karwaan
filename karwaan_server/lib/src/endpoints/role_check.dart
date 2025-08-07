@@ -1,5 +1,5 @@
 class Roles{
-  static const owner = 'Owner';
-  static const admin = 'Admin';
-  static const member = 'Member';
+  static const owner = 'owner';
+  static const admin = 'admin';
+  static const member = 'member';
 }
