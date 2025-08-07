@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_state.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
@@ -8,6 +10,8 @@ import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_c
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_state.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/workspace/workspace_card.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
+import 'package:lottie/lottie.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,10 +21,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(viewportFraction: 0.85);
   final lowBlue = Colors.blue.shade300;
   final heightBlue = Colors.amber.shade400;
   int _currentPage = 0;
+  bool _isCreatingWorkspace = false;
 
   @override
   void dispose() {
@@ -55,15 +60,87 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(totalPages, (index) {
-        return Container(
+        return AnimatedContainer(
+          duration: Duration(milliseconds: 300),
           margin: EdgeInsets.symmetric(horizontal: 4),
-          width: 8,
+          width: currentPage == index ? 12 : 8,
           height: 8,
           decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: currentPage == index ? Colors.blue : Colors.grey.shade400),
+              color: currentPage == index ? Colors.blue : Colors.grey,
+              borderRadius: BorderRadius.circular(4)),
         );
       }),
+    );
+  }
+
+  // add worksapce
+  void _addWorkspaceDialog() {
+    final nameController = TextEditingController();
+    final desController = TextEditingController();
+
+    final cubit = context.read<WorkspaceCubit>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey.shade200,
+        title: Text('Create new workspace'),
+        content: Column(
+          children: [
+            Textfield(
+                text: 'Workspace Name',
+                obsecureText: false,
+                controller: nameController),
+            middleSizedBox,
+            Textfield(
+                text: 'Description',
+                obsecureText: false,
+                controller: desController)
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+          ElevatedButton(
+              onPressed: () async {
+                if (nameController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Workspace name is required!')));
+                  return;
+                }
+
+                setState(() {
+                  _isCreatingWorkspace = true;
+                });
+
+                try {
+                  final credentilas = CreateWorkspaceCredentials(
+                      workspaceName: nameController.text.trim(),
+                      workspaceDescription: desController.text.trim(),
+                      createdAt: DateTime.now());
+
+                  await cubit.createWorkspace(credentilas);
+                  await cubit.getUserWorkspace();
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Workspace successfully created!'),
+                    backgroundColor: Colors.green,
+                  ));
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content:
+                          Text('Failed to create worksapce: ${e.toString()}')));
+                } finally {
+                  setState(() {
+                    _isCreatingWorkspace = false;
+                  });
+                }
+              },
+              child: _isCreatingWorkspace
+                  ? CircularProgressIndicator()
+                  : Text('Create'))
+        ],
+      ),
     );
   }
 
@@ -163,18 +240,52 @@ class _HomePageState extends State<HomePage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'My workspaces',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25,
-                                  color: Colors.black,
+                              Expanded(
+                                child: ListTile(
+                                  title: Text(
+                                    'Workspaces',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'You have ${state.workspaces.length} workspace',
+                                    style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                        color: Colors.grey.shade500),
+                                  ),
                                 ),
                               ),
                               Row(
                                 children: [
-                                  Icon(Icons.add, color: Colors.amber.shade500),
-                                  Text('Add'),
+                                  GestureDetector(
+                                      onTap: _addWorkspaceDialog,
+                                      child: Container(
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(colors: [
+                                              Colors.blue.shade400,
+                                              Colors.grey.shade300
+                                            ]),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Icon(Icons.add,
+                                                  color: Colors.white),
+                                              Text(
+                                                'Add',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              )
+                                            ],
+                                          ))),
                                 ],
                               ),
                             ],
@@ -185,36 +296,32 @@ class _HomePageState extends State<HomePage> {
 
                         // workspace carousel
                         SizedBox(
-                          height: MediaQuery.of(context).size.height,
+                            height: MediaQuery.of(context).size.height,
                             child: Column(
-                          children: [
-                            _buildWorkspaceCarousel(state.workspaces),
-                            const SizedBox(height: 10),
-                            _buildPageIndicator(_currentPage, state.workspaces.length)
-                          ],
-                        )),
-
-                        const SizedBox(height: 10),
-
-                        // swipe
-                        Text(
-                          'SWIPE CARDS',
-                          style: TextStyle(
-                              color: Colors.grey.shade400, fontSize: 15),
-                        ),
-
-                        const SizedBox(height: 40),
+                              children: [
+                                _buildWorkspaceCarousel(state.workspaces),
+                                const SizedBox(height: 10),
+                                _buildPageIndicator(
+                                    _currentPage, state.workspaces.length)
+                              ],
+                            )),
                       ],
                     ),
                   ),
                 ),
+              );
+            } else if (state is WorkspaceNotLoaded) {
+              return Center(
+                child: Lottie.asset('asset/ani/empty.json',
+                    width: 200, height: 200),
               );
             } else {
               return Center(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Something went wrong for the workspaces. Please login!'),
+                  Text(
+                      'Something went wrong for the workspaces. Please login!'),
                   TextButton(
                       onPressed: () => context.read<AuthCubit>().checkAuth(),
                       child: const Text('Retry'))
