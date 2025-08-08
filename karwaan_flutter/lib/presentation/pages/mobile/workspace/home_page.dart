@@ -5,11 +5,13 @@ import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credent
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_state.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_state.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/workspace/workspace_card.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/my_drawer.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 import 'package:lottie/lottie.dart';
 
@@ -21,9 +23,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final PageController _pageController = PageController(viewportFraction: 0.85);
-  final lowBlue = Colors.blue.shade300;
-  final heightBlue = Colors.amber.shade400;
+  final PageController _pageController = PageController(viewportFraction: 0.88);
   int _currentPage = 0;
   bool _isCreatingWorkspace = false;
 
@@ -33,25 +33,72 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // build workspace crarousel
-  Widget _buildWorkspaceCarousel(List<Workspace> workspaces) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.width * 0.85,
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: workspaces.length,
-        onPageChanged: (index) {
-          setState(() {
-            _currentPage = index;
-          });
-        },
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: WorkspaceCard(workspace: workspaces[index]),
-          );
-        },
+  // build Workspace section(choose what ot show for the workspace state)
+  Widget _buildWorkspaceSection(List<Workspace> worksapces) {
+    if (worksapces.isEmpty) {
+      return _buildEmtpyWorkspaceAni();
+    } else {
+      return _buildWorkspaceCarousel(worksapces);
+    }
+  }
+
+  // build empty workspace
+  Widget _buildEmtpyWorkspaceAni() {
+    return Center(
+      child: Column(
+        children: [
+          SizedBox(height: 20),
+          Lottie.asset('asset/ani/emptys.json', height: 250),
+          SizedBox(height: 16),
+          Text(
+            'Create your first workspace to get started!',
+            style: GoogleFonts.alef(
+                fontSize: 16,
+                color: Colors.grey.shade400,
+                fontWeight: FontWeight.w400),
+          )
+        ],
       ),
+    );
+  }
+
+  // build workspace Containers
+  Widget _buildWorkspaceCarousel(List<Workspace> workspaces) {
+    return Column(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.width * 0.80,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: workspaces.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: WorkspaceCard(workspace: workspaces[index]),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildPageIndicator(_currentPage, workspaces.length),
+        const SizedBox(height: 20),
+        Align(
+          alignment: Alignment.center,
+          child: Text(
+            'Tap on the workspace containers!',
+            style: GoogleFonts.alef(
+              color: Colors.grey.shade400,
+              fontSize: 15,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -60,20 +107,21 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(totalPages, (index) {
+        final isActive = currentPage == index;
         return AnimatedContainer(
           duration: Duration(milliseconds: 300),
           margin: EdgeInsets.symmetric(horizontal: 4),
-          width: currentPage == index ? 12 : 8,
+          width: isActive ? 16 : 8,
           height: 8,
           decoration: BoxDecoration(
-              color: currentPage == index ? Colors.blue : Colors.grey,
+              color: isActive ? Colors.grey.shade800 : Colors.grey.shade400,
               borderRadius: BorderRadius.circular(4)),
         );
       }),
     );
   }
 
-  // add worksapce
+  // add worksapce dialog
   void _addWorkspaceDialog() {
     final nameController = TextEditingController();
     final desController = TextEditingController();
@@ -83,9 +131,14 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey.shade200,
-        title: Text('Create new workspace'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        backgroundColor: Colors.grey.shade300,
+        title: Text(
+          'Create new workspace',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Textfield(
                 text: 'Workspace Name',
@@ -98,14 +151,25 @@ class _HomePageState extends State<HomePage> {
                 controller: desController)
           ],
         ),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey, fontSize: 15),
+              )),
           ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade400,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
               onPressed: () async {
                 if (nameController.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Workspace name is required!')));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Workspace name is required!'),
+                    backgroundColor: Colors.red,
+                  ));
                   return;
                 }
 
@@ -127,9 +191,8 @@ class _HomePageState extends State<HomePage> {
                     backgroundColor: Colors.green,
                   ));
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content:
-                          Text('Failed to create worksapce: ${e.toString()}')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed: ${e.toString()}')));
                 } finally {
                   setState(() {
                     _isCreatingWorkspace = false;
@@ -137,8 +200,15 @@ class _HomePageState extends State<HomePage> {
                 }
               },
               child: _isCreatingWorkspace
-                  ? CircularProgressIndicator()
-                  : Text('Create'))
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text(
+                      'Create',
+                      style: TextStyle(color: Colors.white),
+                    ))
         ],
       ),
     );
@@ -150,170 +220,217 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: myDeafultBackgroundColor,
       body: BlocListener<WorkspaceMemberCubit, WorkspaceMemberState>(
         listener: (context, state) {
+          // Error state on workspace members
           if (state is MemberErrorState) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+            ));
           }
         },
         child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
           builder: (context, state) {
+            // Loading/Initial state on workspaces
             if (state is WorkspaceLoading || state is WorkspaceInitial) {
-              return Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
+              return Center(
+                child: Lottie.asset('asset/ani/load.json'),
               );
-            } else if (state is WorkspaceListLoaded) {
-              return SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // heading
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.amber.shade400,
-                                  child: Icon(
-                                    Icons.person_2_outlined,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                              ],
-                            ),
+            }
+            // Workspace loaded lists state
+            else if (state is WorkspaceListLoaded) {
+              final authState = context.watch<AuthCubit>().state;
 
-                            // drawer or something
-                          ],
-                        ),
-
-                        const SizedBox(height: 25),
-
-                        // greetings
-                        ListTile(
-                          title: Row(
+              String username = '';
+              if (authState is AuthAuthenticated) {
+                username = authState.user.name;
+              }
+              return Scaffold(
+                backgroundColor: myDeafultBackgroundColor,
+                drawer: MyDrawer(),
+                body: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Top bar
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Hello, ',
-                                style: TextStyle(
-                                  color: Colors.amber.shade600,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30,
-                                ),
+                              Row(
+                                children: [
+                                  Builder(
+                                    builder: (context) => IconButton(
+                                        onPressed: () =>
+                                            Scaffold.of(context).openDrawer(),
+                                        icon: Icon(
+                                          Icons.menu,
+                                          color: Colors.black,
+                                        )),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'Mike!',
-                                style: TextStyle(
-                                  color: Colors.grey.shade400,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30,
+
+                              // drawer or something
+                              CircleAvatar(
+                                backgroundColor: Colors.grey.shade400,
+                                child: Icon(
+                                  Icons.person_2_outlined,
+                                  color: Colors.grey.shade600,
                                 ),
                               ),
                             ],
                           ),
-                          subtitle: Text(
+
+                          const SizedBox(height: 20),
+
+                          // greetings
+                          Text.rich(TextSpan(children: [
+                            TextSpan(
+                                text: 'Hello, ',
+                                style: GoogleFonts.alef(
+                                    fontSize: 28, fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: username.isNotEmpty
+                                    ? '$username!'
+                                    : 'Guest!',
+                                style: GoogleFonts.alef(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28,
+                                    color: Colors.grey.shade400)),
+                          ])),
+                          Text(
                             'A great day to get better.',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15,
-                            ),
+                            style: GoogleFonts.alef(
+                                color: Colors.grey.shade600, fontSize: 16),
                           ),
-                        ),
 
-                        // divider
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                          child: Divider(
-                              thickness: 1, color: Colors.grey.shade400),
-                        ),
+                          const SizedBox(height: 15),
 
-                        const SizedBox(height: 20),
+                          // divider
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 14.0),
+                            child: Divider(
+                                thickness: 1, color: Colors.grey.shade400),
+                          ),
 
-                        // workspace header
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                          child: Row(
+                          const SizedBox(height: 20),
+
+                          // workspace header
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
                                 child: ListTile(
+                                  contentPadding: EdgeInsets.zero,
                                   title: Text(
                                     'Workspaces',
-                                    style: GoogleFonts.poppins(
+                                    style: GoogleFonts.alef(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 25,
-                                      color: Colors.black,
+                                      fontSize: 28,
                                     ),
                                   ),
                                   subtitle: Text(
-                                    'You have ${state.workspaces.length} workspace',
-                                    style: GoogleFonts.poppins(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15,
-                                        color: Colors.grey.shade500),
+                                    'You have ${state.workspaces.length} workspaces',
+                                    style: GoogleFonts.alef(
+                                        fontSize: 16,
+                                        color: Colors.grey.shade600),
                                   ),
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  GestureDetector(
-                                      onTap: _addWorkspaceDialog,
-                                      child: Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(colors: [
-                                              Colors.blue.shade400,
-                                              Colors.grey.shade300
-                                            ]),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Icon(Icons.add,
-                                                  color: Colors.white),
-                                              Text(
-                                                'Add',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              )
-                                            ],
-                                          ))),
-                                ],
-                              ),
+                              GestureDetector(
+                                  onTap: _addWorkspaceDialog,
+                                  child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade400,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.add,
+                                              color: Colors.grey.shade600,
+                                              size: 18),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'Add',
+                                            style: GoogleFonts.alef(
+                                                color: Colors.grey.shade600,
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ))),
                             ],
                           ),
-                        ),
 
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-                        // workspace carousel
-                        SizedBox(
-                            height: MediaQuery.of(context).size.height,
-                            child: Column(
-                              children: [
-                                _buildWorkspaceCarousel(state.workspaces),
-                                const SizedBox(height: 10),
-                                _buildPageIndicator(
-                                    _currentPage, state.workspaces.length)
-                              ],
-                            )),
-                      ],
+                          // workspace section
+                          _buildWorkspaceSection(state.workspaces),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               );
-            } else if (state is WorkspaceNotLoaded) {
+            }
+            // Workspace error state
+            else if (state is WorkspaceError) {
               return Center(
-                child: Lottie.asset('asset/ani/empty.json',
-                    width: 200, height: 200),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Optional animation
+                      Lottie.asset(
+                        'asset/ani/error.json',
+                        height: 180,
+                        repeat: false,
+                      ),
+                      const SizedBox(height: 16),
+
+                      Text(
+                        "Oops! Something went wrong, but don't worry, you can try again.",
+                        style: GoogleFonts.alef(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+
+                      Text(
+                        state
+                            .error, // show the actual error if it's user-friendly
+                        style: GoogleFonts.alef(
+                          fontSize: 15,
+                          color: Colors.grey.shade600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      ElevatedButton.icon(
+                        onPressed: () =>
+                            context.read<WorkspaceCubit>().getUserWorkspace(),
+                        icon: Icon(Icons.refresh, size: 18),
+                        label: Text('Retry'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey.shade400,
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             } else {
               return Center(
