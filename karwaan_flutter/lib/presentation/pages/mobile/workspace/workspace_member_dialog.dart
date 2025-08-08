@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_change_role_member_model.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details.dart';
@@ -22,12 +23,17 @@ class WorkspaceMembersDialog extends StatelessWidget {
       listener: (context, state) {
         if (state is MemberDeletionSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text('Member removed successfully'), backgroundColor: Colors.green),
+            SnackBar(
+                content: Text('Member removed successfully'),
+                backgroundColor: Colors.green),
           );
         }
         if (state is MemberRoleChanged) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Role changed to ${state.newRole}'), backgroundColor: Colors.green,),
+            SnackBar(
+              content: Text('Role changed to ${state.newRole}'),
+              backgroundColor: Colors.green,
+            ),
           );
         }
         if (state is MemberErrorState) {
@@ -39,8 +45,13 @@ class WorkspaceMembersDialog extends StatelessWidget {
       builder: (context, state) {
         if (state is MemberLoadedState) {
           return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             backgroundColor: Colors.grey.shade300,
-            title: const Text('Members'),
+            title: Text(
+              'Members',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            ),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -53,26 +64,34 @@ class WorkspaceMembersDialog extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: LinearGradient(colors: [
+                            Colors.grey.shade400,
+                            Colors.grey.shade200
+                          ])),
                       child: ListTile(
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 8),
-                        title: Text(member.userName),
+                        title: Text(
+                          member.userName,
+                          style: GoogleFonts.poppins(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                        ),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
                               child: Text(
                                 member.role,
-                                style: const TextStyle(fontSize: 12),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12, fontWeight: FontWeight.w300),
                               ),
                             ),
                             Flexible(
                               child: Text(
                                 'Joined At: ${_formatDate(member.joinedAt)}',
-                                style: const TextStyle(fontSize: 10),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12, fontWeight: FontWeight.w300),
                               ),
                             ),
                           ],
@@ -89,7 +108,10 @@ class WorkspaceMembersDialog extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+                child: Text(
+                  'Close',
+                  style: TextStyle(color: Colors.grey.shade600),
+                ),
               ),
             ],
           );
@@ -99,9 +121,11 @@ class WorkspaceMembersDialog extends StatelessWidget {
     );
   }
 
+  // Member actions dialog
   Widget _buildMemberActions(
       BuildContext context, WorkspaceMemberDetail member) {
     return PopupMenuButton<String>(
+      color: Colors.grey.shade300,
       icon: const Icon(Icons.more_vert),
       onSelected: (value) {
         if (value == 'delete') {
@@ -111,23 +135,31 @@ class WorkspaceMembersDialog extends StatelessWidget {
         }
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
               Icon(Icons.delete_outline, color: Colors.red),
               SizedBox(width: 8),
-              Text('Remove Member'),
+              Text(
+                'Remove Member',
+                style:
+                    GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
+              ),
             ],
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'change_role',
           child: Row(
             children: [
-              Icon(Icons.swap_vert, color: Colors.blue),
+              Icon(Icons.change_circle_outlined, color: Colors.blue),
               SizedBox(width: 8),
-              Text('Change Role'),
+              Text(
+                'Change Role',
+                style:
+                    GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
+              ),
             ],
           ),
         ),
@@ -135,17 +167,29 @@ class WorkspaceMembersDialog extends StatelessWidget {
     );
   }
 
+  // confirm remove dialog
   void _confirmRemove(
       BuildContext context, WorkspaceMemberDetail member) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Member'),
-        content: Text('Remove ${member.userName} from workspace?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        backgroundColor: Colors.grey.shade300,
+        title: Text(
+          'Remove Member',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'Remove ${member.userName} from workspace?',
+          style: GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -167,10 +211,10 @@ class WorkspaceMembersDialog extends StatelessWidget {
     }
   }
 
+  // Change role dialog
   void _showRoleChangeDialog(
       BuildContext context, WorkspaceMemberDetail member) {
-    // 1. Use a controller to manage the dropdown value
-    final roleController = ValueNotifier<String>(member.role);
+    final roleController = ValueNotifier<String>(member.role.toLowerCase());
     final cubit = context.read<WorkspaceMemberCubit>();
 
     showDialog(
@@ -178,19 +222,66 @@ class WorkspaceMembersDialog extends StatelessWidget {
       builder: (context) => BlocProvider.value(
         value: cubit,
         child: AlertDialog(
-          title: Text('Change ${member.userName}\'s Role'),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          backgroundColor: Colors.grey.shade300,
+          title: Text(
+            'Change ${member.userName}\'s Role',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           content: ValueListenableBuilder<String>(
             valueListenable: roleController,
             builder: (context, currentRole, _) {
               return DropdownButtonFormField<String>(
+                dropdownColor: Colors.grey.shade300,
+                 decoration: InputDecoration(
+                  labelText: 'New Role',
+                  labelStyle: GoogleFonts.alef(color: Colors.grey.shade600),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade600)
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade800)
+                  )    
+                ),
                 value: currentRole,
-                items: const [
-                  DropdownMenuItem(value: 'owner', child: Text('Owner')),
-                  DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                  DropdownMenuItem(value: 'member', child: Text('Member')),
+                items: [
+                  DropdownMenuItem(
+                      value: 'owner',
+                      child: Text(
+                        'Owner',
+                        style: GoogleFonts.alef(
+                            color: Colors.grey.shade800,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 17),
+                      )),
+                  DropdownMenuItem(
+                      value: 'admin',
+                      child: Text(
+                        'Admin',
+                        style: GoogleFonts.alef(
+                            color: Colors.grey.shade800,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 17),
+                      )),
+                  DropdownMenuItem(
+                      value: 'member',
+                      child: Text(
+                        'Member',
+                        style: GoogleFonts.alef(
+                            color: Colors.grey.shade800,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 17),
+                      )),
                 ],
                 onChanged: (value) {
-                  roleController.value = value!; // Update the controller
+                  if (value != null) {
+                    roleController.value = value;
+                  }
                 },
               );
             },
@@ -198,7 +289,8 @@ class WorkspaceMembersDialog extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text('Cancel',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
             ),
             BlocBuilder<WorkspaceMemberCubit, WorkspaceMemberState>(
               builder: (context, state) {
@@ -207,22 +299,32 @@ class WorkspaceMembersDialog extends StatelessWidget {
                 return ValueListenableBuilder<String>(
                   valueListenable: roleController,
                   builder: (context, selectedRole, _) {
-                    return TextButton(
-                      onPressed: isLoading || selectedRole == member.role
-                          ? null
-                          : () {
-                              cubit.changeMemberRole(
-                                WorkspaceChangeRoleMemberModel(
-                                  targetUserId: member.userId,
-                                  workspaceId: workspaceId,
-                                  newRole: selectedRole,
-                                ),
-                              );
-                              Navigator.pop(context);
-                            },
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          backgroundColor: Colors.grey.shade500),
+                      onPressed:
+                          isLoading || selectedRole == member.role.toLowerCase()
+                              ? null
+                              : () {
+                                  cubit.changeMemberRole(
+                                    WorkspaceChangeRoleMemberModel(
+                                      targetUserId: member.userId,
+                                      workspaceId: workspaceId,
+                                      newRole: selectedRole,
+                                    ),
+                                  );
+                                  Navigator.pop(context);
+                                },
                       child: isLoading
                           ? const CircularProgressIndicator()
-                          : const Text('Change'),
+                          : Text(
+                              'Change',
+                              style: TextStyle(
+                                  color: Colors.grey.shade800,
+                                  fontWeight: FontWeight.bold),
+                            ),
                     );
                   },
                 );

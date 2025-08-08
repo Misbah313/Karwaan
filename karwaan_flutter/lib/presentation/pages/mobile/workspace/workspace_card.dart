@@ -19,15 +19,14 @@ class WorkspaceCard extends StatelessWidget {
           Expanded(
               child: ListTile(
             title: Text(workspace.workspaceName,
-                style: GoogleFonts.poppins(
-                    color: Colors.white,
+                style: GoogleFonts.alef(
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis),
             subtitle: Text(workspace.workspaceDescription,
-                style: GoogleFonts.poppins(
-                    color: Colors.white,
+                style: GoogleFonts.alef(
+                    color: Colors.grey.shade600,
                     fontSize: 15,
                     fontWeight: FontWeight.w200),
                 maxLines: 2,
@@ -37,7 +36,7 @@ class WorkspaceCard extends StatelessWidget {
               onPressed: () => _showWorkspaceMenu(context),
               icon: Icon(
                 Icons.more_vert,
-                color: Colors.white,
+                color: Colors.grey.shade600,
               )),
         ],
       ),
@@ -45,7 +44,7 @@ class WorkspaceCard extends StatelessWidget {
   }
 
   // build footer with the creation date
-  Widget _builFooter(BuildContext context) {
+  Widget _buildFooter(BuildContext context) {
     return Padding(
         padding: EdgeInsets.all(15.0),
         child: Container(
@@ -54,14 +53,14 @@ class WorkspaceCard extends StatelessWidget {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.grey.shade200])),
+                  colors: [Colors.grey.shade400, Colors.grey.shade200])),
           child: Row(
             children: [
               Icon(Icons.calendar_today, size: 16, color: Colors.white),
               SizedBox(width: 4),
               Text(
-                'Created ${_formatDate(workspace.createdAt)}',
-                style: TextStyle(color: Colors.white, fontSize: 12),
+                'Created At ${_formatDate(workspace.createdAt)}',
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
               ),
             ],
           ),
@@ -75,6 +74,7 @@ class WorkspaceCard extends StatelessWidget {
   // show workspace menu
   void _showWorkspaceMenu(BuildContext context) {
     showBottomSheet(
+      backgroundColor: Colors.grey.shade200,
       context: context,
       builder: (bottomSheetContext) {
         return BlocProvider.value(
@@ -88,25 +88,27 @@ class WorkspaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showWorkspaceMenu(context),
+      onTap: () {
+        // navigate to the board pages
+      },
       child: Container(
         height: MediaQuery.of(context).size.height * 0.75,
         width: MediaQuery.of(context).size.width * 0.8,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: [Colors.blue.shade400, Colors.grey.shade200],
+              colors: [Colors.grey.shade400, Colors.grey.shade200],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight),
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6)],
+          boxShadow: [BoxShadow(color: Colors.grey.shade100, blurRadius: 6)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(context),
             const Spacer(),
-            _builFooter(context),
+            _buildFooter(context),
           ],
         ),
       ),

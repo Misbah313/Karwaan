@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_state.dart';
@@ -20,18 +21,26 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
         if (state is AddMemberSuccess) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text('Member added successfully!'), backgroundColor: Colors.green.shade200,),
+            SnackBar(
+              content: Text('Member added successfully!'),
+              backgroundColor: Colors.green.shade200,
+            ),
           );
           context.read<WorkspaceMemberCubit>().getWorkspaceMembers(workspaceId);
         }
         if (state is MemberErrorState) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error)),
+            SnackBar(content: Text(state.error), backgroundColor: Colors.red),
           );
         }
       },
       child: AlertDialog(
-        title: const Text('Add Member'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        backgroundColor: Colors.grey.shade300,
+        title: Text(
+          'Add Member',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -43,17 +52,31 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
               ),
               middleSizedBox,
               DropdownButtonFormField<String>(
+                dropdownColor: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(10),
                 value: selectedRole,
                 decoration: InputDecoration(
                   labelText: 'Role',
+                  labelStyle: GoogleFonts.alef(color: Colors.grey.shade600),
                   border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade600)
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey.shade800)
+                  )    
                 ),
                 items: ['member', 'admin', 'moderator'].map((role) {
                   return DropdownMenuItem(
                     value: role,
-                    child: Text(role),
+                    child: Text(
+                      role,
+                      style: GoogleFonts.alef(
+                          fontSize: 18, fontWeight: FontWeight.w200),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) => selectedRole = value,
@@ -64,17 +87,26 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey, fontSize: 15),
+            ),
           ),
           BlocBuilder<WorkspaceMemberCubit, WorkspaceMemberState>(
             builder: (context, state) {
               return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    backgroundColor: Colors.grey.shade400),
                 onPressed: state is MemberLoadingState
                     ? null
-                    : () async{
+                    : () async {
                         if (emailController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(content: Text('Email is required!'), backgroundColor: Colors.red),
+                            SnackBar(
+                                content: Text('Email is required!'),
+                                backgroundColor: Colors.red),
                           );
                           return;
                         }
@@ -82,7 +114,8 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
                         if (!emailController.text.contains('@')) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Enter a valid email!'),  backgroundColor: Colors.red),
+                                content: Text('Enter a valid email!'),
+                                backgroundColor: Colors.red),
                           );
                           return;
                         }
@@ -99,7 +132,11 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
                       },
                 child: state is MemberLoadingState
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Add'),
+                    : Text(
+                        'Add',
+                        style: TextStyle(
+                            color: Colors.grey.shade700, fontSize: 15),
+                      ),
               );
             },
           ),
