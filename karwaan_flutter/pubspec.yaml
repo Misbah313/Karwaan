@@ -66,7 +66,6 @@ flutter:
      - asset/images/google.png
      - asset/ani/ani1.json
      - asset/ani/cloud.json
-     - asset/ani/empty.json
      - asset/ani/girl.json
      - asset/ani/girl2.json
      - asset/ani/hi.json
@@ -80,6 +79,8 @@ flutter:
      - asset/ani/error.json
      - asset/ani/dataSecure.json
      - asset/ani/success.json
+     - asset/ani/load.json
+     - asset/ani/emptys.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
