@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_state.dart';
@@ -98,13 +99,24 @@ class WorkspaceMenu extends StatelessWidget {
         builder: (context) => BlocProvider.value(
               value: cubit,
               child: AlertDialog(
-                title: const Text('Leave Workspace?'),
-                content: const Text(
-                    'Are you sure you want to leave this workspace?'),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                backgroundColor: Colors.grey.shade300,
+                title: Text(
+                  'Leave Workspace?',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                ),
+                content: Text(
+                  'Are you sure you want to leave this workspace?',
+                  style: GoogleFonts.alef(),
+                ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   BlocConsumer<WorkspaceMemberCubit, WorkspaceMemberState>(
                     listener: (context, state) {
@@ -114,7 +126,9 @@ class WorkspaceMenu extends StatelessWidget {
                             context); // Close workspace menu if still open
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text('Left workspace successfully')),
+                            content: Text('Left workspace successfully'),
+                            backgroundColor: Colors.green,
+                          ),
                         );
                       }
                       if (state is LastOwnerError) {
@@ -128,7 +142,11 @@ class WorkspaceMenu extends StatelessWidget {
                       }
                     },
                     builder: (context, state) {
-                      return TextButton(
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            backgroundColor: Colors.grey.shade300),
                         onPressed: state is MemberLoadingState
                             ? null
                             : () {
@@ -158,14 +176,25 @@ class WorkspaceMenu extends StatelessWidget {
       builder: (context) => BlocProvider.value(
         value: cubit,
         child: AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          backgroundColor: Colors.grey.shade300,
           title: Text(
             'Delete Workspace?',
-            style: TextStyle(color: Colors.red),
+            style: GoogleFonts.poppins(
+                color: Colors.red, fontWeight: FontWeight.bold),
           ),
-          content: Text('Are you sure want to delete this workspace?'),
+          content: Text(
+            'Are you sure want to delete this workspace?',
+            style: GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 16),
+          ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.grey),
+                )),
             BlocConsumer<WorkspaceCubit, WorkspaceState>(
               listener: (context, state) {
                 if (state is WorkspaceListLoaded) {
@@ -184,7 +213,11 @@ class WorkspaceMenu extends StatelessWidget {
                 }
               },
               builder: (context, state) {
-                return TextButton(
+                return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        backgroundColor: Colors.grey.shade300),
                     onPressed: state is WorkspaceLoading
                         ? null
                         : () {
@@ -216,8 +249,13 @@ class WorkspaceMenu extends StatelessWidget {
         builder: (context) => BlocProvider.value(
               value: cubit,
               child: AlertDialog(
-                title: Text('Update workspace!'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)
+                ),
+                backgroundColor: Colors.grey.shade300,
+                title: Text('Update workspace!', style: GoogleFonts.poppins(fontWeight: FontWeight.bold),),
                 content: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Textfield(
                         text: 'New Name',
@@ -230,10 +268,11 @@ class WorkspaceMenu extends StatelessWidget {
                         controller: newDecController),
                   ],
                 ),
+                 actionsPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel')),
+                      child: Text('Cancel', style: TextStyle(color: Colors.grey),)),
                   BlocConsumer<WorkspaceCubit, WorkspaceState>(
                     listener: (context, state) {
                       if (state is WorkspaceListLoaded) {
@@ -253,7 +292,13 @@ class WorkspaceMenu extends StatelessWidget {
                       }
                     },
                     builder: (context, state) {
-                      return TextButton(
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          backgroundColor: Colors.grey.shade300
+                        ),
                           onPressed: state is WorkspaceLoading
                               ? null
                               : () {
@@ -269,7 +314,8 @@ class WorkspaceMenu extends StatelessWidget {
                                   }
                                   final credentials = WorkspaceCredential(
                                       id: workspaceId,
-                                      workspaceName: newNameController.text.trim(),
+                                      workspaceName:
+                                          newNameController.text.trim(),
                                       workspaceDescription:
                                           newDecController.text.trim());
                                   context
@@ -278,7 +324,7 @@ class WorkspaceMenu extends StatelessWidget {
                                 },
                           child: state is WorkspaceLoading
                               ? const CircularProgressIndicator()
-                              : const Text('Update'));
+                              :  Text('Update', style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w400),));
                     },
                   )
                 ],
