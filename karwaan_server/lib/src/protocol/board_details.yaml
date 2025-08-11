@@ -1,6 +1,9 @@
 class: BoardDetails
+table: board_details
 fields:
-  id: int
+  id: int?
+  workspaceId: int, relation(parent=workspace)
   name: String
   description: String?
+  createdAt: DateTime
   members: List<String>
