@@ -10,17 +10,16 @@ class BoardEndpoint extends Endpoint {
     // get the current user(validate token)
     final currentUser = await TokenEndpoint().validateToken(session, token);
 
+    if (currentUser == null || currentUser.id == null) {
+      throw Exception('No user or invalid token');
+    }
+
     // get the current workspace
-    final currentWorkspace = await Workspace.db
-        .findFirstRow(session, where: (b) => b.id.equals(workspaceId));
+    final currentWorkspace = await Workspace.db.findById(session, workspaceId);
     if (currentWorkspace == null) {
       throw Exception("Workspace doesn't exists!");
     }
 
-    // check the user is a member in that workspace
-    if (currentUser == null || currentUser.id == null) {
-      throw Exception("Invalid user or user ID.");
-    }
     final membership = await WorkspaceMember.db.findFirstRow(session,
         where: (m) =>
             m.user.equals(currentUser.id!) & m.workspace.equals(workspaceId));
@@ -52,22 +51,22 @@ class BoardEndpoint extends Endpoint {
           workspaceId: workspaceId,
           createdBy: currentUser.id!,
           createdAt: DateTime.now(),
-          description: description);
+          description: description ?? '');
 
       // insert the created board to db
-      await Board.db.insertRow(session, createdBoard);
+      final insertedBoard = await Board.db.insertRow(session, createdBoard);
 
       // board member
       final boardmember = BoardMember(
           user: currentUser.id!,
-          board: createdBoard.id!,
+          board: insertedBoard.id!,
           joinedAt: DateTime.now(),
           role: Roles.owner);
 
       // insert the new member to board members
       await BoardMember.db.insertRow(session, boardmember);
 
-      return createdBoard;
+      return insertedBoard;
     } catch (e) {
       throw Exception(e);
     }
@@ -115,9 +114,11 @@ class BoardEndpoint extends Endpoint {
       // assemble board details
       final boardDetails = BoardDetails(
           id: board.id!,
+          workspaceId: board.workspaceId,
           name: board.name,
           members: memberNames,
-          description: board.description);
+          description: board.description,
+          createdAt: DateTime.now());
 
       return boardDetails;
     } catch (e) {
@@ -174,11 +175,12 @@ class BoardEndpoint extends Endpoint {
 
         // Create board details
         boardDetailsList.add(BoardDetails(
-          id: board.id!,
-          name: board.name,
-          members: memberNames,
-          description: board.description,
-        ));
+            id: board.id!,
+            workspaceId: board.workspaceId,
+            name: board.name,
+            members: memberNames,
+            description: board.description,
+            createdAt: DateTime.now()));
       }
 
       // 7. Return list of board details
@@ -203,6 +205,11 @@ class BoardEndpoint extends Endpoint {
         .findFirstRow(session, where: (u) => u.id.equals(boardId));
     if (board == null) {
       throw Exception('No board found!');
+    }
+
+    final workspace = await Workspace.db.findById(session, board.workspaceId);
+    if(workspace == null) {
+      throw Exception('Parent board not founded!!');
     }
 
     // check user permission(should be Owner)
@@ -247,8 +254,12 @@ class BoardEndpoint extends Endpoint {
     }
 
     // No-op guard: check if anything actually changed
-    if (board.name == originalName && board.description == originalDec) {
-      return board; // Nothing to update
+    final nameChanged =
+        newName != null && newName.trim() != originalName.trim();
+    final descChanged =
+        newDec != null && newDec.trim() != (originalDec.trim());
+    if (!nameChanged && !descChanged) {
+      return board; // No changes
     }
 
     try {
@@ -299,6 +310,53 @@ class BoardEndpoint extends Endpoint {
     } catch (e) {
       throw Exception(e);
     }
+  }
+
+  // get boards by workspace
+  Future<List<BoardDetails>> getBoardsByWorkspace(
+    Session session,
+    int workspaceId,
+    String token,
+  ) async {
+    // Validate user token
+    final currentUser = await TokenEndpoint().validateToken(session, token);
+    if (currentUser == null || currentUser.id == null) {
+      throw Exception('No user or invalid token!');
+    }
+
+    // Check workspace exists
+    final workspace = await Workspace.db.findById(session, workspaceId);
+    if (workspace == null) {
+      throw Exception("Workspace doesn't exist!");
+    }
+
+    // Check user membership in workspace
+    final membership = await WorkspaceMember.db.findFirstRow(session,
+        where: (m) =>
+            m.user.equals(currentUser.id!) & m.workspace.equals(workspaceId));
+    if (membership == null) {
+      throw Exception('You are not a member of this workspace!');
+    }
+
+    // Fetch all boards in the workspace
+    final boards = await Board.db.find(
+      session,
+      where: (b) => b.workspaceId.equals(workspaceId),
+    );
+
+    // Convert to BoardDetails without members info
+    final boardDetailsList = boards.map((board) {
+      return BoardDetails(
+        id: board.id!,
+        workspaceId: board.workspaceId,
+        name: board.name,
+        description: board.description,
+        createdAt: board.createdAt,
+        members: [], // empty list since you don't want to fetch members here
+      );
+    }).toList();
+
+    return boardDetailsList;
   }
 }
 
