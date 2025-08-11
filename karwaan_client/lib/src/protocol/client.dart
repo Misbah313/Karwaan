@@ -196,6 +196,19 @@ class EndpointBoard extends _i1.EndpointRef {
           'token': token,
         },
       );
+
+  _i2.Future<List<_i7.BoardDetails>> getBoardsByWorkspace(
+    int workspaceId,
+    String token,
+  ) =>
+      caller.callServerEndpoint<List<_i7.BoardDetails>>(
+        'board',
+        'getBoardsByWorkspace',
+        {
+          'workspaceId': workspaceId,
+          'token': token,
+        },
+      );
 }
 
 /// {@category Endpoint}
@@ -271,7 +284,7 @@ class EndpointBoardMember extends _i1.EndpointRef {
 
   _i2.Future<_i9.BoardMember> addMemberToBoard(
     int boardId,
-    int userToAddId,
+    String userToAddEmail,
     String token,
   ) =>
       caller.callServerEndpoint<_i9.BoardMember>(
@@ -279,7 +292,7 @@ class EndpointBoardMember extends _i1.EndpointRef {
         'addMemberToBoard',
         {
           'boardId': boardId,
-          'userToAddId': userToAddId,
+          'userToAddEmail': userToAddEmail,
           'token': token,
         },
       );
