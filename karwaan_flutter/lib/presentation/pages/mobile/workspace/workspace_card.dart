@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
+import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_gate.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/workspace/workspace_menu.dart';
 
@@ -19,9 +22,8 @@ class WorkspaceCard extends StatelessWidget {
           Expanded(
               child: ListTile(
             title: Text(workspace.workspaceName,
-                style: GoogleFonts.alef(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                style:
+                    GoogleFonts.alef(fontSize: 20, fontWeight: FontWeight.bold),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis),
             subtitle: Text(workspace.workspaceDescription,
@@ -89,7 +91,20 @@ class WorkspaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // navigate to the board pages
+        debugPrint(
+            'Starting naviagating to the boards page for the ${workspace.workspaceName} workspace');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BlocProvider<BoardCubit>(
+                      create: (context) =>
+                          BoardCubit(context.read<BoardRepo>()),
+                      child: BoardGate(
+                          boardRepo: context.read<BoardRepo>(),
+                          workspaceId: workspace.id,
+                          workspaceName: workspace.workspaceName,
+                          workspaceDescription: workspace.workspaceDescription),
+                    )));
       },
       child: Container(
         height: MediaQuery.of(context).size.height * 0.75,
