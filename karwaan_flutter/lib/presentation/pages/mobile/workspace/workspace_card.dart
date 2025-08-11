@@ -91,8 +91,6 @@ class WorkspaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        debugPrint(
-            'Starting naviagating to the boards page for the ${workspace.workspaceName} workspace');
         Navigator.push(
             context,
             MaterialPageRoute(
