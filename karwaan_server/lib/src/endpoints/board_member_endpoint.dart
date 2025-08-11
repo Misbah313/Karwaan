@@ -6,7 +6,7 @@ import 'package:serverpod/serverpod.dart';
 class BoardMemberEndpoint extends Endpoint {
   // add member to board
   Future<BoardMember> addMemberToBoard(
-      Session session, int boardId, int userToAddId, String token) async {
+      Session session, int boardId, String userToAddEmail, String token) async {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
@@ -32,18 +32,21 @@ class BoardMemberEndpoint extends Endpoint {
     }
 
     // check if the user need to be acutally exists
-    final targetUser = await User.db.findById(session, userToAddId);
+    final targetUser = await User.db.findFirstRow(
+      session,
+      where: (p0) => p0.email.equals(userToAddEmail),
+    );
     if (targetUser == null) {
       throw Exception('No user has been found!');
     }
 
     // board.workspaceId came from your Board model
-    final workspaceMemberShip = await WorkspaceMember.db.findFirstRow(
+    final targetUserMembership = await WorkspaceMember.db.findFirstRow(
       session,
       where: (w) =>
           w.workspace.equals(board.workspaceId) & w.user.equals(targetUser.id!),
     );
-    if (workspaceMemberShip == null) {
+    if (targetUserMembership == null) {
       throw Exception('User is not a member of parent workspace!');
     }
 
@@ -59,14 +62,14 @@ class BoardMemberEndpoint extends Endpoint {
     try {
       // create and insert board member row for the new user
       final newBoardMember = BoardMember(
-          user: userToAddId,
+          user: targetUser.id!,
           board: boardId,
           joinedAt: DateTime.now(),
-          role: 'Member');
+          role: Roles.member);
 
-      await BoardMember.db.insertRow(session, newBoardMember);
+     final insertedMember = await BoardMember.db.insertRow(session, newBoardMember);
 
-      return newBoardMember;
+      return insertedMember;
     } catch (e) {
       throw Exception(e);
     }

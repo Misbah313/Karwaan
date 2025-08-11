@@ -52,7 +52,7 @@ class WorkspaceMenu extends StatelessWidget {
           title: const Text('Delete Workspace'),
           onTap: () {
             Navigator.pop(context);
-            _showDeleteMemberDialog(context, workspace.id);
+            _showDeleteWorkspaceDialog(context, workspace.id);
           },
         ),
         ListTile(
@@ -168,7 +168,7 @@ class WorkspaceMenu extends StatelessWidget {
             ));
   }
 
-  void _showDeleteMemberDialog(BuildContext context, int workspaceId) {
+  void _showDeleteWorkspaceDialog(BuildContext context, int workspaceId) {
     final cubit = context.read<WorkspaceCubit>();
 
     showDialog(

@@ -439,6 +439,30 @@ class Endpoints extends _i1.EndpointDispatch {
             params['token'],
           ),
         ),
+        'getBoardsByWorkspace': _i1.MethodConnector(
+          name: 'getBoardsByWorkspace',
+          params: {
+            'workspaceId': _i1.ParameterDescription(
+              name: 'workspaceId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['board'] as _i4.BoardEndpoint).getBoardsByWorkspace(
+            session,
+            params['workspaceId'],
+            params['token'],
+          ),
+        ),
       },
     );
     connectors['boardList'] = _i1.EndpointConnector(
@@ -567,9 +591,9 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
-            'userToAddId': _i1.ParameterDescription(
-              name: 'userToAddId',
-              type: _i1.getType<int>(),
+            'userToAddEmail': _i1.ParameterDescription(
+              name: 'userToAddEmail',
+              type: _i1.getType<String>(),
               nullable: false,
             ),
             'token': _i1.ParameterDescription(
@@ -586,7 +610,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .addMemberToBoard(
             session,
             params['boardId'],
-            params['userToAddId'],
+            params['userToAddEmail'],
             params['token'],
           ),
         ),

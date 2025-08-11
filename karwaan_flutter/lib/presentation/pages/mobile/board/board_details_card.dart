@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
-import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
-import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
-import 'package:karwaan_flutter/presentation/cubits/board/board_gate.dart';
-import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/workspace/workspace_menu.dart';
+import 'package:karwaan_flutter/domain/models/board/board_details.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/board/board_menu.dart';
 
-class WorkspaceCard extends StatelessWidget {
-  final Workspace workspace;
-  const WorkspaceCard({super.key, required this.workspace});
+class BoardDetailsCard extends StatelessWidget {
+  final BoardDetails board;
+  const BoardDetailsCard({super.key, required this.board});
 
   // build header with the menu button
   Widget _buildHeader(BuildContext context) {
@@ -21,12 +16,12 @@ class WorkspaceCard extends StatelessWidget {
         children: [
           Expanded(
               child: ListTile(
-            title: Text(workspace.workspaceName,
+            title: Text(board.name,
                 style:
                     GoogleFonts.alef(fontSize: 20, fontWeight: FontWeight.bold),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis),
-            subtitle: Text(workspace.workspaceDescription,
+            subtitle: Text(board.description,
                 style: GoogleFonts.alef(
                     color: Colors.grey.shade600,
                     fontSize: 15,
@@ -35,7 +30,7 @@ class WorkspaceCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis),
           )),
           IconButton(
-              onPressed: () => _showWorkspaceMenu(context),
+              onPressed: () => _showBoardMenu(context),
               icon: Icon(
                 Icons.more_vert,
                 color: Colors.grey.shade600,
@@ -61,7 +56,7 @@ class WorkspaceCard extends StatelessWidget {
               Icon(Icons.calendar_today, size: 16, color: Colors.white),
               SizedBox(width: 4),
               Text(
-                'Created At ${_formatDate(workspace.createdAt)}',
+                'Created At ${_formatDate(board.createdAt)}',
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
               ),
             ],
@@ -74,15 +69,12 @@ class WorkspaceCard extends StatelessWidget {
   }
 
   // show workspace menu
-  void _showWorkspaceMenu(BuildContext context) {
+  void _showBoardMenu(BuildContext context) {
     showBottomSheet(
       backgroundColor: Colors.grey.shade200,
       context: context,
       builder: (bottomSheetContext) {
-        return BlocProvider.value(
-          value: context.read<WorkspaceMemberCubit>(),
-          child: WorkspaceMenu(workspace: workspace),
-        );
+        return BoardMenu(board: board,);
       },
     );
   }
@@ -91,22 +83,13 @@ class WorkspaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BlocProvider<BoardCubit>(
-                      create: (context) =>
-                          BoardCubit(context.read<BoardRepo>()),
-                      child: BoardGate(
-                          boardRepo: context.read<BoardRepo>(),
-                          workspaceId: workspace.id,
-                          workspaceName: workspace.workspaceName,
-                          workspaceDescription: workspace.workspaceDescription),
-                    )));
+        // navigate to the board list page
       },
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.75,
-        width: MediaQuery.of(context).size.width * 0.8,
+        constraints: BoxConstraints(
+          minHeight: 150
+        ),
+        width: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -120,8 +103,7 @@ class WorkspaceCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(context),
-            const Spacer(),
-            _buildFooter(context),
+            _buildFooter(context)
           ],
         ),
       ),

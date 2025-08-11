@@ -13,35 +13,49 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class BoardDetails implements _i1.SerializableModel {
   BoardDetails._({
-    required this.id,
+    this.id,
+    required this.workspaceId,
     required this.name,
     this.description,
+    required this.createdAt,
     required this.members,
   });
 
   factory BoardDetails({
-    required int id,
+    int? id,
+    required int workspaceId,
     required String name,
     String? description,
+    required DateTime createdAt,
     required List<String> members,
   }) = _BoardDetailsImpl;
 
   factory BoardDetails.fromJson(Map<String, dynamic> jsonSerialization) {
     return BoardDetails(
-      id: jsonSerialization['id'] as int,
+      id: jsonSerialization['id'] as int?,
+      workspaceId: jsonSerialization['workspaceId'] as int,
       name: jsonSerialization['name'] as String,
       description: jsonSerialization['description'] as String?,
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       members: (jsonSerialization['members'] as List)
           .map((e) => e as String)
           .toList(),
     );
   }
 
-  int id;
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
+
+  int workspaceId;
 
   String name;
 
   String? description;
+
+  DateTime createdAt;
 
   List<String> members;
 
@@ -50,16 +64,20 @@ abstract class BoardDetails implements _i1.SerializableModel {
   @_i1.useResult
   BoardDetails copyWith({
     int? id,
+    int? workspaceId,
     String? name,
     String? description,
+    DateTime? createdAt,
     List<String>? members,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
+      'workspaceId': workspaceId,
       'name': name,
       if (description != null) 'description': description,
+      'createdAt': createdAt.toJson(),
       'members': members.toJson(),
     };
   }
@@ -74,14 +92,18 @@ class _Undefined {}
 
 class _BoardDetailsImpl extends BoardDetails {
   _BoardDetailsImpl({
-    required int id,
+    int? id,
+    required int workspaceId,
     required String name,
     String? description,
+    required DateTime createdAt,
     required List<String> members,
   }) : super._(
           id: id,
+          workspaceId: workspaceId,
           name: name,
           description: description,
+          createdAt: createdAt,
           members: members,
         );
 
@@ -90,15 +112,19 @@ class _BoardDetailsImpl extends BoardDetails {
   @_i1.useResult
   @override
   BoardDetails copyWith({
-    int? id,
+    Object? id = _Undefined,
+    int? workspaceId,
     String? name,
     Object? description = _Undefined,
+    DateTime? createdAt,
     List<String>? members,
   }) {
     return BoardDetails(
-      id: id ?? this.id,
+      id: id is int? ? id : this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
       name: name ?? this.name,
       description: description is String? ? description : this.description,
+      createdAt: createdAt ?? this.createdAt,
       members: members ?? this.members.map((e0) => e0).toList(),
     );
   }
