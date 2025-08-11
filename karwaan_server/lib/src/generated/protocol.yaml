@@ -12,6 +12,7 @@ board:
   - getUserBoards:
   - updateBoard:
   - deleteBoard:
+  - getBoardsByWorkspace:
 boardList:
   - createBoardList:
   - listBoardLists:

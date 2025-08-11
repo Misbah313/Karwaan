@@ -15,7 +15,7 @@ abstract class Board implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Board._({
     this.id,
     required this.name,
-    this.description,
+    required this.description,
     required this.workspaceId,
     required this.createdBy,
     required this.createdAt,
@@ -24,7 +24,7 @@ abstract class Board implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   factory Board({
     int? id,
     required String name,
-    String? description,
+    required String description,
     required int workspaceId,
     required int createdBy,
     required DateTime createdAt,
@@ -34,7 +34,7 @@ abstract class Board implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Board(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      description: jsonSerialization['description'] as String?,
+      description: jsonSerialization['description'] as String,
       workspaceId: jsonSerialization['workspaceId'] as int,
       createdBy: jsonSerialization['createdBy'] as int,
       createdAt:
@@ -51,7 +51,7 @@ abstract class Board implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   String name;
 
-  String? description;
+  String description;
 
   int workspaceId;
 
@@ -78,7 +78,7 @@ abstract class Board implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (description != null) 'description': description,
+      'description': description,
       'workspaceId': workspaceId,
       'createdBy': createdBy,
       'createdAt': createdAt.toJson(),
@@ -90,7 +90,7 @@ abstract class Board implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (description != null) 'description': description,
+      'description': description,
       'workspaceId': workspaceId,
       'createdBy': createdBy,
       'createdAt': createdAt.toJson(),
@@ -133,7 +133,7 @@ class _BoardImpl extends Board {
   _BoardImpl({
     int? id,
     required String name,
-    String? description,
+    required String description,
     required int workspaceId,
     required int createdBy,
     required DateTime createdAt,
@@ -153,7 +153,7 @@ class _BoardImpl extends Board {
   Board copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? description = _Undefined,
+    String? description,
     int? workspaceId,
     int? createdBy,
     DateTime? createdAt,
@@ -161,7 +161,7 @@ class _BoardImpl extends Board {
     return Board(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      description: description is String? ? description : this.description,
+      description: description ?? this.description,
       workspaceId: workspaceId ?? this.workspaceId,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
