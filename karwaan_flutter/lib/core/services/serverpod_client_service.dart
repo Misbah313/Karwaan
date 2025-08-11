@@ -28,6 +28,8 @@ class ServerpodClientService {
     }
   }
 
+  // ============================================= AUTHENTICATION =================================================== //
+
   // get the current user
   Future<User?> getCurrentUser() async {
     final token = await _authTokenStorage.getToken();
@@ -126,6 +128,8 @@ class ServerpodClientService {
   }
 
   // update user
+
+  // =============================================== WORKSPACE ====================================================== //
 
   // create workspace
   Future<Workspace> createWorkspace(
@@ -283,6 +287,172 @@ class ServerpodClientService {
       }
 
       await client.workspaceMember.leaveWorkspace(workspaceId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // ===================================================== BOARD ========================================================== //
+
+  // create board
+  Future<Board> createBoard(
+      int workspaceId, String name, String description) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login before performing this action!!');
+      }
+
+      debugPrint('Startin creating board from serverpodclientservcie!');
+      final board =
+          await client.board.createBoard(workspaceId, name, description, token);
+      debugPrint(
+          'board creatd from serverpodclientservice by name of ${board.name}');
+
+      return board;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // ger user boardss
+  Future<List<BoardDetails>> getUserBoards() async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final boards = await client.board.getUserBoards(token);
+
+      return boards;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update board
+  Future<Board> updateBoard(
+      int boardId, String newName, String newDescription) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!!');
+      }
+
+      final updatedBoard = await client.board.updateBoard(boardId, token,
+          newName: newName, newDec: newDescription);
+
+      return updatedBoard;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete board
+  Future<bool> deleteBoard(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!!');
+      }
+      await client.board.deleteBoard(boardId, token);
+      return true;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get boards by workspace
+  Future<List<BoardDetails>> getBoardsByWorkspace(int workspaceId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!!');
+      }
+
+      final list = await client.board.getBoardsByWorkspace(workspaceId, token);
+      return list;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // add member to board
+  Future<BoardMember> addMemberToBoard(int boardId, String email) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+      final member =
+          await client.boardMember.addMemberToBoard(boardId, email, token);
+          if(member.id == null) {
+            throw Exception('Failed to add member from client service: Server returned invalid datat!');
+          }
+
+      return member;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // remove member from board
+  Future<void> removeMemberFromBoard(int boardId, int userToRemoveId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!!');
+      }
+
+      await client.boardMember
+          .removeMemberFromBoard(boardId, userToRemoveId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+ 
+  // get board members
+  Future<List<BoardMemberDetails>> getBoardMembers(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final members = await client.boardMember.getBoardMembers(boardId, token);
+      return members;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // change board member role
+  Future<BoardMember> changeBoardMemberRole(
+      int boardId, int userToChangeRoleId, String newRole) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final change = await client.boardMember
+          .changeBoardMemberRole(boardId, token, userToChangeRoleId, newRole);
+      return change;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // leave board
+  Future<void> leaveBoard(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      await client.boardMember.leaveBoard(boardId, token);
     } catch (e) {
       rethrow;
     }
