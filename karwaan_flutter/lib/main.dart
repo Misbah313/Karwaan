@@ -5,9 +5,11 @@ import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
 import 'package:karwaan_flutter/data/repositories/auth/auth_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/board/board_remote_repo.dart';
+import 'package:karwaan_flutter/data/repositories/boardlist/boardlist_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/workspace/workspace_remote_repo.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
+import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_gate.dart';
@@ -23,6 +25,7 @@ void main() async {
   final authRepo = AuthRemoteRepo(serverpodClientService);
   final workspaceRepo = WorkspaceRemoteRepo(serverpodClientService);
   final boardRepo = BoardRemoteRepo(serverpodClientService);
+  final boardlistRepo = BoardlistRemoteRepo(serverpodClientService);
 
   runApp(
     MultiProvider(
@@ -30,6 +33,7 @@ void main() async {
         Provider<AuthRepo>(create: (_) => authRepo), // Global AuthRepo
         Provider<WorkspaceRepo>(create: (_) => workspaceRepo),
         Provider<BoardRepo>(create: (_) => boardRepo),
+        Provider<BoardlistRepo>(create: (_) => boardlistRepo),
         BlocProvider<AuthCubit>(
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
