@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/board/board_details.dart';
+import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
+import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_gate.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/board/board_menu.dart';
 
 class BoardDetailsCard extends StatelessWidget {
@@ -74,7 +78,9 @@ class BoardDetailsCard extends StatelessWidget {
       backgroundColor: Colors.grey.shade200,
       context: context,
       builder: (bottomSheetContext) {
-        return BoardMenu(board: board,);
+        return BoardMenu(
+          board: board,
+        );
       },
     );
   }
@@ -84,11 +90,20 @@ class BoardDetailsCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // navigate to the board list page
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BlocProvider<BoardlistCubit>(
+                      create: (context) =>
+                          BoardlistCubit(context.read<BoardlistRepo>()),
+                      child: BoardlistGate(
+                        boardlistRepo: context.read<BoardlistRepo>(),
+                        boardId: board.id,
+                      ),
+                    )));
       },
       child: Container(
-        constraints: BoxConstraints(
-          minHeight: 150
-        ),
+        constraints: BoxConstraints(minHeight: 150),
         width: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -101,10 +116,7 @@ class BoardDetailsCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            _buildFooter(context)
-          ],
+          children: [_buildHeader(context), _buildFooter(context)],
         ),
       ),
     );
