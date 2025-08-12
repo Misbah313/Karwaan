@@ -51,9 +51,16 @@ class BoardListEndpoint extends Endpoint {
           createdAt: DateTime.now(),
           createdBy: currentUser.id!);
 
-      await BoardList.db.insertRow(session, newList);
+      final inserted = await BoardList.db.insertRow(session, newList);
+      await Future.delayed(Duration(milliseconds: 100));
 
-      return newList;
+      
+      return BoardList(
+          id: inserted.id,
+          board: inserted.board,
+          title: inserted.title,
+          createdAt: inserted.createdAt,
+          createdBy: inserted.createdBy);
     } catch (e) {
       throw Exception(e);
     }
