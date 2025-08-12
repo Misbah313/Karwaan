@@ -387,9 +387,10 @@ class ServerpodClientService {
       }
       final member =
           await client.boardMember.addMemberToBoard(boardId, email, token);
-          if(member.id == null) {
-            throw Exception('Failed to add member from client service: Server returned invalid datat!');
-          }
+      if (member.id == null) {
+        throw Exception(
+            'Failed to add member from client service: Server returned invalid datat!');
+      }
 
       return member;
     } catch (e) {
@@ -411,7 +412,7 @@ class ServerpodClientService {
       rethrow;
     }
   }
- 
+
   // get board members
   Future<List<BoardMemberDetails>> getBoardMembers(int boardId) async {
     try {
@@ -453,6 +454,69 @@ class ServerpodClientService {
       }
 
       await client.boardMember.leaveBoard(boardId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // ========================================================= BOARD LIST ==================================================== //
+
+  // create board list
+  Future<BoardList> createBoardList(int boardId, String title) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final boardlist =
+          await client.boardList.createBoardList(boardId, token, title);
+      return boardlist;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get board list
+  Future<List<BoardList>> listBoardLists(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final list = await client.boardList.listBoardLists(boardId, token);
+      return list;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update board list
+  Future<BoardList> updateBoardList(int listId, String newTitle) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final update =
+          await client.boardList.updateBoardList(listId, token, newTitle);
+      return update;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete board list
+  Future<bool> deleteBoardList(int listId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.boardList.deleteBoardList(listId, token);
     } catch (e) {
       rethrow;
     }
