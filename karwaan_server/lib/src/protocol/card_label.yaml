@@ -2,5 +2,5 @@ class: CardLabel
 table: card_label
 fields:
   id: int?
-  card: int, relation(parent=card)
+  card: int, relation(parent=board_card)
   label: int, relation(parent=lable)
