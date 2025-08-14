@@ -13,7 +13,7 @@ class CardLabelEndpoint extends Endpoint {
     }
 
     // validate card and label exist
-    final validateCard = await Card.db.findById(session, cardId);
+    final validateCard = await BoardCard.db.findById(session, cardId);
     final validateLabel = await Label.db.findById(session, labelId);
     if (validateCard == null || validateLabel == null) {
       throw Exception('No cards and label found!');
@@ -71,7 +71,7 @@ class CardLabelEndpoint extends Endpoint {
     }
 
     // fetch the card
-    final card = await Card.db.findById(session, fetched.card);
+    final card = await BoardCard.db.findById(session, fetched.card);
     if (card == null) {
       throw Exception('No card found!');
     }
@@ -109,7 +109,7 @@ class CardLabelEndpoint extends Endpoint {
     }
 
     // fetch the card
-    final card = await Card.db.findById(session, cardId);
+    final card = await BoardCard.db.findById(session, cardId);
     if (card == null) throw Exception('Card not found!');
 
     // fetch board list to get the board
@@ -148,7 +148,7 @@ class CardLabelEndpoint extends Endpoint {
   }
 
   // get cards for label
-  Future<List<Card>> getCardForLabel(
+  Future<List<BoardCard>> getCardForLabel(
       Session session, int labelId, String token) async {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
@@ -182,7 +182,7 @@ class CardLabelEndpoint extends Endpoint {
       final extracted = cardLabel.map((e) => e.card).toSet();
 
       // fetch cards
-      final cards = await Card.db.find(
+      final cards = await BoardCard.db.find(
         session,
         where: (c) => c.id.inSet(extracted),
       );
