@@ -4,7 +4,7 @@ import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart'
 import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/boardlist%20+%20boardcard/boardlist_page.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/boardlist_page.dart';
 
 class BoardlistGate extends StatelessWidget {
   final BoardlistRepo boardlistRepo;
