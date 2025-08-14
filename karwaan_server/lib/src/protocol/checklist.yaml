@@ -3,6 +3,6 @@ table: check_list
 fields:
   id: int?
   title: String
-  card: int, relation(parent=card)
+  card: int, relation(parent=board_card)
   createdAt: DateTime
   createdBy: int, relation(parent=user)
