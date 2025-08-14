@@ -1,0 +1,10 @@
+class: BoardCard
+table: board_card
+fields:
+  title: String
+  description: String?
+  createdBy: int, relation(parent=user)
+  list: int, relation(parent=board_list)
+  createdAt: DateTime
+  position: int?
+  isCompleted: bool
