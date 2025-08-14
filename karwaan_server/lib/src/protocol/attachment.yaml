@@ -2,6 +2,6 @@ class: Attachment
 table: attachment
 fields:
   id: int?
-  card: int, relation(parent=card)
+  card: int, relation(parent=board_card)
   uploadedBy: int, relation(parent=user)
   fileName: String
