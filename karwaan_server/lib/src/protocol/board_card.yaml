@@ -1,5 +1,5 @@
-class: Card
-table: card
+class: BoardCard
+table: board_card
 fields:
   title: String
   description: String?

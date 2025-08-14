@@ -14,7 +14,7 @@ class ChecklistEndpoint extends Endpoint {
     }
 
     // check card exists
-    final card = await Card.db.findById(session, cardId);
+    final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
       throw Exception('Card not found!');
     }
@@ -78,7 +78,7 @@ class ChecklistEndpoint extends Endpoint {
     }
 
     // find the card
-    final card = await Card.db.findById(session, cardId);
+    final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
       throw Exception('Card not found!');
     }
@@ -132,7 +132,7 @@ class ChecklistEndpoint extends Endpoint {
     }
 
     // fetch the parent card
-    final card = await Card.db.findById(session, checklist.card);
+    final card = await BoardCard.db.findById(session, checklist.card);
     if (card == null) {
       throw Exception('Parent card not found!');
     }
@@ -212,7 +212,7 @@ class ChecklistEndpoint extends Endpoint {
     }
 
     // fetch parent card
-    final card = await Card.db.findById(session, checklist.card);
+    final card = await BoardCard.db.findById(session, checklist.card);
     if (card == null) {
       throw Exception('Parent card not found!');
     }

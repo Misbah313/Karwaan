@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/board/board_details.dart';
+import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_gate.dart';
@@ -99,6 +100,9 @@ class BoardDetailsCard extends StatelessWidget {
                       child: BoardlistGate(
                         boardlistRepo: context.read<BoardlistRepo>(),
                         boardId: board.id,
+                        boardcardRepo: context.read<BoardcardRepo>(),
+                        boardName: board.name,
+
                       ),
                     )));
       },

@@ -11,8 +11,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class Card implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Card._({
+abstract class BoardCard
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  BoardCard._({
     this.id,
     required this.title,
     this.description,
@@ -23,7 +24,7 @@ abstract class Card implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required this.isCompleted,
   });
 
-  factory Card({
+  factory BoardCard({
     int? id,
     required String title,
     String? description,
@@ -32,10 +33,10 @@ abstract class Card implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required DateTime createdAt,
     int? position,
     required bool isCompleted,
-  }) = _CardImpl;
+  }) = _BoardCardImpl;
 
-  factory Card.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Card(
+  factory BoardCard.fromJson(Map<String, dynamic> jsonSerialization) {
+    return BoardCard(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
       description: jsonSerialization['description'] as String?,
@@ -48,9 +49,9 @@ abstract class Card implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     );
   }
 
-  static final t = CardTable();
+  static final t = BoardCardTable();
 
-  static const db = CardRepository._();
+  static const db = BoardCardRepository._();
 
   @override
   int? id;
@@ -72,10 +73,10 @@ abstract class Card implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   _i1.Table<int?> get table => t;
 
-  /// Returns a shallow copy of this [Card]
+  /// Returns a shallow copy of this [BoardCard]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Card copyWith({
+  BoardCard copyWith({
     int? id,
     String? title,
     String? description,
@@ -113,26 +114,26 @@ abstract class Card implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     };
   }
 
-  static CardInclude include() {
-    return CardInclude._();
+  static BoardCardInclude include() {
+    return BoardCardInclude._();
   }
 
-  static CardIncludeList includeList({
-    _i1.WhereExpressionBuilder<CardTable>? where,
+  static BoardCardIncludeList includeList({
+    _i1.WhereExpressionBuilder<BoardCardTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CardTable>? orderBy,
+    _i1.OrderByBuilder<BoardCardTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CardTable>? orderByList,
-    CardInclude? include,
+    _i1.OrderByListBuilder<BoardCardTable>? orderByList,
+    BoardCardInclude? include,
   }) {
-    return CardIncludeList._(
+    return BoardCardIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(Card.t),
+      orderBy: orderBy?.call(BoardCard.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(Card.t),
+      orderByList: orderByList?.call(BoardCard.t),
       include: include,
     );
   }
@@ -145,8 +146,8 @@ abstract class Card implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
 class _Undefined {}
 
-class _CardImpl extends Card {
-  _CardImpl({
+class _BoardCardImpl extends BoardCard {
+  _BoardCardImpl({
     int? id,
     required String title,
     String? description,
@@ -166,11 +167,11 @@ class _CardImpl extends Card {
           isCompleted: isCompleted,
         );
 
-  /// Returns a shallow copy of this [Card]
+  /// Returns a shallow copy of this [BoardCard]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Card copyWith({
+  BoardCard copyWith({
     Object? id = _Undefined,
     String? title,
     Object? description = _Undefined,
@@ -180,7 +181,7 @@ class _CardImpl extends Card {
     Object? position = _Undefined,
     bool? isCompleted,
   }) {
-    return Card(
+    return BoardCard(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
       description: description is String? ? description : this.description,
@@ -193,8 +194,8 @@ class _CardImpl extends Card {
   }
 }
 
-class CardTable extends _i1.Table<int?> {
-  CardTable({super.tableRelation}) : super(tableName: 'card') {
+class BoardCardTable extends _i1.Table<int?> {
+  BoardCardTable({super.tableRelation}) : super(tableName: 'board_card') {
     title = _i1.ColumnString(
       'title',
       this,
@@ -252,19 +253,19 @@ class CardTable extends _i1.Table<int?> {
       ];
 }
 
-class CardInclude extends _i1.IncludeObject {
-  CardInclude._();
+class BoardCardInclude extends _i1.IncludeObject {
+  BoardCardInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Card.t;
+  _i1.Table<int?> get table => BoardCard.t;
 }
 
-class CardIncludeList extends _i1.IncludeList {
-  CardIncludeList._({
-    _i1.WhereExpressionBuilder<CardTable>? where,
+class BoardCardIncludeList extends _i1.IncludeList {
+  BoardCardIncludeList._({
+    _i1.WhereExpressionBuilder<BoardCardTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -272,20 +273,20 @@ class CardIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(Card.t);
+    super.where = where?.call(BoardCard.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Card.t;
+  _i1.Table<int?> get table => BoardCard.t;
 }
 
-class CardRepository {
-  const CardRepository._();
+class BoardCardRepository {
+  const BoardCardRepository._();
 
-  /// Returns a list of [Card]s matching the given query parameters.
+  /// Returns a list of [BoardCard]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -307,20 +308,20 @@ class CardRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<Card>> find(
+  Future<List<BoardCard>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CardTable>? where,
+    _i1.WhereExpressionBuilder<BoardCardTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CardTable>? orderBy,
+    _i1.OrderByBuilder<BoardCardTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CardTable>? orderByList,
+    _i1.OrderByListBuilder<BoardCardTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<Card>(
-      where: where?.call(Card.t),
-      orderBy: orderBy?.call(Card.t),
-      orderByList: orderByList?.call(Card.t),
+    return session.db.find<BoardCard>(
+      where: where?.call(BoardCard.t),
+      orderBy: orderBy?.call(BoardCard.t),
+      orderByList: orderByList?.call(BoardCard.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -328,7 +329,7 @@ class CardRepository {
     );
   }
 
-  /// Returns the first matching [Card] matching the given query parameters.
+  /// Returns the first matching [BoardCard] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -345,136 +346,136 @@ class CardRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<Card?> findFirstRow(
+  Future<BoardCard?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CardTable>? where,
+    _i1.WhereExpressionBuilder<BoardCardTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CardTable>? orderBy,
+    _i1.OrderByBuilder<BoardCardTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<CardTable>? orderByList,
+    _i1.OrderByListBuilder<BoardCardTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<Card>(
-      where: where?.call(Card.t),
-      orderBy: orderBy?.call(Card.t),
-      orderByList: orderByList?.call(Card.t),
+    return session.db.findFirstRow<BoardCard>(
+      where: where?.call(BoardCard.t),
+      orderBy: orderBy?.call(BoardCard.t),
+      orderByList: orderByList?.call(BoardCard.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [Card] by its [id] or null if no such row exists.
-  Future<Card?> findById(
+  /// Finds a single [BoardCard] by its [id] or null if no such row exists.
+  Future<BoardCard?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<Card>(
+    return session.db.findById<BoardCard>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [Card]s in the list and returns the inserted rows.
+  /// Inserts all [BoardCard]s in the list and returns the inserted rows.
   ///
-  /// The returned [Card]s will have their `id` fields set.
+  /// The returned [BoardCard]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<Card>> insert(
+  Future<List<BoardCard>> insert(
     _i1.Session session,
-    List<Card> rows, {
+    List<BoardCard> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Card>(
+    return session.db.insert<BoardCard>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [Card] and returns the inserted row.
+  /// Inserts a single [BoardCard] and returns the inserted row.
   ///
-  /// The returned [Card] will have its `id` field set.
-  Future<Card> insertRow(
+  /// The returned [BoardCard] will have its `id` field set.
+  Future<BoardCard> insertRow(
     _i1.Session session,
-    Card row, {
+    BoardCard row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Card>(
+    return session.db.insertRow<BoardCard>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [Card]s in the list and returns the updated rows. If
+  /// Updates all [BoardCard]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<Card>> update(
+  Future<List<BoardCard>> update(
     _i1.Session session,
-    List<Card> rows, {
-    _i1.ColumnSelections<CardTable>? columns,
+    List<BoardCard> rows, {
+    _i1.ColumnSelections<BoardCardTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Card>(
+    return session.db.update<BoardCard>(
       rows,
-      columns: columns?.call(Card.t),
+      columns: columns?.call(BoardCard.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [Card]. The row needs to have its id set.
+  /// Updates a single [BoardCard]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<Card> updateRow(
+  Future<BoardCard> updateRow(
     _i1.Session session,
-    Card row, {
-    _i1.ColumnSelections<CardTable>? columns,
+    BoardCard row, {
+    _i1.ColumnSelections<BoardCardTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Card>(
+    return session.db.updateRow<BoardCard>(
       row,
-      columns: columns?.call(Card.t),
+      columns: columns?.call(BoardCard.t),
       transaction: transaction,
     );
   }
 
-  /// Deletes all [Card]s in the list and returns the deleted rows.
+  /// Deletes all [BoardCard]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<Card>> delete(
+  Future<List<BoardCard>> delete(
     _i1.Session session,
-    List<Card> rows, {
+    List<BoardCard> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Card>(
+    return session.db.delete<BoardCard>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [Card].
-  Future<Card> deleteRow(
+  /// Deletes a single [BoardCard].
+  Future<BoardCard> deleteRow(
     _i1.Session session,
-    Card row, {
+    BoardCard row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Card>(
+    return session.db.deleteRow<BoardCard>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<Card>> deleteWhere(
+  Future<List<BoardCard>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CardTable> where,
+    required _i1.WhereExpressionBuilder<BoardCardTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Card>(
-      where: where(Card.t),
+    return session.db.deleteWhere<BoardCard>(
+      where: where(BoardCard.t),
       transaction: transaction,
     );
   }
@@ -483,12 +484,12 @@ class CardRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<CardTable>? where,
+    _i1.WhereExpressionBuilder<BoardCardTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Card>(
-      where: where?.call(Card.t),
+    return session.db.count<BoardCard>(
+      where: where?.call(BoardCard.t),
       limit: limit,
       transaction: transaction,
     );

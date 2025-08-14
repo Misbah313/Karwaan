@@ -6,6 +6,11 @@ authentication:
   - registerUser:
   - loginUser:
   - logoutUser:
+boardCard:
+  - createBoardCard:
+  - getListByBoardCard:
+  - updateBoardCard:
+  - deleteBoardCard:
 board:
   - createBoard:
   - getUserBoard:
@@ -24,11 +29,6 @@ boardMember:
   - getBoardMembers:
   - changeBoardMemberRole:
   - leaveBoard:
-card:
-  - createCard:
-  - getListByCard:
-  - updateCard:
-  - deleteCard:
 cardLabel:
   - assignLableToCard:
   - removeLabelFromCard:

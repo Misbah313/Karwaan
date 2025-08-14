@@ -2,7 +2,7 @@ class: Comment
 table: comment
 fields:
   id: int?
-  card: int, relation(parent=card)
+  card: int, relation(parent=board_card)
   author: int, relation(parent=user)
   content: String
   createdAt: DateTime

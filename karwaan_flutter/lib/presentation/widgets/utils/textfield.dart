@@ -27,12 +27,12 @@ class _TextfieldState extends State<Textfield> {
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.blue.shade300,
+              color: Colors.grey.shade700,
             ),
             borderRadius: BorderRadius.circular(12),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue.shade200),
+            borderSide: BorderSide(color: Colors.grey.shade700),
             borderRadius: BorderRadius.circular(12),
           ),
           errorBorder: OutlineInputBorder(
@@ -45,7 +45,7 @@ class _TextfieldState extends State<Textfield> {
             borderRadius: BorderRadius.circular(12),
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Colors.grey.shade200,
           hintText: widget.text,
           hintStyle: GoogleFonts.poppins(fontSize: 15, color: Colors.grey.shade500)
         ),

@@ -11,8 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class Card implements _i1.SerializableModel {
-  Card._({
+abstract class BoardCard implements _i1.SerializableModel {
+  BoardCard._({
     this.id,
     required this.title,
     this.description,
@@ -23,7 +23,7 @@ abstract class Card implements _i1.SerializableModel {
     required this.isCompleted,
   });
 
-  factory Card({
+  factory BoardCard({
     int? id,
     required String title,
     String? description,
@@ -32,10 +32,10 @@ abstract class Card implements _i1.SerializableModel {
     required DateTime createdAt,
     int? position,
     required bool isCompleted,
-  }) = _CardImpl;
+  }) = _BoardCardImpl;
 
-  factory Card.fromJson(Map<String, dynamic> jsonSerialization) {
-    return Card(
+  factory BoardCard.fromJson(Map<String, dynamic> jsonSerialization) {
+    return BoardCard(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
       description: jsonSerialization['description'] as String?,
@@ -67,10 +67,10 @@ abstract class Card implements _i1.SerializableModel {
 
   bool isCompleted;
 
-  /// Returns a shallow copy of this [Card]
+  /// Returns a shallow copy of this [BoardCard]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Card copyWith({
+  BoardCard copyWith({
     int? id,
     String? title,
     String? description,
@@ -102,8 +102,8 @@ abstract class Card implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _CardImpl extends Card {
-  _CardImpl({
+class _BoardCardImpl extends BoardCard {
+  _BoardCardImpl({
     int? id,
     required String title,
     String? description,
@@ -123,11 +123,11 @@ class _CardImpl extends Card {
           isCompleted: isCompleted,
         );
 
-  /// Returns a shallow copy of this [Card]
+  /// Returns a shallow copy of this [BoardCard]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Card copyWith({
+  BoardCard copyWith({
     Object? id = _Undefined,
     String? title,
     Object? description = _Undefined,
@@ -137,7 +137,7 @@ class _CardImpl extends Card {
     Object? position = _Undefined,
     bool? isCompleted,
   }) {
-    return Card(
+    return BoardCard(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
       description: description is String? ? description : this.description,

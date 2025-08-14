@@ -12,10 +12,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/attachment_endpoint.dart' as _i2;
 import '../endpoints/authentication_endpoint.dart' as _i3;
-import '../endpoints/board_endpoint.dart' as _i4;
-import '../endpoints/board_list_endpoint.dart' as _i5;
-import '../endpoints/board_member_endpoint.dart' as _i6;
-import '../endpoints/card_endpoint.dart' as _i7;
+import '../endpoints/board_card_endpoint.dart' as _i4;
+import '../endpoints/board_endpoint.dart' as _i5;
+import '../endpoints/board_list_endpoint.dart' as _i6;
+import '../endpoints/board_member_endpoint.dart' as _i7;
 import '../endpoints/card_label_endpoint.dart' as _i8;
 import '../endpoints/checklist_endpoint.dart' as _i9;
 import '../endpoints/checklist_item_endpoint.dart' as _i10;
@@ -44,28 +44,28 @@ class Endpoints extends _i1.EndpointDispatch {
           'authentication',
           null,
         ),
-      'board': _i4.BoardEndpoint()
+      'boardCard': _i4.BoardCardEndpoint()
+        ..initialize(
+          server,
+          'boardCard',
+          null,
+        ),
+      'board': _i5.BoardEndpoint()
         ..initialize(
           server,
           'board',
           null,
         ),
-      'boardList': _i5.BoardListEndpoint()
+      'boardList': _i6.BoardListEndpoint()
         ..initialize(
           server,
           'boardList',
           null,
         ),
-      'boardMember': _i6.BoardMemberEndpoint()
+      'boardMember': _i7.BoardMemberEndpoint()
         ..initialize(
           server,
           'boardMember',
-          null,
-        ),
-      'card': _i7.CardEndpoint()
-        ..initialize(
-          server,
-          'card',
           null,
         ),
       'cardLabel': _i8.CardLabelEndpoint()
@@ -297,6 +297,139 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['boardCard'] = _i1.EndpointConnector(
+      name: 'boardCard',
+      endpoint: endpoints['boardCard']!,
+      methodConnectors: {
+        'createBoardCard': _i1.MethodConnector(
+          name: 'createBoardCard',
+          params: {
+            'boardListId': _i1.ParameterDescription(
+              name: 'boardListId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'title': _i1.ParameterDescription(
+              name: 'title',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'dec': _i1.ParameterDescription(
+              name: 'dec',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i4.BoardCardEndpoint).createBoardCard(
+            session,
+            params['boardListId'],
+            params['token'],
+            params['title'],
+            dec: params['dec'],
+          ),
+        ),
+        'getListByBoardCard': _i1.MethodConnector(
+          name: 'getListByBoardCard',
+          params: {
+            'boardListId': _i1.ParameterDescription(
+              name: 'boardListId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i4.BoardCardEndpoint)
+                  .getListByBoardCard(
+            session,
+            params['boardListId'],
+            params['token'],
+          ),
+        ),
+        'updateBoardCard': _i1.MethodConnector(
+          name: 'updateBoardCard',
+          params: {
+            'cardId': _i1.ParameterDescription(
+              name: 'cardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'newTitle': _i1.ParameterDescription(
+              name: 'newTitle',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'newDec': _i1.ParameterDescription(
+              name: 'newDec',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'completed': _i1.ParameterDescription(
+              name: 'completed',
+              type: _i1.getType<bool?>(),
+              nullable: true,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i4.BoardCardEndpoint).updateBoardCard(
+            session,
+            params['cardId'],
+            params['token'],
+            params['newTitle'],
+            params['newDec'],
+            params['completed'],
+          ),
+        ),
+        'deleteBoardCard': _i1.MethodConnector(
+          name: 'deleteBoardCard',
+          params: {
+            'cardId': _i1.ParameterDescription(
+              name: 'cardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i4.BoardCardEndpoint).deleteBoardCard(
+            session,
+            params['cardId'],
+            params['token'],
+          ),
+        ),
+      },
+    );
     connectors['board'] = _i1.EndpointConnector(
       name: 'board',
       endpoint: endpoints['board']!,
@@ -329,7 +462,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['board'] as _i4.BoardEndpoint).createBoard(
+              (endpoints['board'] as _i5.BoardEndpoint).createBoard(
             session,
             params['workspaceId'],
             params['name'],
@@ -355,7 +488,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['board'] as _i4.BoardEndpoint).getUserBoard(
+              (endpoints['board'] as _i5.BoardEndpoint).getUserBoard(
             session,
             params['boardId'],
             params['token'],
@@ -374,7 +507,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['board'] as _i4.BoardEndpoint).getUserBoards(
+              (endpoints['board'] as _i5.BoardEndpoint).getUserBoards(
             session,
             params['token'],
           ),
@@ -407,7 +540,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['board'] as _i4.BoardEndpoint).updateBoard(
+              (endpoints['board'] as _i5.BoardEndpoint).updateBoard(
             session,
             params['boardId'],
             params['token'],
@@ -433,7 +566,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['board'] as _i4.BoardEndpoint).deleteBoard(
+              (endpoints['board'] as _i5.BoardEndpoint).deleteBoard(
             session,
             params['boardId'],
             params['token'],
@@ -457,7 +590,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['board'] as _i4.BoardEndpoint).getBoardsByWorkspace(
+              (endpoints['board'] as _i5.BoardEndpoint).getBoardsByWorkspace(
             session,
             params['workspaceId'],
             params['token'],
@@ -492,7 +625,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardList'] as _i5.BoardListEndpoint).createBoardList(
+              (endpoints['boardList'] as _i6.BoardListEndpoint).createBoardList(
             session,
             params['boardId'],
             params['token'],
@@ -517,7 +650,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardList'] as _i5.BoardListEndpoint).listBoardLists(
+              (endpoints['boardList'] as _i6.BoardListEndpoint).listBoardLists(
             session,
             params['boardId'],
             params['token'],
@@ -546,7 +679,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardList'] as _i5.BoardListEndpoint).updateBoardList(
+              (endpoints['boardList'] as _i6.BoardListEndpoint).updateBoardList(
             session,
             params['listId'],
             params['token'],
@@ -571,7 +704,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardList'] as _i5.BoardListEndpoint).deleteBoardList(
+              (endpoints['boardList'] as _i6.BoardListEndpoint).deleteBoardList(
             session,
             params['listId'],
             params['token'],
@@ -606,7 +739,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardMember'] as _i6.BoardMemberEndpoint)
+              (endpoints['boardMember'] as _i7.BoardMemberEndpoint)
                   .addMemberToBoard(
             session,
             params['boardId'],
@@ -637,7 +770,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardMember'] as _i6.BoardMemberEndpoint)
+              (endpoints['boardMember'] as _i7.BoardMemberEndpoint)
                   .removeMemberFromBoard(
             session,
             params['boardId'],
@@ -663,7 +796,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardMember'] as _i6.BoardMemberEndpoint)
+              (endpoints['boardMember'] as _i7.BoardMemberEndpoint)
                   .getBoardMembers(
             session,
             params['boardId'],
@@ -698,7 +831,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardMember'] as _i6.BoardMemberEndpoint)
+              (endpoints['boardMember'] as _i7.BoardMemberEndpoint)
                   .changeBoardMemberRole(
             session,
             params['boardId'],
@@ -725,141 +858,9 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['boardMember'] as _i6.BoardMemberEndpoint).leaveBoard(
+              (endpoints['boardMember'] as _i7.BoardMemberEndpoint).leaveBoard(
             session,
             params['boardId'],
-            params['token'],
-          ),
-        ),
-      },
-    );
-    connectors['card'] = _i1.EndpointConnector(
-      name: 'card',
-      endpoint: endpoints['card']!,
-      methodConnectors: {
-        'createCard': _i1.MethodConnector(
-          name: 'createCard',
-          params: {
-            'boardListId': _i1.ParameterDescription(
-              name: 'boardListId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'token': _i1.ParameterDescription(
-              name: 'token',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'title': _i1.ParameterDescription(
-              name: 'title',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'dec': _i1.ParameterDescription(
-              name: 'dec',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['card'] as _i7.CardEndpoint).createCard(
-            session,
-            params['boardListId'],
-            params['token'],
-            params['title'],
-            dec: params['dec'],
-          ),
-        ),
-        'getListByCard': _i1.MethodConnector(
-          name: 'getListByCard',
-          params: {
-            'boardListId': _i1.ParameterDescription(
-              name: 'boardListId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'token': _i1.ParameterDescription(
-              name: 'token',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['card'] as _i7.CardEndpoint).getListByCard(
-            session,
-            params['boardListId'],
-            params['token'],
-          ),
-        ),
-        'updateCard': _i1.MethodConnector(
-          name: 'updateCard',
-          params: {
-            'cardId': _i1.ParameterDescription(
-              name: 'cardId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'token': _i1.ParameterDescription(
-              name: 'token',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'newTitle': _i1.ParameterDescription(
-              name: 'newTitle',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'newDec': _i1.ParameterDescription(
-              name: 'newDec',
-              type: _i1.getType<String?>(),
-              nullable: true,
-            ),
-            'completed': _i1.ParameterDescription(
-              name: 'completed',
-              type: _i1.getType<bool?>(),
-              nullable: true,
-            ),
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['card'] as _i7.CardEndpoint).updateCard(
-            session,
-            params['cardId'],
-            params['token'],
-            params['newTitle'],
-            params['newDec'],
-            params['completed'],
-          ),
-        ),
-        'deleteCard': _i1.MethodConnector(
-          name: 'deleteCard',
-          params: {
-            'cardId': _i1.ParameterDescription(
-              name: 'cardId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'token': _i1.ParameterDescription(
-              name: 'token',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['card'] as _i7.CardEndpoint).deleteCard(
-            session,
-            params['cardId'],
             params['token'],
           ),
         ),

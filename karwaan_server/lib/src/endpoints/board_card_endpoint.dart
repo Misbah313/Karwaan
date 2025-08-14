@@ -3,9 +3,9 @@ import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
-class CardEndpoint extends Endpoint {
+class BoardCardEndpoint extends Endpoint {
   // create card
-  Future<Card> createCard(
+  Future<BoardCard> createBoardCard(
       Session session, int boardListId, String token, String title,
       {String? dec}) async {
     // validate token(get current user)
@@ -28,7 +28,7 @@ class CardEndpoint extends Endpoint {
       }
 
       // set the required fields and create the card obj
-      final card = Card(
+      final card = BoardCard(
         title: trimmedTitle,
         createdBy: currentUser.id!,
         description: dec?.trim(),
@@ -38,7 +38,7 @@ class CardEndpoint extends Endpoint {
       );
 
       // insert the created card into the db
-      final insertedCard = await Card.db.insertRow(session, card);
+      final insertedCard = await BoardCard.db.insertRow(session, card);
       return insertedCard;
     } catch (e) {
       throw Exception(e);
@@ -46,7 +46,7 @@ class CardEndpoint extends Endpoint {
   }
 
   // get cards by list
-  Future<List<Card>> getListByCard(
+  Future<List<BoardCard>> getListByBoardCard(
       Session session, int boardListId, String token) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
@@ -74,7 +74,7 @@ class CardEndpoint extends Endpoint {
     try {
       // Query all cards linked to this board list
       // fetch all card
-      final fetch = await Card.db.find(
+      final fetch = await BoardCard.db.find(
         session,
         where: (c) => c.list.equals(boardListId),
         orderBy: (c) => c.createdAt,
@@ -87,7 +87,7 @@ class CardEndpoint extends Endpoint {
   }
 
   // upadate cards
-  Future<Card> updateCard(Session session, int cardId, String token,
+  Future<BoardCard> updateBoardCard(Session session, int cardId, String token,
       String newTitle, String? newDec, bool? completed) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
@@ -96,7 +96,7 @@ class CardEndpoint extends Endpoint {
     }
 
     // fetch card by card id
-    final card = await Card.db.findById(session, cardId);
+    final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
       throw Exception('No card found!');
     }
@@ -141,7 +141,7 @@ class CardEndpoint extends Endpoint {
       }
 
       // save the changes
-      await Card.db.updateRow(session, card);
+      await BoardCard.db.updateRow(session, card);
       return card;
     } catch (e) {
       throw Exception(e);
@@ -149,7 +149,7 @@ class CardEndpoint extends Endpoint {
   }
 
   // delete cards
-  Future<bool> deleteCard(Session session, int cardId, String token) async {
+  Future<bool> deleteBoardCard(Session session, int cardId, String token) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
@@ -157,7 +157,7 @@ class CardEndpoint extends Endpoint {
     }
 
     // fetch card by card id
-    final card = await Card.db.findById(session, cardId);
+    final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
       throw Exception('No card found!');
     }
@@ -186,7 +186,7 @@ class CardEndpoint extends Endpoint {
           card.createdBy == currentUser.id!) {
         // allow deletion
 
-        await Card.db.deleteRow(session, card);
+        await BoardCard.db.deleteRow(session, card);
         return true;
       } else {
         throw Exception("You don't have the permission to delete this card!");

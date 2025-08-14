@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/board/board.dart';
 
-class BoardCard extends StatelessWidget {
+class BoardCardBoard extends StatelessWidget {
   final Board board;
-  const BoardCard({super.key, required this.board});
+  const BoardCardBoard({super.key, required this.board});
 
   // build header with the menu button
   Widget _buildHeader(BuildContext context) {

@@ -13,7 +13,7 @@ class CommentEndpoint extends Endpoint {
     }
 
     // check if the card id (the comment want be add to) exists
-    final card = await Card.db.findById(session, cardId);
+    final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
       throw Exception('No card found!');
     }
@@ -69,7 +69,7 @@ class CommentEndpoint extends Endpoint {
     }
 
     // card the parent card existence
-    final card = await Card.db.findById(session, cardId);
+    final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
       throw Exception('Card not found!');
     }
@@ -164,7 +164,7 @@ class CommentEndpoint extends Endpoint {
     }
 
     // user role check
-    final card = await Card.db.findById(session, comment.card);
+    final card = await BoardCard.db.findById(session, comment.card);
     if (card == null) {
       throw Exception('Card not found');
     }
