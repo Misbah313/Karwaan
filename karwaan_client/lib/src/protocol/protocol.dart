@@ -14,11 +14,11 @@ import 'greeting.dart' as _i2;
 import 'attachment.dart' as _i3;
 import 'auth_response.dart' as _i4;
 import 'board.dart' as _i5;
-import 'board_details.dart' as _i6;
-import 'board_list.dart' as _i7;
-import 'board_member.dart' as _i8;
-import 'board_member_details.dart' as _i9;
-import 'card.dart' as _i10;
+import 'board_card.dart' as _i6;
+import 'board_details.dart' as _i7;
+import 'board_list.dart' as _i8;
+import 'board_member.dart' as _i9;
+import 'board_member_details.dart' as _i10;
 import 'card_label.dart' as _i11;
 import 'checklist.dart' as _i12;
 import 'checklist_item.dart' as _i13;
@@ -30,10 +30,10 @@ import 'workspace.dart' as _i18;
 import 'workspace_member.dart' as _i19;
 import 'workspace_member_details.dart' as _i20;
 import 'package:karwaan_client/src/protocol/attachment.dart' as _i21;
-import 'package:karwaan_client/src/protocol/board_details.dart' as _i22;
-import 'package:karwaan_client/src/protocol/board_list.dart' as _i23;
-import 'package:karwaan_client/src/protocol/board_member_details.dart' as _i24;
-import 'package:karwaan_client/src/protocol/card.dart' as _i25;
+import 'package:karwaan_client/src/protocol/board_card.dart' as _i22;
+import 'package:karwaan_client/src/protocol/board_details.dart' as _i23;
+import 'package:karwaan_client/src/protocol/board_list.dart' as _i24;
+import 'package:karwaan_client/src/protocol/board_member_details.dart' as _i25;
 import 'package:karwaan_client/src/protocol/label.dart' as _i26;
 import 'package:karwaan_client/src/protocol/checklist.dart' as _i27;
 import 'package:karwaan_client/src/protocol/checklist_item.dart' as _i28;
@@ -46,11 +46,11 @@ export 'greeting.dart';
 export 'attachment.dart';
 export 'auth_response.dart';
 export 'board.dart';
+export 'board_card.dart';
 export 'board_details.dart';
 export 'board_list.dart';
 export 'board_member.dart';
 export 'board_member_details.dart';
-export 'card.dart';
 export 'card_label.dart';
 export 'checklist.dart';
 export 'checklist_item.dart';
@@ -88,20 +88,20 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i5.Board) {
       return _i5.Board.fromJson(data) as T;
     }
-    if (t == _i6.BoardDetails) {
-      return _i6.BoardDetails.fromJson(data) as T;
+    if (t == _i6.BoardCard) {
+      return _i6.BoardCard.fromJson(data) as T;
     }
-    if (t == _i7.BoardList) {
-      return _i7.BoardList.fromJson(data) as T;
+    if (t == _i7.BoardDetails) {
+      return _i7.BoardDetails.fromJson(data) as T;
     }
-    if (t == _i8.BoardMember) {
-      return _i8.BoardMember.fromJson(data) as T;
+    if (t == _i8.BoardList) {
+      return _i8.BoardList.fromJson(data) as T;
     }
-    if (t == _i9.BoardMemberDetails) {
-      return _i9.BoardMemberDetails.fromJson(data) as T;
+    if (t == _i9.BoardMember) {
+      return _i9.BoardMember.fromJson(data) as T;
     }
-    if (t == _i10.Card) {
-      return _i10.Card.fromJson(data) as T;
+    if (t == _i10.BoardMemberDetails) {
+      return _i10.BoardMemberDetails.fromJson(data) as T;
     }
     if (t == _i11.CardLabel) {
       return _i11.CardLabel.fromJson(data) as T;
@@ -145,20 +145,21 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i5.Board?>()) {
       return (data != null ? _i5.Board.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.BoardDetails?>()) {
-      return (data != null ? _i6.BoardDetails.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.BoardCard?>()) {
+      return (data != null ? _i6.BoardCard.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.BoardList?>()) {
-      return (data != null ? _i7.BoardList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.BoardDetails?>()) {
+      return (data != null ? _i7.BoardDetails.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.BoardMember?>()) {
-      return (data != null ? _i8.BoardMember.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.BoardList?>()) {
+      return (data != null ? _i8.BoardList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.BoardMemberDetails?>()) {
-      return (data != null ? _i9.BoardMemberDetails.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.BoardMember?>()) {
+      return (data != null ? _i9.BoardMember.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.Card?>()) {
-      return (data != null ? _i10.Card.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.BoardMemberDetails?>()) {
+      return (data != null ? _i10.BoardMemberDetails.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i11.CardLabel?>()) {
       return (data != null ? _i11.CardLabel.fromJson(data) : null) as T;
@@ -198,22 +199,23 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i21.Attachment>(e)).toList()
           as T;
     }
-    if (t == List<_i22.BoardDetails>) {
-      return (data as List)
-          .map((e) => deserialize<_i22.BoardDetails>(e))
-          .toList() as T;
-    }
-    if (t == List<_i23.BoardList>) {
-      return (data as List).map((e) => deserialize<_i23.BoardList>(e)).toList()
+    if (t == List<_i22.BoardCard>) {
+      return (data as List).map((e) => deserialize<_i22.BoardCard>(e)).toList()
           as T;
     }
-    if (t == List<_i24.BoardMemberDetails>) {
+    if (t == List<_i23.BoardDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i24.BoardMemberDetails>(e))
+          .map((e) => deserialize<_i23.BoardDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i25.Card>) {
-      return (data as List).map((e) => deserialize<_i25.Card>(e)).toList() as T;
+    if (t == List<_i24.BoardList>) {
+      return (data as List).map((e) => deserialize<_i24.BoardList>(e)).toList()
+          as T;
+    }
+    if (t == List<_i25.BoardMemberDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i25.BoardMemberDetails>(e))
+          .toList() as T;
     }
     if (t == List<_i26.Label>) {
       return (data as List).map((e) => deserialize<_i26.Label>(e)).toList()
@@ -263,20 +265,20 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i5.Board) {
       return 'Board';
     }
-    if (data is _i6.BoardDetails) {
+    if (data is _i6.BoardCard) {
+      return 'BoardCard';
+    }
+    if (data is _i7.BoardDetails) {
       return 'BoardDetails';
     }
-    if (data is _i7.BoardList) {
+    if (data is _i8.BoardList) {
       return 'BoardList';
     }
-    if (data is _i8.BoardMember) {
+    if (data is _i9.BoardMember) {
       return 'BoardMember';
     }
-    if (data is _i9.BoardMemberDetails) {
+    if (data is _i10.BoardMemberDetails) {
       return 'BoardMemberDetails';
-    }
-    if (data is _i10.Card) {
-      return 'Card';
     }
     if (data is _i11.CardLabel) {
       return 'CardLabel';
@@ -329,20 +331,20 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Board') {
       return deserialize<_i5.Board>(data['data']);
     }
+    if (dataClassName == 'BoardCard') {
+      return deserialize<_i6.BoardCard>(data['data']);
+    }
     if (dataClassName == 'BoardDetails') {
-      return deserialize<_i6.BoardDetails>(data['data']);
+      return deserialize<_i7.BoardDetails>(data['data']);
     }
     if (dataClassName == 'BoardList') {
-      return deserialize<_i7.BoardList>(data['data']);
+      return deserialize<_i8.BoardList>(data['data']);
     }
     if (dataClassName == 'BoardMember') {
-      return deserialize<_i8.BoardMember>(data['data']);
+      return deserialize<_i9.BoardMember>(data['data']);
     }
     if (dataClassName == 'BoardMemberDetails') {
-      return deserialize<_i9.BoardMemberDetails>(data['data']);
-    }
-    if (dataClassName == 'Card') {
-      return deserialize<_i10.Card>(data['data']);
+      return deserialize<_i10.BoardMemberDetails>(data['data']);
     }
     if (dataClassName == 'CardLabel') {
       return deserialize<_i11.CardLabel>(data['data']);
