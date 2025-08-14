@@ -15,11 +15,11 @@ import 'greeting.dart' as _i3;
 import 'attachment.dart' as _i4;
 import 'auth_response.dart' as _i5;
 import 'board.dart' as _i6;
-import 'board_details.dart' as _i7;
-import 'board_list.dart' as _i8;
-import 'board_member.dart' as _i9;
-import 'board_member_details.dart' as _i10;
-import 'card.dart' as _i11;
+import 'board_card.dart' as _i7;
+import 'board_details.dart' as _i8;
+import 'board_list.dart' as _i9;
+import 'board_member.dart' as _i10;
+import 'board_member_details.dart' as _i11;
 import 'card_label.dart' as _i12;
 import 'checklist.dart' as _i13;
 import 'checklist_item.dart' as _i14;
@@ -31,10 +31,10 @@ import 'workspace.dart' as _i19;
 import 'workspace_member.dart' as _i20;
 import 'workspace_member_details.dart' as _i21;
 import 'package:karwaan_server/src/generated/attachment.dart' as _i22;
-import 'package:karwaan_server/src/generated/board_details.dart' as _i23;
-import 'package:karwaan_server/src/generated/board_list.dart' as _i24;
-import 'package:karwaan_server/src/generated/board_member_details.dart' as _i25;
-import 'package:karwaan_server/src/generated/card.dart' as _i26;
+import 'package:karwaan_server/src/generated/board_card.dart' as _i23;
+import 'package:karwaan_server/src/generated/board_details.dart' as _i24;
+import 'package:karwaan_server/src/generated/board_list.dart' as _i25;
+import 'package:karwaan_server/src/generated/board_member_details.dart' as _i26;
 import 'package:karwaan_server/src/generated/label.dart' as _i27;
 import 'package:karwaan_server/src/generated/checklist.dart' as _i28;
 import 'package:karwaan_server/src/generated/checklist_item.dart' as _i29;
@@ -47,11 +47,11 @@ export 'greeting.dart';
 export 'attachment.dart';
 export 'auth_response.dart';
 export 'board.dart';
+export 'board_card.dart';
 export 'board_details.dart';
 export 'board_list.dart';
 export 'board_member.dart';
 export 'board_member_details.dart';
-export 'card.dart';
 export 'card_label.dart';
 export 'checklist.dart';
 export 'checklist_item.dart';
@@ -107,7 +107,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'attachment_fk_0',
           columns: ['card'],
-          referenceTable: 'card',
+          referenceTable: 'board_card',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -211,6 +211,101 @@ class Protocol extends _i1.SerializationManagerServer {
       indexes: [
         _i2.IndexDefinition(
           indexName: 'board_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'board_card',
+      dartName: 'BoardCard',
+      schema: 'public',
+      module: 'karwaan',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'board_card_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'list',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'position',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isCompleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'board_card_fk_0',
+          columns: ['createdBy'],
+          referenceTable: 'user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'board_card_fk_1',
+          columns: ['list'],
+          referenceTable: 'board_list',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'board_card_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -526,101 +621,6 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'card',
-      dartName: 'Card',
-      schema: 'public',
-      module: 'karwaan',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'card_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'title',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'description',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdBy',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'list',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          dartType: 'DateTime',
-        ),
-        _i2.ColumnDefinition(
-          name: 'position',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'isCompleted',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'card_fk_0',
-          columns: ['createdBy'],
-          referenceTable: 'user',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.noAction,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'card_fk_1',
-          columns: ['list'],
-          referenceTable: 'board_list',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.noAction,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'card_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'card_label',
       dartName: 'CardLabel',
       schema: 'public',
@@ -650,7 +650,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'card_label_fk_0',
           columns: ['card'],
-          referenceTable: 'card',
+          referenceTable: 'board_card',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -727,7 +727,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'check_list_fk_0',
           columns: ['card'],
-          referenceTable: 'card',
+          referenceTable: 'board_card',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -881,7 +881,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'comment_fk_0',
           columns: ['card'],
-          referenceTable: 'card',
+          referenceTable: 'board_card',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -1354,20 +1354,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i6.Board) {
       return _i6.Board.fromJson(data) as T;
     }
-    if (t == _i7.BoardDetails) {
-      return _i7.BoardDetails.fromJson(data) as T;
+    if (t == _i7.BoardCard) {
+      return _i7.BoardCard.fromJson(data) as T;
     }
-    if (t == _i8.BoardList) {
-      return _i8.BoardList.fromJson(data) as T;
+    if (t == _i8.BoardDetails) {
+      return _i8.BoardDetails.fromJson(data) as T;
     }
-    if (t == _i9.BoardMember) {
-      return _i9.BoardMember.fromJson(data) as T;
+    if (t == _i9.BoardList) {
+      return _i9.BoardList.fromJson(data) as T;
     }
-    if (t == _i10.BoardMemberDetails) {
-      return _i10.BoardMemberDetails.fromJson(data) as T;
+    if (t == _i10.BoardMember) {
+      return _i10.BoardMember.fromJson(data) as T;
     }
-    if (t == _i11.Card) {
-      return _i11.Card.fromJson(data) as T;
+    if (t == _i11.BoardMemberDetails) {
+      return _i11.BoardMemberDetails.fromJson(data) as T;
     }
     if (t == _i12.CardLabel) {
       return _i12.CardLabel.fromJson(data) as T;
@@ -1411,21 +1411,21 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i6.Board?>()) {
       return (data != null ? _i6.Board.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.BoardDetails?>()) {
-      return (data != null ? _i7.BoardDetails.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.BoardCard?>()) {
+      return (data != null ? _i7.BoardCard.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.BoardList?>()) {
-      return (data != null ? _i8.BoardList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.BoardDetails?>()) {
+      return (data != null ? _i8.BoardDetails.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.BoardMember?>()) {
-      return (data != null ? _i9.BoardMember.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.BoardList?>()) {
+      return (data != null ? _i9.BoardList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.BoardMemberDetails?>()) {
-      return (data != null ? _i10.BoardMemberDetails.fromJson(data) : null)
+    if (t == _i1.getType<_i10.BoardMember?>()) {
+      return (data != null ? _i10.BoardMember.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.BoardMemberDetails?>()) {
+      return (data != null ? _i11.BoardMemberDetails.fromJson(data) : null)
           as T;
-    }
-    if (t == _i1.getType<_i11.Card?>()) {
-      return (data != null ? _i11.Card.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i12.CardLabel?>()) {
       return (data != null ? _i12.CardLabel.fromJson(data) : null) as T;
@@ -1465,22 +1465,23 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i22.Attachment>(e)).toList()
           as T;
     }
-    if (t == List<_i23.BoardDetails>) {
-      return (data as List)
-          .map((e) => deserialize<_i23.BoardDetails>(e))
-          .toList() as T;
-    }
-    if (t == List<_i24.BoardList>) {
-      return (data as List).map((e) => deserialize<_i24.BoardList>(e)).toList()
+    if (t == List<_i23.BoardCard>) {
+      return (data as List).map((e) => deserialize<_i23.BoardCard>(e)).toList()
           as T;
     }
-    if (t == List<_i25.BoardMemberDetails>) {
+    if (t == List<_i24.BoardDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i25.BoardMemberDetails>(e))
+          .map((e) => deserialize<_i24.BoardDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i26.Card>) {
-      return (data as List).map((e) => deserialize<_i26.Card>(e)).toList() as T;
+    if (t == List<_i25.BoardList>) {
+      return (data as List).map((e) => deserialize<_i25.BoardList>(e)).toList()
+          as T;
+    }
+    if (t == List<_i26.BoardMemberDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i26.BoardMemberDetails>(e))
+          .toList() as T;
     }
     if (t == List<_i27.Label>) {
       return (data as List).map((e) => deserialize<_i27.Label>(e)).toList()
@@ -1533,20 +1534,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i6.Board) {
       return 'Board';
     }
-    if (data is _i7.BoardDetails) {
+    if (data is _i7.BoardCard) {
+      return 'BoardCard';
+    }
+    if (data is _i8.BoardDetails) {
       return 'BoardDetails';
     }
-    if (data is _i8.BoardList) {
+    if (data is _i9.BoardList) {
       return 'BoardList';
     }
-    if (data is _i9.BoardMember) {
+    if (data is _i10.BoardMember) {
       return 'BoardMember';
     }
-    if (data is _i10.BoardMemberDetails) {
+    if (data is _i11.BoardMemberDetails) {
       return 'BoardMemberDetails';
-    }
-    if (data is _i11.Card) {
-      return 'Card';
     }
     if (data is _i12.CardLabel) {
       return 'CardLabel';
@@ -1603,20 +1604,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Board') {
       return deserialize<_i6.Board>(data['data']);
     }
+    if (dataClassName == 'BoardCard') {
+      return deserialize<_i7.BoardCard>(data['data']);
+    }
     if (dataClassName == 'BoardDetails') {
-      return deserialize<_i7.BoardDetails>(data['data']);
+      return deserialize<_i8.BoardDetails>(data['data']);
     }
     if (dataClassName == 'BoardList') {
-      return deserialize<_i8.BoardList>(data['data']);
+      return deserialize<_i9.BoardList>(data['data']);
     }
     if (dataClassName == 'BoardMember') {
-      return deserialize<_i9.BoardMember>(data['data']);
+      return deserialize<_i10.BoardMember>(data['data']);
     }
     if (dataClassName == 'BoardMemberDetails') {
-      return deserialize<_i10.BoardMemberDetails>(data['data']);
-    }
-    if (dataClassName == 'Card') {
-      return deserialize<_i11.Card>(data['data']);
+      return deserialize<_i11.BoardMemberDetails>(data['data']);
     }
     if (dataClassName == 'CardLabel') {
       return deserialize<_i12.CardLabel>(data['data']);
@@ -1668,16 +1669,16 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i4.Attachment.t;
       case _i6.Board:
         return _i6.Board.t;
-      case _i7.BoardDetails:
-        return _i7.BoardDetails.t;
-      case _i8.BoardList:
-        return _i8.BoardList.t;
-      case _i9.BoardMember:
-        return _i9.BoardMember.t;
-      case _i10.BoardMemberDetails:
-        return _i10.BoardMemberDetails.t;
-      case _i11.Card:
-        return _i11.Card.t;
+      case _i7.BoardCard:
+        return _i7.BoardCard.t;
+      case _i8.BoardDetails:
+        return _i8.BoardDetails.t;
+      case _i9.BoardList:
+        return _i9.BoardList.t;
+      case _i10.BoardMember:
+        return _i10.BoardMember.t;
+      case _i11.BoardMemberDetails:
+        return _i11.BoardMemberDetails.t;
       case _i12.CardLabel:
         return _i12.CardLabel.t;
       case _i13.CheckList:
