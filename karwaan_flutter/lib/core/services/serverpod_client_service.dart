@@ -14,7 +14,7 @@ class ServerpodClientService {
   // initialize serverpod client service (Long-term: Switch to .env before deploying (even to test servers).1: add flutter_dotenv package, 2:Create .env(SERVERPOD_URL=http://10.226.253.89:8080/) 3: Load it in main.dart(void main() aysnc { await dotev.load(fileName: '.env'); final serverpodUrl = dotenv.get('Serverpo Url')}), 4: update serverpod clinet(Client(serverpodUrl)));
   Future<void> initialize() async {
     client = Client(
-      'http://10.226.253.89:8080/',
+      'http://10.136.73.89:8080/',
     )..connectivityMonitor = FlutterConnectivityMonitor();
 
     final storedToken = await _authTokenStorage.getToken();
@@ -583,6 +583,133 @@ class ServerpodClientService {
       }
 
       return await client.boardCard.deleteBoardCard(cardId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // ============================================================ LABEL + CARDLABEL ==================================================== //
+
+  // ==> LABEL:
+
+  // create label
+  Future<Label> createLabel(int boardId, String title, String color) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final create =
+          await client.label.createLabel(boardId, token, title, color);
+      return create;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get labels for board
+  Future<List<Label>> getLabelsForBoard(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final labels = await client.label.getLabelsForBoard(boardId, token);
+      return labels;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update label
+  Future<Label> updateLabel(
+      int labelId, String newTitle, String newColor) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final updated = await client.label.updateLabel(labelId, token, newTitle: newTitle, newColor: newColor);
+      return updated;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete label
+  Future<bool> deleteLabel(int labelId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.label.deleteLabel(labelId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // ===> CARD LABEL:
+
+  // assign label to card
+  Future<CardLabel> assignLabelToCard(int labelId, int cardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final cardlabel =
+          await client.cardLabel.assignLableToCard(labelId, cardId, token);
+      return cardlabel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // remove label from card
+  Future<void> removeLabelFromCard(int cardId, int labelId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      await client.cardLabel.removeLabelFromCard(cardId, labelId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get labels for card
+  Future<List<Label>> getLabelsforCard(int cardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final labels = await client.cardLabel.getLabelForCard(cardId, token);
+      return labels;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get cards for label
+  Future<List<BoardCard>> getCardsForLabel(int labelId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final cards = await client.cardLabel.getCardForLabel(labelId, token);
+      return cards;
     } catch (e) {
       rethrow;
     }
