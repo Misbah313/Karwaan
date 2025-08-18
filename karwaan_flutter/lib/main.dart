@@ -7,11 +7,15 @@ import 'package:karwaan_flutter/data/repositories/auth/auth_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/board/board_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/boardcard/board_card_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/boardlist/boardlist_remote_repo.dart';
+import 'package:karwaan_flutter/data/repositories/cardlabel/cardlabel_remote_repo.dart';
+import 'package:karwaan_flutter/data/repositories/label/label_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/workspace/workspace_remote_repo.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
+import 'package:karwaan_flutter/domain/repository/cardlabel/cardlabel_repo.dart';
+import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_gate.dart';
@@ -29,6 +33,8 @@ void main() async {
   final boardRepo = BoardRemoteRepo(serverpodClientService);
   final boardlistRepo = BoardlistRemoteRepo(serverpodClientService);
   final boardcardRepo = BoardCardRemoteRepo(serverpodClientService);
+  final labelRepo = LabelRemoteRepo(serverpodClientService);
+  final cardLabelRepo = CardlabelRemoteRepo(serverpodClientService);
 
   runApp(
     MultiProvider(
@@ -38,6 +44,8 @@ void main() async {
         Provider<BoardRepo>(create: (_) => boardRepo),
         Provider<BoardlistRepo>(create: (_) => boardlistRepo),
         Provider<BoardcardRepo>(create: (_) => boardcardRepo),
+        Provider<LabelRepo>(create: (_) => labelRepo),
+        Provider<CardlabelRepo>(create: (_) => cardLabelRepo),
         BlocProvider<AuthCubit>(
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
