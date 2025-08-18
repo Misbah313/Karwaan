@@ -5,9 +5,12 @@ import 'package:karwaan_flutter/domain/models/board/board_credentials.dart';
 import 'package:karwaan_flutter/domain/models/board/board_details.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_state.dart';
 import 'package:karwaan_flutter/domain/models/board/board_state.dart';
+import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/board/board_add_member_dialog.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/board/board_label_dialog.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/board/board_member_dialog.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 
@@ -64,6 +67,14 @@ class BoardMenu extends StatelessWidget {
             _showLeaveConfirmationDialog(context, board.id);
           },
         ),
+        ListTile(
+          leading: Icon(Icons.label),
+          title: const Text('Manage labels'),
+          onTap: () {
+            Navigator.pop(context);
+            _showLabelDialog(context);
+          },
+        )
       ],
     );
   }
@@ -325,5 +336,41 @@ class BoardMenu extends StatelessWidget {
                 ],
               ),
             ));
+  }
+
+  void _showLabelDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    Color? selectedColor;
+    final labelCubit = LabelCubit(context.read<LabelRepo>());
+
+    // Define available label colors
+    final labelColors = [
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.yellow,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.pink,
+      Colors.brown,
+      Colors.cyan,
+    ];
+
+    showDialog(
+        context: context,
+        builder: (context) => BlocProvider(
+            create: (_) => labelCubit,
+            child: LabelDialogContent(
+                boardId: board.id,
+                nameController: nameController,
+                selectedColor: selectedColor,
+                labelColors: labelColors,
+                onColorSelected: (color) => selectedColor = color))).then((_) {
+      nameController.dispose();
+      labelCubit.close();
+    });
+
+    labelCubit.getLabelsForBoard(board.id);
   }
 }
