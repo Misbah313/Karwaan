@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card_credentails.dart';
+import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_credentails.dart';
+import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_state.dart';
+import 'package:karwaan_flutter/domain/models/label/label_state.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/cardlabel/cardlabel_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
+import 'package:lottie/lottie.dart';
 
 class CardWidget extends StatelessWidget {
   final BoardCard card;
-  final BoardCardCubit cardCubit; // pass the cubit for updates
+  final BoardCardCubit cardCubit; // Cubit for CRUD operations on this card
   const CardWidget({super.key, required this.card, required this.cardCubit});
 
   @override
   Widget build(BuildContext context) {
-    // show confim delete card dialog
+    // Confirm delete dialog
     Future<void> confirmDeleteCard(int cardId) async {
       await showDialog(
         context: context,
         builder: (dialogCtx) {
           return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             backgroundColor: Colors.grey.shade300,
             title: const Text('Delete Card'),
             content: Text(
@@ -43,27 +51,51 @@ class CardWidget extends StatelessWidget {
     }
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
             colors: [Colors.blueGrey.shade300, Colors.grey.shade300]),
         borderRadius: BorderRadius.circular(10),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 3)],
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 3)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /* Top label color (hardcoded for now)
-          Container(
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.blue, // future: card.labelColor
-              borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-            ),
+          // Top label color strips
+          BlocBuilder<CardlabelCubit, CardlabelState>(
+            builder: (context, state) {
+              if (state is CardLabelLoading || state is CardLabelInitial) {
+                return Center(
+                  child: Lottie.asset('asset/ani/load.json'),
+                );
+              }
+              if (state is CardLabelForCardListLoaded) {
+                final cardLabels = state.labels;
+                if (cardLabels.isEmpty) return const SizedBox();
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Row(
+                    children: cardLabels.map((label) {
+                      return Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(left: 4, top: 4),
+                        decoration: BoxDecoration(
+                          color: _parseLabelColor(label.color),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }
+              return const SizedBox();
+            },
           ),
-          */
+
+          // Main card content
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: Row(
               children: [
                 // Checkbox for completion
@@ -73,14 +105,12 @@ class CardWidget extends StatelessWidget {
                   side: BorderSide(color: Colors.grey.shade400),
                   value: card.isCompleted,
                   onChanged: (val) {
-                    // Update the card completion status
                     cardCubit.updateBoardCard(
                       BoardCardCredentails(
                         cardId: card.id,
                         newTitle: card.title,
                         newDec: card.description,
                         isCompleted: val ?? false,
-                        // future: add other fields
                       ),
                     );
                   },
@@ -91,16 +121,16 @@ class CardWidget extends StatelessWidget {
                   child: Text(
                     card.title,
                     style: GoogleFonts.alef(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade800,
-                        decoration: card.isCompleted
-                            ? TextDecoration.lineThrough
-                            : null,
-                        decorationColor: Colors.grey.shade700),
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade800,
+                      decoration:
+                          card.isCompleted ? TextDecoration.lineThrough : null,
+                      decorationColor: Colors.grey.shade700,
+                    ),
                   ),
                 ),
 
-                // Edit icon
+                // Popup menu for card actions
                 PopupMenuButton<_CardAction>(
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(10),
@@ -117,39 +147,35 @@ class CardWidget extends StatelessWidget {
                       case _CardAction.delete:
                         confirmDeleteCard(card.id);
                         break;
+                      case _CardAction.editLabels:
+                        _showEditLabelsDialog(context, card);
+                        break;
                     }
                   },
                   itemBuilder: (_) => [
                     PopupMenuItem(
-                        value: _CardAction.edit,
-                        child: Text(
-                          'Edit',
+                      value: _CardAction.edit,
+                      child: Text('Edit',
                           style: GoogleFonts.alef(
                               color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500),
-                        )),
+                              fontWeight: FontWeight.w500)),
+                    ),
                     PopupMenuItem(
-                        value: _CardAction.delete,
-                        child: Text(
-                          'Delete',
+                      value: _CardAction.editLabels,
+                      child: Text('Edit Labels',
                           style: GoogleFonts.alef(
                               color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500),
-                        )),
+                              fontWeight: FontWeight.w500)),
+                    ),
+                    PopupMenuItem(
+                      value: _CardAction.delete,
+                      child: Text('Delete',
+                          style: GoogleFonts.alef(
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w500)),
+                    ),
                   ],
                 ),
-
-                // Popup menu for future actions (delete, move, labels)
-                /*
-                PopupMenuButton(
-                  icon: Icon(Icons.more_vert, size: 20),
-                  itemBuilder: (_) => [
-                    PopupMenuItem(value: 'delete', child: Text('Delete')),
-                    PopupMenuItem(value: 'move', child: Text('Move')),
-                    // future: color/labels
-                  ],
-                ),
-                */
               ],
             ),
           ),
@@ -159,7 +185,8 @@ class CardWidget extends StatelessWidget {
   }
 }
 
-enum _CardAction { edit, delete }
+// Card actions enum
+enum _CardAction { edit, delete, editLabels }
 
 // Edit card dialog
 Future<void> _showEditCardDialog(
@@ -170,25 +197,22 @@ Future<void> _showEditCardDialog(
   await showDialog(
     context: context,
     builder: (dialogCtx) => AlertDialog(
-      title: Text('Edit Card'),
+      title: const Text('Edit Card'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: titleController,
-            decoration: InputDecoration(labelText: 'Title'),
-          ),
+              controller: titleController,
+              decoration: const InputDecoration(labelText: 'Title')),
           TextField(
-            controller: descController,
-            decoration: InputDecoration(labelText: 'Description'),
-          ),
+              controller: descController,
+              decoration: const InputDecoration(labelText: 'Description')),
         ],
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(dialogCtx).pop(),
-          child: Text('Cancel'),
-        ),
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: const Text('Cancel')),
         ElevatedButton(
           onPressed: () {
             final newTitle = titleController.text.trim();
@@ -214,9 +238,175 @@ Future<void> _showEditCardDialog(
             );
             Navigator.of(dialogCtx).pop();
           },
-          child: Text('Save'),
+          child: const Text('Save'),
         ),
       ],
     ),
   );
+}
+
+// Edit labels dialog
+Future<void> _showEditLabelsDialog(BuildContext context, BoardCard card) async {
+  final cardLabelCubit = context.read<CardlabelCubit>();
+  final labelCubit = context.read<LabelCubit>();
+
+  await showDialog(
+    context: context,
+    builder: (dialogContext) {
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: labelCubit),
+          BlocProvider.value(value: cardLabelCubit),
+        ],
+        child: BlocListener<CardlabelCubit, CardlabelState>(
+          listener: (context, state) {
+            if (state is CardLabelAssigned) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Label has been assigned successfully.'),
+                backgroundColor: Colors.green,
+              ));
+              cardLabelCubit.getLabelForCard(card.id);
+            }
+            if (state is CardLabelRemoved) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Label has been removed successfully.'),
+                backgroundColor: Colors.green,
+              ));
+              Navigator.pop(context);
+              cardLabelCubit.getLabelForCard(card.id);
+            }
+            if (state is CardLabelError) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
+              ));
+            }
+          },
+          child: AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            backgroundColor: Colors.grey.shade300,
+            title: Text(
+              'Edit Labels',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            ),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Builder(
+                builder: (innerContext) {
+                  return BlocBuilder<LabelCubit, LabelState>(
+                    builder: (context, labelState) {
+                      if (labelState is LabelListLoaded) {
+                        final boardLabels = labelState.labels;
+                        final assignedLabelIds = <int>[];
+
+                        final cardLabelState =
+                            innerContext.read<CardlabelCubit>().state;
+                        if (cardLabelState is CardLabelForCardListLoaded) {
+                          assignedLabelIds
+                              .addAll(cardLabelState.labels.map((l) => l.id!));
+                        }
+
+                        return ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height * 0.6,
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: boardLabels.map((label) {
+                                final isAssigned =
+                                    assignedLabelIds.contains(label.id);
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: _parseLabelColor(label.color),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          label.title,
+                                          style: GoogleFonts.alef(
+                                            fontSize: 17,
+                                            color: Colors.grey.shade200,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            isAssigned
+                                                ? Icons.close
+                                                : Icons.add_circle,
+                                            color: isAssigned
+                                                ? Colors.black
+                                                : Colors.white,
+                                          ),
+                                          onPressed: () {
+                                            if (isAssigned) {
+                                              innerContext
+                                                  .read<CardlabelCubit>()
+                                                  .removeLabelFromCard(
+                                                    CardlabelCredentails(
+                                                      labelId: label.id!,
+                                                      cardId: card.id,
+                                                    ),
+                                                  );
+                                            } else {
+                                              innerContext
+                                                  .read<CardlabelCubit>()
+                                                  .assignLabelToCard(
+                                                    CardlabelCredentails(
+                                                      labelId: label.id!,
+                                                      cardId: card.id,
+                                                    ),
+                                                  );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        );
+                      }
+                      return const CircularProgressIndicator();
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(
+                  'Close',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// convert string color for a flutter color
+Color _parseLabelColor(String colorString) {
+  if (colorString.startsWith('#')) {
+    String hex = colorString.replaceFirst('#', '');
+    return Color(int.parse('FF$hex', radix: 16));
+  }
+  return Color(int.parse(colorString)); // Fallback for non-hex format
 }

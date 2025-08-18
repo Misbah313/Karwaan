@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class Label implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Label._({
     this.id,
-    required this.name,
+    required this.title,
     required this.color,
     required this.board,
     required this.createdBy,
@@ -22,7 +22,7 @@ abstract class Label implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   factory Label({
     int? id,
-    required String name,
+    required String title,
     required String color,
     required int board,
     required int createdBy,
@@ -31,7 +31,7 @@ abstract class Label implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   factory Label.fromJson(Map<String, dynamic> jsonSerialization) {
     return Label(
       id: jsonSerialization['id'] as int?,
-      name: jsonSerialization['name'] as String,
+      title: jsonSerialization['title'] as String,
       color: jsonSerialization['color'] as String,
       board: jsonSerialization['board'] as int,
       createdBy: jsonSerialization['createdBy'] as int,
@@ -45,7 +45,7 @@ abstract class Label implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   int? id;
 
-  String name;
+  String title;
 
   String color;
 
@@ -61,7 +61,7 @@ abstract class Label implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @_i1.useResult
   Label copyWith({
     int? id,
-    String? name,
+    String? title,
     String? color,
     int? board,
     int? createdBy,
@@ -70,7 +70,7 @@ abstract class Label implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'name': name,
+      'title': title,
       'color': color,
       'board': board,
       'createdBy': createdBy,
@@ -81,7 +81,7 @@ abstract class Label implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'name': name,
+      'title': title,
       'color': color,
       'board': board,
       'createdBy': createdBy,
@@ -123,13 +123,13 @@ class _Undefined {}
 class _LabelImpl extends Label {
   _LabelImpl({
     int? id,
-    required String name,
+    required String title,
     required String color,
     required int board,
     required int createdBy,
   }) : super._(
           id: id,
-          name: name,
+          title: title,
           color: color,
           board: board,
           createdBy: createdBy,
@@ -141,14 +141,14 @@ class _LabelImpl extends Label {
   @override
   Label copyWith({
     Object? id = _Undefined,
-    String? name,
+    String? title,
     String? color,
     int? board,
     int? createdBy,
   }) {
     return Label(
       id: id is int? ? id : this.id,
-      name: name ?? this.name,
+      title: title ?? this.title,
       color: color ?? this.color,
       board: board ?? this.board,
       createdBy: createdBy ?? this.createdBy,
@@ -158,8 +158,8 @@ class _LabelImpl extends Label {
 
 class LabelTable extends _i1.Table<int?> {
   LabelTable({super.tableRelation}) : super(tableName: 'lable') {
-    name = _i1.ColumnString(
-      'name',
+    title = _i1.ColumnString(
+      'title',
       this,
     );
     color = _i1.ColumnString(
@@ -176,7 +176,7 @@ class LabelTable extends _i1.Table<int?> {
     );
   }
 
-  late final _i1.ColumnString name;
+  late final _i1.ColumnString title;
 
   late final _i1.ColumnString color;
 
@@ -187,7 +187,7 @@ class LabelTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
         id,
-        name,
+        title,
         color,
         board,
         createdBy,

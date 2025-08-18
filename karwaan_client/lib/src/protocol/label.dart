@@ -14,7 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class Label implements _i1.SerializableModel {
   Label._({
     this.id,
-    required this.name,
+    required this.title,
     required this.color,
     required this.board,
     required this.createdBy,
@@ -22,7 +22,7 @@ abstract class Label implements _i1.SerializableModel {
 
   factory Label({
     int? id,
-    required String name,
+    required String title,
     required String color,
     required int board,
     required int createdBy,
@@ -31,7 +31,7 @@ abstract class Label implements _i1.SerializableModel {
   factory Label.fromJson(Map<String, dynamic> jsonSerialization) {
     return Label(
       id: jsonSerialization['id'] as int?,
-      name: jsonSerialization['name'] as String,
+      title: jsonSerialization['title'] as String,
       color: jsonSerialization['color'] as String,
       board: jsonSerialization['board'] as int,
       createdBy: jsonSerialization['createdBy'] as int,
@@ -43,7 +43,7 @@ abstract class Label implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  String name;
+  String title;
 
   String color;
 
@@ -56,7 +56,7 @@ abstract class Label implements _i1.SerializableModel {
   @_i1.useResult
   Label copyWith({
     int? id,
-    String? name,
+    String? title,
     String? color,
     int? board,
     int? createdBy,
@@ -65,7 +65,7 @@ abstract class Label implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'name': name,
+      'title': title,
       'color': color,
       'board': board,
       'createdBy': createdBy,
@@ -83,13 +83,13 @@ class _Undefined {}
 class _LabelImpl extends Label {
   _LabelImpl({
     int? id,
-    required String name,
+    required String title,
     required String color,
     required int board,
     required int createdBy,
   }) : super._(
           id: id,
-          name: name,
+          title: title,
           color: color,
           board: board,
           createdBy: createdBy,
@@ -101,14 +101,14 @@ class _LabelImpl extends Label {
   @override
   Label copyWith({
     Object? id = _Undefined,
-    String? name,
+    String? title,
     String? color,
     int? board,
     int? createdBy,
   }) {
     return Label(
       id: id is int? ? id : this.id,
-      name: name ?? this.name,
+      title: title ?? this.title,
       color: color ?? this.color,
       board: board ?? this.board,
       createdBy: createdBy ?? this.createdBy,

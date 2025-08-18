@@ -2,7 +2,7 @@ class: Label
 table: lable
 fields:
   id: int?
-  name: String
+  title: String
   color: String
   board: int, relation(parent=board)
   createdBy: int, relation(parent=user)

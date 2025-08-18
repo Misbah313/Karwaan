@@ -42,7 +42,7 @@ class LabelEndpoint extends Endpoint {
       // check duplicate label name on the same board
       final duplicate = await Label.db.findFirstRow(
         session,
-        where: (l) => l.board.equals(boardId) & l.name.equals(trimmedTitle),
+        where: (l) => l.board.equals(boardId) & l.title.equals(trimmedTitle),
       );
       if (duplicate != null) {
         throw Exception('A label with that title already exists!');
@@ -50,13 +50,16 @@ class LabelEndpoint extends Endpoint {
 
       // create and insert label
       final label = Label(
-          name: trimmedTitle,
+          title: trimmedTitle,
           color: trimmedColor,
           board: boardId,
           createdBy: currentUser.id!);
 
-      await Label.db.insertRow(session, label);
-      return label;
+      final created = await Label.db.insertRow(session, label);
+      if (created.id == null) {
+        throw Exception('Label ID is null after creation!');
+      }
+      return created;
     } catch (e) {
       throw Exception(e);
     }
@@ -91,7 +94,7 @@ class LabelEndpoint extends Endpoint {
       final labels = await Label.db.find(
         session,
         where: (l) => l.board.equals(boardId),
-        orderBy: (l) => l.name,
+        orderBy: (l) => l.title,
       );
 
       return labels;
@@ -137,14 +140,14 @@ class LabelEndpoint extends Endpoint {
           session,
           where: (l) =>
               l.board.equals(label.board) &
-              l.name.equals(name) &
+              l.title.equals(name) &
               l.id.notEquals(labelId),
         );
         if (duplicate != null) {
           throw Exception('A label with that title already exists!');
         }
 
-        label.name = name;
+        label.title = name;
       }
 
       if (newColor != null) {

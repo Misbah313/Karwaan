@@ -930,7 +930,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'lable_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'name',
+          name: 'title',
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',

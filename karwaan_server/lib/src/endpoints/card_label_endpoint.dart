@@ -39,14 +39,11 @@ class CardLabelEndpoint extends Endpoint {
         session,
         where: (c) => c.card.equals(cardId) & c.label.equals(labelId),
       );
-      if (duplicate != null) {
-        throw Exception('Label already assigned to this card!');
-      }
+      if (duplicate != null) return duplicate;
 
       // insert the label
-      final link = CardLabel(card: cardId, label: labelId);
-      await CardLabel.db.insertRow(session, link);
-      return link;
+      return await CardLabel.db
+          .insertRow(session, CardLabel(card: cardId, label: labelId));
     } catch (e) {
       throw Exception(e);
     }
@@ -139,7 +136,7 @@ class CardLabelEndpoint extends Endpoint {
       final labels = await Label.db.find(
         session,
         where: (l) => l.id.inSet(labelIds),
-        orderBy: (l) => l.name,
+        orderBy: (l) => l.title,
       );
       return labels;
     } catch (e) {

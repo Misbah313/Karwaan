@@ -1,0 +1,114 @@
+{
+  "actions": [
+    {
+      "type": "deleteTable",
+      "deleteTable": "lable"
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "lable",
+        "dartName": "Label",
+        "module": "karwaan",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('lable_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "title",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "color",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "board",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "createdBy",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "lable_fk_0",
+            "columns": [
+              "board"
+            ],
+            "referenceTable": "board",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          },
+          {
+            "constraintName": "lable_fk_1",
+            "columns": [
+              "createdBy"
+            ],
+            "referenceTable": "user",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "lable_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column \"name\" of table \"lable\" will be dropped.",
+      "table": "lable",
+      "columns": [
+        "name"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "tableDropped",
+      "message": "One or more columns are added to table \"lable\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+      "table": "lable",
+      "columns": [
+        "title"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}
