@@ -5,10 +5,17 @@ import 'package:karwaan_flutter/domain/models/boardcard/board_card.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card_credentails.dart';
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_credentails.dart';
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_state.dart';
+import 'package:karwaan_flutter/domain/models/checklist/checklist_state.dart';
+import 'package:karwaan_flutter/domain/models/checklist/create_checklist_credentails.dart';
+import 'package:karwaan_flutter/domain/models/checklist/update_checklist_credentails.dart';
 import 'package:karwaan_flutter/domain/models/label/label_state.dart';
+import 'package:karwaan_flutter/domain/repository/checklistItem/checklist_item_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/cardlabel/cardlabel_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/checklist/checklist_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/checklistItem/checklist_item_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/checklistItem/checklist_item_dialog.dart';
 import 'package:lottie/lottie.dart';
 
 class CardWidget extends StatelessWidget {
@@ -150,6 +157,9 @@ class CardWidget extends StatelessWidget {
                       case _CardAction.editLabels:
                         _showEditLabelsDialog(context, card);
                         break;
+                      case _CardAction.checklist:
+                        _showChecklistDialog(context, card.id);
+                        break;
                     }
                   },
                   itemBuilder: (_) => [
@@ -174,6 +184,13 @@ class CardWidget extends StatelessWidget {
                               color: Colors.grey.shade700,
                               fontWeight: FontWeight.w500)),
                     ),
+                    PopupMenuItem(
+                      value: _CardAction.checklist,
+                      child: Text('Checklist',
+                          style: GoogleFonts.alef(
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w500)),
+                    ),
                   ],
                 ),
               ],
@@ -186,7 +203,7 @@ class CardWidget extends StatelessWidget {
 }
 
 // Card actions enum
-enum _CardAction { edit, delete, editLabels }
+enum _CardAction { edit, delete, editLabels, checklist }
 
 // Edit card dialog
 Future<void> _showEditCardDialog(
@@ -197,7 +214,11 @@ Future<void> _showEditCardDialog(
   await showDialog(
     context: context,
     builder: (dialogCtx) => AlertDialog(
-      title: const Text('Edit Card'),
+      backgroundColor: Colors.grey.shade300,
+      title: Text(
+        'Edit Card',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -212,8 +233,15 @@ Future<void> _showEditCardDialog(
       actions: [
         TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Cancel')),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey),
+            )),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              backgroundColor: Colors.grey[350]),
           onPressed: () {
             final newTitle = titleController.text.trim();
             final newDesc = descController.text.trim();
@@ -238,7 +266,10 @@ Future<void> _showEditCardDialog(
             );
             Navigator.of(dialogCtx).pop();
           },
-          child: const Text('Save'),
+          child: Text(
+            'Save',
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
         ),
       ],
     ),
@@ -400,6 +431,348 @@ Future<void> _showEditLabelsDialog(BuildContext context, BoardCard card) async {
       );
     },
   );
+}
+
+// checklist dialog
+Future<void> _showChecklistDialog(BuildContext context, int cardId) async {
+  final checklistCubit = context.read<ChecklistCubit>();
+  checklistCubit.listChecklist(cardId);
+
+  showDialog(
+    context: context,
+    builder: (context) => BlocProvider.value(
+      value: checklistCubit,
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: Colors.grey.shade300,
+        title: Text(
+          'Checklists',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: BlocListener<ChecklistCubit, ChecklistState>(
+          listener: (context, state) {
+            if (state is ChecklistCreated) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Checklist has been created.'),
+                backgroundColor: Colors.green,
+              ));
+              checklistCubit.listChecklist(cardId);
+            }
+            if (state is ChecklistError) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
+              ));
+              Navigator.pop(context);
+            }
+            if (state is ChecklistDeleted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Checklist has been deleted successfully.'),
+                backgroundColor: Colors.green,
+              ));
+              checklistCubit.listChecklist(cardId);
+            }
+            if (state is ChecklistUpdated) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Checklist has been updated successfully'),
+                backgroundColor: Colors.green,
+              ));
+              checklistCubit.listChecklist(cardId);
+            }
+          },
+          child: BlocBuilder<ChecklistCubit, ChecklistState>(
+            builder: (context, state) {
+              if (state is ChecklistInitial || state is ChecklistLoading) {
+                return Center(
+                    child: Lottie.asset('asset/ani/load.json',
+                        fit: BoxFit.contain));
+              } else if (state is ChecklistListLoaded) {
+                final checklist = state.checklist;
+
+                if (checklist.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No checklist yet!',
+                      style: GoogleFonts.alef(
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: checklist.map((item) {
+                      return GestureDetector(
+                        onTap: () {
+                          // navigate to the checklist item dialog page
+                          Navigator.pop(context);
+                          _showChecklistItemDialog(
+                              context, item.id!, item.title);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 10),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(colors: [
+                                Colors.blueGrey.shade300,
+                                Colors.grey.shade300
+                              ])),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.title,
+                                  style: GoogleFonts.alef(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade700,
+                                      fontSize: 18),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              PopupMenuButton<_ChecklistAction>(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(10),
+                                icon: Icon(Icons.more_horiz,
+                                    size: 20, color: Colors.grey.shade700),
+                                onSelected: (action) {
+                                  switch (action) {
+                                    case _ChecklistAction.update:
+                                      _showUpdateChecklistDialog(
+                                          context, checklistCubit, item.id!);
+                                      break;
+                                    case _ChecklistAction.delete:
+                                      _showConfirmDeleteChecklistDialog(
+                                          context, checklistCubit, item.id!);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (_) => [
+                                  PopupMenuItem(
+                                      value: _ChecklistAction.update,
+                                      child: Text(
+                                        'Update',
+                                        style: GoogleFonts.alef(
+                                            color: Colors.grey.shade700,
+                                            fontWeight: FontWeight.w500),
+                                      )),
+                                  PopupMenuItem(
+                                      value: _ChecklistAction.delete,
+                                      child: Text(
+                                        'Delete',
+                                        style: GoogleFonts.alef(
+                                            color: Colors.grey.shade700,
+                                            fontWeight: FontWeight.w500),
+                                      )),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }
+              return Center(
+                child: Text('Something went wrong , please try again!'),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Close',
+                style: TextStyle(color: Colors.grey),
+              )),
+          ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Colors.grey[350]),
+              onPressed: () {
+                _showCreateChecklistDialog(context, cardId, checklistCubit);
+              },
+              child: Text(
+                'Create Checklist',
+                style:
+                    GoogleFonts.alef(color: Colors.grey.shade700, fontSize: 16),
+              ))
+        ],
+      ),
+    ),
+  );
+}
+
+// update checklist dialog
+Future<void> _showUpdateChecklistDialog(BuildContext context,
+    ChecklistCubit checklistCubit, int checklistId) async {
+  final newContentController = TextEditingController();
+  await showDialog(
+    context: context,
+    builder: (dialogCtx) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      backgroundColor: Colors.grey.shade300,
+      title: Text(
+        'Update Checklist',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: newContentController,
+            decoration: InputDecoration(labelText: 'New Title'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey),
+            )),
+        ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                backgroundColor: Colors.grey[350]),
+            onPressed: () {
+              final credentails = UpdateChecklistCredentails(
+                  checklistId: checklistId,
+                  newTitle: newContentController.text.trim());
+              Navigator.pop(dialogCtx);
+              checklistCubit.updateChecklist(credentails);
+            },
+            child: Text(
+              'Update',
+              style:
+                  GoogleFonts.alef(color: Colors.grey.shade700, fontSize: 16),
+            ))
+      ],
+    ),
+  );
+}
+
+// checklist delete confirmation dialog
+Future<void> _showConfirmDeleteChecklistDialog(BuildContext context,
+    ChecklistCubit checklistCubit, int checklistId) async {
+  await showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      backgroundColor: Colors.grey.shade300,
+      title: Text('Delete checklist'),
+      content: Text(
+        'Are you sure want to delete this checklist? This cannot be undone!!',
+        style: GoogleFonts.alef(fontSize: 16, color: Colors.black87),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey),
+            )),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            backgroundColor: Colors.grey[350],
+          ),
+          onPressed: () {
+            Navigator.of(dialogContext).pop();
+            checklistCubit.deleteChecklist(checklistId);
+          },
+          child: Text(
+            'Delete',
+            style: GoogleFonts.alef(fontSize: 15, color: Colors.red),
+          ),
+        )
+      ],
+    ),
+  );
+}
+
+// show create checklist dialog
+Future<void> _showCreateChecklistDialog(
+    BuildContext context, int cardID, ChecklistCubit checklistCubit) async {
+  final contentController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (dialogContext) => BlocProvider.value(
+      value: checklistCubit,
+      child: AlertDialog(
+        backgroundColor: Colors.grey.shade300,
+        title: Text(
+          'Create Checklist',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+                controller: contentController,
+                decoration: const InputDecoration(labelText: 'Title')),
+          ],
+        ),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey),
+              )),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              backgroundColor: Colors.grey.shade400,
+            ),
+            onPressed: () {
+              final credentails = CreateChecklistCredentails(
+                  cardId: cardID, title: contentController.text.trim());
+              Navigator.pop(dialogContext);
+              checklistCubit.createChecklist(credentails);
+            },
+            child: Text(
+              'Create',
+              style:
+                  GoogleFonts.alef(color: Colors.grey.shade700, fontSize: 16),
+            ),
+          )
+        ],
+      ),
+    ),
+  );
+}
+
+enum _ChecklistAction { update, delete }
+
+// show checklist item dialog
+void _showChecklistItemDialog(
+    BuildContext context, int checklistId, String checklistTitle) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        final cubit = ChecklistItemCubit(context.read<ChecklistItemRepo>());
+        cubit.listChecklistItem(checklistId);
+        return BlocProvider.value(
+          value: cubit,
+          child: ChecklistItemDialog(checklistTitle: checklistTitle, checklistId: checklistId,),
+        );
+      });
 }
 
 // convert string color for a flutter color
