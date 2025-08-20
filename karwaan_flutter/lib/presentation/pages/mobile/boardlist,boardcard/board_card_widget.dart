@@ -6,9 +6,12 @@ import 'package:karwaan_flutter/domain/models/boardcard/board_card_credentails.d
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_credentails.dart';
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_state.dart';
 import 'package:karwaan_flutter/domain/models/label/label_state.dart';
+import 'package:karwaan_flutter/domain/repository/checklist/checklist_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/cardlabel/cardlabel_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/checklist/checklist_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/checklist/checklist_dialog.dart';
 import 'package:lottie/lottie.dart';
 
 class CardWidget extends StatelessWidget {
@@ -150,6 +153,9 @@ class CardWidget extends StatelessWidget {
                       case _CardAction.editLabels:
                         _showEditLabelsDialog(context, card);
                         break;
+                      case _CardAction.checklist:
+                        _showChecklistDialogPage(context, card.id);
+                        break;
                     }
                   },
                   itemBuilder: (_) => [
@@ -174,6 +180,13 @@ class CardWidget extends StatelessWidget {
                               color: Colors.grey.shade700,
                               fontWeight: FontWeight.w500)),
                     ),
+                    PopupMenuItem(
+                      value: _CardAction.checklist,
+                      child: Text('Checklist',
+                          style: GoogleFonts.alef(
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w500)),
+                    ),
                   ],
                 ),
               ],
@@ -186,7 +199,7 @@ class CardWidget extends StatelessWidget {
 }
 
 // Card actions enum
-enum _CardAction { edit, delete, editLabels }
+enum _CardAction { edit, delete, editLabels, checklist }
 
 // Edit card dialog
 Future<void> _showEditCardDialog(
@@ -197,7 +210,11 @@ Future<void> _showEditCardDialog(
   await showDialog(
     context: context,
     builder: (dialogCtx) => AlertDialog(
-      title: const Text('Edit Card'),
+      backgroundColor: Colors.grey.shade300,
+      title: Text(
+        'Edit Card',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -212,8 +229,15 @@ Future<void> _showEditCardDialog(
       actions: [
         TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Cancel')),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey),
+            )),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              backgroundColor: Colors.grey[350]),
           onPressed: () {
             final newTitle = titleController.text.trim();
             final newDesc = descController.text.trim();
@@ -238,7 +262,10 @@ Future<void> _showEditCardDialog(
             );
             Navigator.of(dialogCtx).pop();
           },
-          child: const Text('Save'),
+          child: Text(
+            'Save',
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
         ),
       ],
     ),
@@ -397,6 +424,21 @@ Future<void> _showEditLabelsDialog(BuildContext context, BoardCard card) async {
             ],
           ),
         ),
+      );
+    },
+  );
+}
+
+// show checklist dialog page
+void _showChecklistDialogPage(BuildContext context, int cardId) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      final cubit = ChecklistCubit(context.read<ChecklistRepo>());
+      cubit.listChecklist(cardId);
+      return BlocProvider.value(
+        value: cubit,
+        child: ChecklistDialog(cardId: cardId, checklistCubit: cubit),
       );
     },
   );

@@ -25,10 +25,7 @@ class ChecklistItemEndpoint extends Endpoint {
     }
 
     // fetch the parent boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
@@ -71,9 +68,12 @@ class ChecklistItemEndpoint extends Endpoint {
           isDone: false,
           createdBy: currentUser.id!);
 
-      await CheckListItem.db.insertRow(session, checklistitem);
+    final inserted = await CheckListItem.db.insertRow(session, checklistitem);
+    if(inserted.id == null) {
+      throw Exception('Item id is null after creation!');
+    }
 
-      return checklistitem;
+      return inserted;
     } catch (e) {
       throw Exception(e);
     }
@@ -100,10 +100,7 @@ class ChecklistItemEndpoint extends Endpoint {
     }
 
     // fetch the parent boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
@@ -167,10 +164,7 @@ class ChecklistItemEndpoint extends Endpoint {
     }
 
     // fetch the parent boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
@@ -255,10 +249,7 @@ class ChecklistItemEndpoint extends Endpoint {
     }
 
     // get boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
@@ -327,10 +318,7 @@ class ChecklistItemEndpoint extends Endpoint {
     }
 
     // fetch the parent boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
