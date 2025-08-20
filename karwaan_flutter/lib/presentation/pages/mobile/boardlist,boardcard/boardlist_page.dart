@@ -9,10 +9,12 @@ import 'package:karwaan_flutter/domain/models/boardlist/boardlist_state.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/create_board_list_credentails.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/domain/repository/cardlabel/cardlabel_repo.dart';
+import 'package:karwaan_flutter/domain/repository/checklist/checklist_repo.dart';
 import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/cardlabel/cardlabel_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/checklist/checklist_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/board_card_widget.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
@@ -515,13 +517,21 @@ class _BoardlistPageState extends State<BoardlistPage> {
 
                                 // cardlabel cubit for the specifc card
                                 BlocProvider(
-                                    create: (_) => CardlabelCubit(context.read<CardlabelRepo>())
+                                    create: (_) => CardlabelCubit(
+                                        context.read<CardlabelRepo>())
                                       ..getLabelForCard(cards[index].id)),
 
                                 // label cubit for global label list
                                 BlocProvider(
-                                    create: (_) => LabelCubit(context.read<LabelRepo>())
-                                      ..getLabelsForBoard(widget.boardId))
+                                    create: (_) =>
+                                        LabelCubit(context.read<LabelRepo>())
+                                          ..getLabelsForBoard(widget.boardId)),
+
+                                // checklist cubit for the specific card
+                                BlocProvider(
+                                    create: (_) => ChecklistCubit(
+                                        context.read<ChecklistRepo>())
+                                      ..listChecklist(cards[index].id))
                               ],
                               child: CardWidget(
                                 card: cards[index],
