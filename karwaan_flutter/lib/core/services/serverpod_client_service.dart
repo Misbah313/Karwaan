@@ -632,7 +632,8 @@ class ServerpodClientService {
         throw Exception('Please login first!');
       }
 
-      final updated = await client.label.updateLabel(labelId, token, newTitle: newTitle, newColor: newColor);
+      final updated = await client.label
+          .updateLabel(labelId, token, newTitle: newTitle, newColor: newColor);
       return updated;
     } catch (e) {
       rethrow;
@@ -710,6 +711,153 @@ class ServerpodClientService {
 
       final cards = await client.cardLabel.getCardForLabel(labelId, token);
       return cards;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // ============================================================= CHECKLIST + CHECKLIST ITEM ====================================================== //
+
+  // ===> CHECKLIST:
+
+  // create checklist
+  Future<CheckList> createChecklist(int cardId, String title) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final checklist =
+          await client.checklist.createChecklist(cardId, title, token);
+      return checklist;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // list checklist
+  Future<List<CheckList>> listCheckList(int cardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final list = await client.checklist.listChecklist(cardId, token);
+      return list;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update checklist
+  Future<CheckList> updatedChecklist(int checklistId, String newTitle) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final updated =
+          await client.checklist.updateChecklist(checklistId, newTitle, token);
+      return updated;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete checklist
+  Future<void> deleteChecklist(int checklistId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      await client.checklist.deleteChecklist(checklistId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // CHECKLIST ITEM:
+
+  // create checklist item
+  Future<CheckListItem> createChecklistItem(
+      int checklistId, String content) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final item = await client.checklistItem
+          .createChecklistItem(checklistId, content, token);
+      return item;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // list checklist item
+  Future<List<CheckListItem>> listCheckListItem(int checklistId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final list =
+          await client.checklistItem.listChecklistItems(checklistId, token);
+      return list;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update checklist item
+  Future<CheckListItem> updateChecklistItem(
+      int checklistItemId, int checklistId, String newContent) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final update = await client.checklistItem
+          .updateChecklistItem(checklistItemId, checklistId, newContent, token);
+      return update;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // toggle checklistitem status
+  Future<CheckListItem> toggleChecklistItemStatus(int checklistItemId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final toggled = await client.checklistItem
+          .toggleChecklistItemStatus(checklistItemId, token);
+      return toggled;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete checklist item
+  Future<void> deleteChecklistItem(int checklistItemId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      await client.checklistItem.deleteChecklistItem(checklistItemId, token);
     } catch (e) {
       rethrow;
     }
