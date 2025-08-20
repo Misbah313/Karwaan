@@ -8,6 +8,8 @@ import 'package:karwaan_flutter/data/repositories/board/board_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/boardcard/board_card_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/boardlist/boardlist_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/cardlabel/cardlabel_remote_repo.dart';
+import 'package:karwaan_flutter/data/repositories/checklist/checklist_remote_repo.dart';
+import 'package:karwaan_flutter/data/repositories/checklistItem/checklist_item_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/label/label_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/workspace/workspace_remote_repo.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
@@ -15,6 +17,8 @@ import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
 import 'package:karwaan_flutter/domain/repository/cardlabel/cardlabel_repo.dart';
+import 'package:karwaan_flutter/domain/repository/checklist/checklist_repo.dart';
+import 'package:karwaan_flutter/domain/repository/checklistItem/checklist_item_repo.dart';
 import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
@@ -23,7 +27,6 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
 
   final serverpodClientService =
       ServerpodClientService(AuthTokenStorageHelper());
@@ -35,6 +38,8 @@ void main() async {
   final boardcardRepo = BoardCardRemoteRepo(serverpodClientService);
   final labelRepo = LabelRemoteRepo(serverpodClientService);
   final cardLabelRepo = CardlabelRemoteRepo(serverpodClientService);
+  final checklistRepo = ChecklistRemoteRepo(serverpodClientService);
+  final checklistItemRepo = ChecklistItemRemoteRepo(serverpodClientService);
 
   runApp(
     MultiProvider(
@@ -46,6 +51,8 @@ void main() async {
         Provider<BoardcardRepo>(create: (_) => boardcardRepo),
         Provider<LabelRepo>(create: (_) => labelRepo),
         Provider<CardlabelRepo>(create: (_) => cardLabelRepo),
+        Provider<ChecklistRepo>(create: (_) => checklistRepo),
+        Provider<ChecklistItemRepo>(create: (_) => checklistItemRepo),
         BlocProvider<AuthCubit>(
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
