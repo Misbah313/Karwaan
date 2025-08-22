@@ -25,12 +25,13 @@ import 'package:karwaan_client/src/protocol/label.dart' as _i13;
 import 'package:karwaan_client/src/protocol/checklist.dart' as _i14;
 import 'package:karwaan_client/src/protocol/checklist_item.dart' as _i15;
 import 'package:karwaan_client/src/protocol/comment.dart' as _i16;
-import 'package:karwaan_client/src/protocol/workspace.dart' as _i17;
-import 'package:karwaan_client/src/protocol/workspace_member.dart' as _i18;
+import 'package:karwaan_client/src/protocol/comment_withauthor.dart' as _i17;
+import 'package:karwaan_client/src/protocol/workspace.dart' as _i18;
+import 'package:karwaan_client/src/protocol/workspace_member.dart' as _i19;
 import 'package:karwaan_client/src/protocol/workspace_member_details.dart'
-    as _i19;
-import 'package:karwaan_client/src/protocol/greeting.dart' as _i20;
-import 'protocol.dart' as _i21;
+    as _i20;
+import 'package:karwaan_client/src/protocol/greeting.dart' as _i21;
+import 'protocol.dart' as _i22;
 
 /// {@category Endpoint}
 class EndpointAttachment extends _i1.EndpointRef {
@@ -655,11 +656,11 @@ class EndpointComment extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i16.Comment>> getCommentsForCard(
+  _i2.Future<List<_i17.CommentWithAuthor>> getCommentsForCard(
     int cardId,
     String token,
   ) =>
-      caller.callServerEndpoint<List<_i16.Comment>>(
+      caller.callServerEndpoint<List<_i17.CommentWithAuthor>>(
         'comment',
         'getCommentsForCard',
         {
@@ -828,12 +829,12 @@ class EndpointWorkspace extends _i1.EndpointRef {
   @override
   String get name => 'workspace';
 
-  _i2.Future<_i17.Workspace> createWorkspace(
+  _i2.Future<_i18.Workspace> createWorkspace(
     String name,
     String? description,
     String token,
   ) =>
-      caller.callServerEndpoint<_i17.Workspace>(
+      caller.callServerEndpoint<_i18.Workspace>(
         'workspace',
         'createWorkspace',
         {
@@ -843,20 +844,20 @@ class EndpointWorkspace extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i17.Workspace>> getUserWorkspace(String token) =>
-      caller.callServerEndpoint<List<_i17.Workspace>>(
+  _i2.Future<List<_i18.Workspace>> getUserWorkspace(String token) =>
+      caller.callServerEndpoint<List<_i18.Workspace>>(
         'workspace',
         'getUserWorkspace',
         {'token': token},
       );
 
-  _i2.Future<_i17.Workspace> updateWorkspace(
+  _i2.Future<_i18.Workspace> updateWorkspace(
     int workspaceId,
     String token, {
     String? newName,
     String? newDes,
   }) =>
-      caller.callServerEndpoint<_i17.Workspace>(
+      caller.callServerEndpoint<_i18.Workspace>(
         'workspace',
         'updateWorkspace',
         {
@@ -888,12 +889,12 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
   @override
   String get name => 'workspaceMember';
 
-  _i2.Future<_i18.WorkspaceMember> addMemberToWorkspace(
+  _i2.Future<_i19.WorkspaceMember> addMemberToWorkspace(
     int userToAddId,
     int workspaceId,
     String token,
   ) =>
-      caller.callServerEndpoint<_i18.WorkspaceMember>(
+      caller.callServerEndpoint<_i19.WorkspaceMember>(
         'workspaceMember',
         'addMemberToWorkspace',
         {
@@ -918,11 +919,11 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i19.WorkspaceMemberDetails>> getWorkspaceMember(
+  _i2.Future<List<_i20.WorkspaceMemberDetails>> getWorkspaceMember(
     int workspaceId,
     String token,
   ) =>
-      caller.callServerEndpoint<List<_i19.WorkspaceMemberDetails>>(
+      caller.callServerEndpoint<List<_i20.WorkspaceMemberDetails>>(
         'workspaceMember',
         'getWorkspaceMember',
         {
@@ -931,13 +932,13 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i18.WorkspaceMember> changeMemberRole(
+  _i2.Future<_i19.WorkspaceMember> changeMemberRole(
     int workspaceId,
     String token,
     int targetUserId,
     String newRole,
   ) =>
-      caller.callServerEndpoint<_i18.WorkspaceMember>(
+      caller.callServerEndpoint<_i19.WorkspaceMember>(
         'workspaceMember',
         'changeMemberRole',
         {
@@ -961,13 +962,13 @@ class EndpointWorkspaceMember extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i18.WorkspaceMember> addMemberByEmail(
+  _i2.Future<_i19.WorkspaceMember> addMemberByEmail(
     String email,
     int workspaceId,
     String token,
     String role,
   ) =>
-      caller.callServerEndpoint<_i18.WorkspaceMember>(
+      caller.callServerEndpoint<_i19.WorkspaceMember>(
         'workspaceMember',
         'addMemberByEmail',
         {
@@ -989,8 +990,8 @@ class EndpointGreeting extends _i1.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i20.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i20.Greeting>(
+  _i2.Future<_i21.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i21.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -1013,7 +1014,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i21.Protocol(),
+          _i22.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
