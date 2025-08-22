@@ -1,0 +1,8 @@
+class: CommentWithAuthor
+fields:
+  id: int
+  card: int
+  authorId: int
+  authorName: String
+  content: String
+  createdAt: DateTime
