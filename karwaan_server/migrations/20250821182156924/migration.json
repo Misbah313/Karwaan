@@ -1,0 +1,52 @@
+{
+  "actions": [
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "comment",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "author",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          }
+        ],
+        "deleteColumns": [
+          "author"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [
+          "comment_fk_1"
+        ],
+        "warnings": [
+          {
+            "type": "columnDropped",
+            "message": "Column author of table comment is modified in a way that it must be deleted and recreated.",
+            "table": "comment",
+            "columns": [
+              "author"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column author of table comment is modified in a way that it must be deleted and recreated.",
+      "table": "comment",
+      "columns": [
+        "author"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

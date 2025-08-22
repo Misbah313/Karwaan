@@ -7,11 +7,14 @@ import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_credentails.da
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_state.dart';
 import 'package:karwaan_flutter/domain/models/label/label_state.dart';
 import 'package:karwaan_flutter/domain/repository/checklist/checklist_repo.dart';
+import 'package:karwaan_flutter/domain/repository/comment/comment_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/cardlabel/cardlabel_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/checklist/checklist_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/comment/comment_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/checklist/checklist_dialog.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/comment/comment_dialog.dart';
 import 'package:lottie/lottie.dart';
 
 class CardWidget extends StatelessWidget {
@@ -156,6 +159,9 @@ class CardWidget extends StatelessWidget {
                       case _CardAction.checklist:
                         _showChecklistDialogPage(context, card.id);
                         break;
+                      case _CardAction.comment:
+                        _showCommentDialogPage(context, card.id);
+                        break;
                     }
                   },
                   itemBuilder: (_) => [
@@ -187,6 +193,13 @@ class CardWidget extends StatelessWidget {
                               color: Colors.grey.shade700,
                               fontWeight: FontWeight.w500)),
                     ),
+                    PopupMenuItem(
+                      value: _CardAction.comment,
+                      child: Text('Comments',
+                          style: GoogleFonts.alef(
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w500)),
+                    ),
                   ],
                 ),
               ],
@@ -199,7 +212,7 @@ class CardWidget extends StatelessWidget {
 }
 
 // Card actions enum
-enum _CardAction { edit, delete, editLabels, checklist }
+enum _CardAction { edit, delete, editLabels, checklist, comment }
 
 // Edit card dialog
 Future<void> _showEditCardDialog(
@@ -439,6 +452,21 @@ void _showChecklistDialogPage(BuildContext context, int cardId) {
       return BlocProvider.value(
         value: cubit,
         child: ChecklistDialog(cardId: cardId, checklistCubit: cubit),
+      );
+    },
+  );
+}
+
+// show comment dialog page
+void _showCommentDialogPage(BuildContext context, int cardId) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      final cubit = CommentCubit(context.read<CommentRepo>());
+      cubit.getCommentsForCard(cardId);
+      return BlocProvider.value(
+        value: cubit,
+        child: CommentDialog(cardId: cardId, commentCubit: cubit),
       );
     },
   );

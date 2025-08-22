@@ -1,0 +1,114 @@
+{
+  "actions": [
+    {
+      "type": "deleteTable",
+      "deleteTable": "comment"
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "comment",
+        "dartName": "Comment",
+        "module": "karwaan",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('comment_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "card",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "author",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "content",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "createdAt",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "comment_fk_0",
+            "columns": [
+              "card"
+            ],
+            "referenceTable": "board_card",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          },
+          {
+            "constraintName": "comment_fk_1",
+            "columns": [
+              "author"
+            ],
+            "referenceTable": "user",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "comment_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column author of table comment is modified in a way that it must be deleted and recreated.",
+      "table": "comment",
+      "columns": [
+        "author"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "tableDropped",
+      "message": "One or more columns are added to table \"comment\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+      "table": "comment",
+      "columns": [
+        "author"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

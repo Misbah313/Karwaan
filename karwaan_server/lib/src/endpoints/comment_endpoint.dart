@@ -19,8 +19,7 @@ class CommentEndpoint extends Endpoint {
     }
 
     // get the board which the card belong to
-    final boardList = await BoardList.db
-        .findFirstRow(session, where: (b) => b.board.equals(card.list));
+    final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
       throw Exception('No parent board found!');
     }
@@ -52,15 +51,18 @@ class CommentEndpoint extends Endpoint {
           content: trimmedContent,
           createdAt: DateTime.now());
 
-      await Comment.db.insertRow(session, comment);
-      return comment;
+      final inserted = await Comment.db.insertRow(session, comment);
+      if (inserted.id == null) {
+        throw Exception('Comment id is null after creation!');
+      }
+      return inserted;
     } catch (e) {
       throw Exception(e);
     }
   }
 
   // get comment for card
-  Future<List<Comment>> getCommentsForCard(
+  Future<List<CommentWithAuthor>> getCommentsForCard(
       Session session, int cardId, String token) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
@@ -75,10 +77,7 @@ class CommentEndpoint extends Endpoint {
     }
 
     // get parent board info(boardlist and board)
-    final boardList = await BoardList.db.findFirstRow(
-      session,
-      where: (b) => b.board.equals(card.list),
-    );
+    final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
       throw Exception('BoardList not found!');
     }
@@ -105,7 +104,29 @@ class CommentEndpoint extends Endpoint {
         orderBy: (c) => c.createdAt,
       );
 
-      return comments;
+      // fecth author ids
+      final authorIds = comments.map((c) => c.author).toSet();
+
+      final authors = await User.db.find(
+        session,
+        where: (u) => u.id.inSet(authorIds),
+      );
+      final authorMap = {for (var u in authors) u.id!: u};
+
+      // map comments to commentWithAuthor
+      return comments.map((c) {
+        final auhtor = authorMap[c.author];
+        if(c.id == null) {
+          throw Exception('Comment id is null after creation');
+        }
+        return CommentWithAuthor(
+            id: c.id!,
+            card: c.card,
+            authorId: c.author,
+            authorName: auhtor?.name ?? 'Unknown',
+            content: c.content,
+            createdAt: c.createdAt);
+      }).toList();
     } catch (e) {
       throw Exception(e);
     }
@@ -168,10 +189,7 @@ class CommentEndpoint extends Endpoint {
     if (card == null) {
       throw Exception('Card not found');
     }
-    final boardList = await BoardList.db.findFirstRow(
-      session,
-      where: (b) => b.board.equals(card.list),
-    );
+    final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
       throw Exception('BoardList not found!');
     }
