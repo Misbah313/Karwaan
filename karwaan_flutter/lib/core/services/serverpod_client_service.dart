@@ -862,4 +862,67 @@ class ServerpodClientService {
       rethrow;
     }
   }
+
+  // ========================================================================= COMMENT ========================================================== //
+
+  // create comment
+  Future<Comment> createComment(int cardId, String content) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final comment =
+          await client.comment.createComment(token, cardId, content);
+      return comment;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get comments for card
+  Future<List<CommentWithAuthor>> getCommentsForCard(int cardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final list = await client.comment.getCommentsForCard(cardId, token);
+      return list;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // update comment
+  Future<Comment> updateComment(int commentId, String newContent) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final updated =
+          await client.comment.updateComment(commentId, newContent, token);
+      return updated;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete comment
+  Future<bool> deleteComment(int commentId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.comment.deleteComment(commentId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
