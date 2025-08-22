@@ -1,0 +1,48 @@
+{
+  "actions": [
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "comment",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [],
+        "modifyColumns": [
+          {
+            "columnName": "author",
+            "addNullable": false,
+            "removeNullable": true,
+            "changeDefault": false
+          }
+        ],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "type": "notNullAdded",
+            "message": "Column author of table comment is modified to be not null. If there are existing rows with null values, this migration will fail.",
+            "table": "comment",
+            "columns": [
+              "author"
+            ],
+            "destrucive": false
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "notNullAdded",
+      "message": "Column author of table comment is modified to be not null. If there are existing rows with null values, this migration will fail.",
+      "table": "comment",
+      "columns": [
+        "author"
+      ],
+      "destrucive": false
+    }
+  ],
+  "migrationApiVersion": 1
+}
