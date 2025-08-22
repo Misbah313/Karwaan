@@ -24,25 +24,26 @@ import 'card_label.dart' as _i12;
 import 'checklist.dart' as _i13;
 import 'checklist_item.dart' as _i14;
 import 'comment.dart' as _i15;
-import 'label.dart' as _i16;
-import 'user.dart' as _i17;
-import 'user_token.dart' as _i18;
-import 'workspace.dart' as _i19;
-import 'workspace_member.dart' as _i20;
-import 'workspace_member_details.dart' as _i21;
-import 'package:karwaan_server/src/generated/attachment.dart' as _i22;
-import 'package:karwaan_server/src/generated/board_card.dart' as _i23;
-import 'package:karwaan_server/src/generated/board_details.dart' as _i24;
-import 'package:karwaan_server/src/generated/board_list.dart' as _i25;
-import 'package:karwaan_server/src/generated/board_member_details.dart' as _i26;
-import 'package:karwaan_server/src/generated/label.dart' as _i27;
-import 'package:karwaan_server/src/generated/checklist.dart' as _i28;
-import 'package:karwaan_server/src/generated/checklist_item.dart' as _i29;
-import 'package:karwaan_server/src/generated/comment.dart' as _i30;
-import 'package:karwaan_server/src/generated/user.dart' as _i31;
-import 'package:karwaan_server/src/generated/workspace.dart' as _i32;
+import 'comment_withauthor.dart' as _i16;
+import 'label.dart' as _i17;
+import 'user.dart' as _i18;
+import 'user_token.dart' as _i19;
+import 'workspace.dart' as _i20;
+import 'workspace_member.dart' as _i21;
+import 'workspace_member_details.dart' as _i22;
+import 'package:karwaan_server/src/generated/attachment.dart' as _i23;
+import 'package:karwaan_server/src/generated/board_card.dart' as _i24;
+import 'package:karwaan_server/src/generated/board_details.dart' as _i25;
+import 'package:karwaan_server/src/generated/board_list.dart' as _i26;
+import 'package:karwaan_server/src/generated/board_member_details.dart' as _i27;
+import 'package:karwaan_server/src/generated/label.dart' as _i28;
+import 'package:karwaan_server/src/generated/checklist.dart' as _i29;
+import 'package:karwaan_server/src/generated/checklist_item.dart' as _i30;
+import 'package:karwaan_server/src/generated/comment_withauthor.dart' as _i31;
+import 'package:karwaan_server/src/generated/user.dart' as _i32;
+import 'package:karwaan_server/src/generated/workspace.dart' as _i33;
 import 'package:karwaan_server/src/generated/workspace_member_details.dart'
-    as _i33;
+    as _i34;
 export 'greeting.dart';
 export 'attachment.dart';
 export 'auth_response.dart';
@@ -56,6 +57,7 @@ export 'card_label.dart';
 export 'checklist.dart';
 export 'checklist_item.dart';
 export 'comment.dart';
+export 'comment_withauthor.dart';
 export 'label.dart';
 export 'user.dart';
 export 'user_token.dart';
@@ -1381,23 +1383,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i15.Comment) {
       return _i15.Comment.fromJson(data) as T;
     }
-    if (t == _i16.Label) {
-      return _i16.Label.fromJson(data) as T;
+    if (t == _i16.CommentWithAuthor) {
+      return _i16.CommentWithAuthor.fromJson(data) as T;
     }
-    if (t == _i17.User) {
-      return _i17.User.fromJson(data) as T;
+    if (t == _i17.Label) {
+      return _i17.Label.fromJson(data) as T;
     }
-    if (t == _i18.UserToken) {
-      return _i18.UserToken.fromJson(data) as T;
+    if (t == _i18.User) {
+      return _i18.User.fromJson(data) as T;
     }
-    if (t == _i19.Workspace) {
-      return _i19.Workspace.fromJson(data) as T;
+    if (t == _i19.UserToken) {
+      return _i19.UserToken.fromJson(data) as T;
     }
-    if (t == _i20.WorkspaceMember) {
-      return _i20.WorkspaceMember.fromJson(data) as T;
+    if (t == _i20.Workspace) {
+      return _i20.Workspace.fromJson(data) as T;
     }
-    if (t == _i21.WorkspaceMemberDetails) {
-      return _i21.WorkspaceMemberDetails.fromJson(data) as T;
+    if (t == _i21.WorkspaceMember) {
+      return _i21.WorkspaceMember.fromJson(data) as T;
+    }
+    if (t == _i22.WorkspaceMemberDetails) {
+      return _i22.WorkspaceMemberDetails.fromJson(data) as T;
     }
     if (t == _i1.getType<_i3.Greeting?>()) {
       return (data != null ? _i3.Greeting.fromJson(data) : null) as T;
@@ -1439,77 +1444,81 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i15.Comment?>()) {
       return (data != null ? _i15.Comment.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.Label?>()) {
-      return (data != null ? _i16.Label.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.CommentWithAuthor?>()) {
+      return (data != null ? _i16.CommentWithAuthor.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.User?>()) {
-      return (data != null ? _i17.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.Label?>()) {
+      return (data != null ? _i17.Label.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.UserToken?>()) {
-      return (data != null ? _i18.UserToken.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.User?>()) {
+      return (data != null ? _i18.User.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.Workspace?>()) {
-      return (data != null ? _i19.Workspace.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.UserToken?>()) {
+      return (data != null ? _i19.UserToken.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i20.WorkspaceMember?>()) {
-      return (data != null ? _i20.WorkspaceMember.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.Workspace?>()) {
+      return (data != null ? _i20.Workspace.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.WorkspaceMemberDetails?>()) {
-      return (data != null ? _i21.WorkspaceMemberDetails.fromJson(data) : null)
+    if (t == _i1.getType<_i21.WorkspaceMember?>()) {
+      return (data != null ? _i21.WorkspaceMember.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i22.WorkspaceMemberDetails?>()) {
+      return (data != null ? _i22.WorkspaceMemberDetails.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i22.Attachment>) {
-      return (data as List).map((e) => deserialize<_i22.Attachment>(e)).toList()
+    if (t == List<_i23.Attachment>) {
+      return (data as List).map((e) => deserialize<_i23.Attachment>(e)).toList()
           as T;
     }
-    if (t == List<_i23.BoardCard>) {
-      return (data as List).map((e) => deserialize<_i23.BoardCard>(e)).toList()
+    if (t == List<_i24.BoardCard>) {
+      return (data as List).map((e) => deserialize<_i24.BoardCard>(e)).toList()
           as T;
     }
-    if (t == List<_i24.BoardDetails>) {
+    if (t == List<_i25.BoardDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i24.BoardDetails>(e))
+          .map((e) => deserialize<_i25.BoardDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i25.BoardList>) {
-      return (data as List).map((e) => deserialize<_i25.BoardList>(e)).toList()
+    if (t == List<_i26.BoardList>) {
+      return (data as List).map((e) => deserialize<_i26.BoardList>(e)).toList()
           as T;
     }
-    if (t == List<_i26.BoardMemberDetails>) {
+    if (t == List<_i27.BoardMemberDetails>) {
       return (data as List)
-          .map((e) => deserialize<_i26.BoardMemberDetails>(e))
+          .map((e) => deserialize<_i27.BoardMemberDetails>(e))
           .toList() as T;
     }
-    if (t == List<_i27.Label>) {
-      return (data as List).map((e) => deserialize<_i27.Label>(e)).toList()
+    if (t == List<_i28.Label>) {
+      return (data as List).map((e) => deserialize<_i28.Label>(e)).toList()
           as T;
     }
-    if (t == List<_i28.CheckList>) {
-      return (data as List).map((e) => deserialize<_i28.CheckList>(e)).toList()
+    if (t == List<_i29.CheckList>) {
+      return (data as List).map((e) => deserialize<_i29.CheckList>(e)).toList()
           as T;
     }
-    if (t == List<_i29.CheckListItem>) {
+    if (t == List<_i30.CheckListItem>) {
       return (data as List)
-          .map((e) => deserialize<_i29.CheckListItem>(e))
+          .map((e) => deserialize<_i30.CheckListItem>(e))
           .toList() as T;
     }
-    if (t == List<_i30.Comment>) {
-      return (data as List).map((e) => deserialize<_i30.Comment>(e)).toList()
-          as T;
-    }
-    if (t == List<_i31.User>) {
-      return (data as List).map((e) => deserialize<_i31.User>(e)).toList() as T;
-    }
-    if (t == List<_i32.Workspace>) {
-      return (data as List).map((e) => deserialize<_i32.Workspace>(e)).toList()
-          as T;
-    }
-    if (t == List<_i33.WorkspaceMemberDetails>) {
+    if (t == List<_i31.CommentWithAuthor>) {
       return (data as List)
-          .map((e) => deserialize<_i33.WorkspaceMemberDetails>(e))
+          .map((e) => deserialize<_i31.CommentWithAuthor>(e))
+          .toList() as T;
+    }
+    if (t == List<_i32.User>) {
+      return (data as List).map((e) => deserialize<_i32.User>(e)).toList() as T;
+    }
+    if (t == List<_i33.Workspace>) {
+      return (data as List).map((e) => deserialize<_i33.Workspace>(e)).toList()
+          as T;
+    }
+    if (t == List<_i34.WorkspaceMemberDetails>) {
+      return (data as List)
+          .map((e) => deserialize<_i34.WorkspaceMemberDetails>(e))
           .toList() as T;
     }
     try {
@@ -1561,22 +1570,25 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i15.Comment) {
       return 'Comment';
     }
-    if (data is _i16.Label) {
+    if (data is _i16.CommentWithAuthor) {
+      return 'CommentWithAuthor';
+    }
+    if (data is _i17.Label) {
       return 'Label';
     }
-    if (data is _i17.User) {
+    if (data is _i18.User) {
       return 'User';
     }
-    if (data is _i18.UserToken) {
+    if (data is _i19.UserToken) {
       return 'UserToken';
     }
-    if (data is _i19.Workspace) {
+    if (data is _i20.Workspace) {
       return 'Workspace';
     }
-    if (data is _i20.WorkspaceMember) {
+    if (data is _i21.WorkspaceMember) {
       return 'WorkspaceMember';
     }
-    if (data is _i21.WorkspaceMemberDetails) {
+    if (data is _i22.WorkspaceMemberDetails) {
       return 'WorkspaceMemberDetails';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1631,23 +1643,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Comment') {
       return deserialize<_i15.Comment>(data['data']);
     }
+    if (dataClassName == 'CommentWithAuthor') {
+      return deserialize<_i16.CommentWithAuthor>(data['data']);
+    }
     if (dataClassName == 'Label') {
-      return deserialize<_i16.Label>(data['data']);
+      return deserialize<_i17.Label>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_i17.User>(data['data']);
+      return deserialize<_i18.User>(data['data']);
     }
     if (dataClassName == 'UserToken') {
-      return deserialize<_i18.UserToken>(data['data']);
+      return deserialize<_i19.UserToken>(data['data']);
     }
     if (dataClassName == 'Workspace') {
-      return deserialize<_i19.Workspace>(data['data']);
+      return deserialize<_i20.Workspace>(data['data']);
     }
     if (dataClassName == 'WorkspaceMember') {
-      return deserialize<_i20.WorkspaceMember>(data['data']);
+      return deserialize<_i21.WorkspaceMember>(data['data']);
     }
     if (dataClassName == 'WorkspaceMemberDetails') {
-      return deserialize<_i21.WorkspaceMemberDetails>(data['data']);
+      return deserialize<_i22.WorkspaceMemberDetails>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1687,18 +1702,18 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i14.CheckListItem.t;
       case _i15.Comment:
         return _i15.Comment.t;
-      case _i16.Label:
-        return _i16.Label.t;
-      case _i17.User:
-        return _i17.User.t;
-      case _i18.UserToken:
-        return _i18.UserToken.t;
-      case _i19.Workspace:
-        return _i19.Workspace.t;
-      case _i20.WorkspaceMember:
-        return _i20.WorkspaceMember.t;
-      case _i21.WorkspaceMemberDetails:
-        return _i21.WorkspaceMemberDetails.t;
+      case _i17.Label:
+        return _i17.Label.t;
+      case _i18.User:
+        return _i18.User.t;
+      case _i19.UserToken:
+        return _i19.UserToken.t;
+      case _i20.Workspace:
+        return _i20.Workspace.t;
+      case _i21.WorkspaceMember:
+        return _i21.WorkspaceMember.t;
+      case _i22.WorkspaceMemberDetails:
+        return _i22.WorkspaceMemberDetails.t;
     }
     return null;
   }
