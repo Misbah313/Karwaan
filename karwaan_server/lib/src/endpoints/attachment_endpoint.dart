@@ -19,10 +19,7 @@ class AttachmentEndpoint extends Endpoint {
     }
 
     // fetch the parent boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
@@ -67,9 +64,12 @@ class AttachmentEndpoint extends Endpoint {
           fileName: trimmedFileName);
 
       // insert into db
-      await Attachment.db.insertRow(session, attachment);
+      final inserted = await Attachment.db.insertRow(session, attachment);
+      if (inserted.id == null) {
+        throw Exception('Attachment id is null after uploading!');
+      }
 
-      return attachment;
+      return inserted;
     } catch (e) {
       throw Exception(e);
     }
@@ -90,10 +90,7 @@ class AttachmentEndpoint extends Endpoint {
     }
 
     // fetch the parent boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
@@ -146,10 +143,7 @@ class AttachmentEndpoint extends Endpoint {
     }
 
     // fetch the parent boardlist + board
-    final boardlist = await BoardList.db.findFirstRow(
-      session,
-      where: (p0) => p0.board.equals(card.list),
-    );
+    final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
       throw Exception('Parent boardlist not found!');
     }
