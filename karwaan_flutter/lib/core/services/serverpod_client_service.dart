@@ -925,4 +925,51 @@ class ServerpodClientService {
       rethrow;
     }
   }
+
+  // ================================================================== ATTACHMENT ======================================================================= //
+
+  // upload attachment
+  Future<Attachment> uploadAttachment(int cardId, String fileName) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final upload =
+          await client.attachment.uploadAttachment(cardId, fileName, token);
+      return upload;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // list attachment
+  Future<List<Attachment>> listAttachment(int cardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final list = await client.attachment.listAttachments(cardId, token);
+      return list;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete attachment
+  Future<bool> deleteAttachment(int attachmentId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.attachment.deleteAttachment(attachmentId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
