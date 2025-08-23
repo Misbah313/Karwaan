@@ -89,9 +89,16 @@ class _BoardlistPageState extends State<BoardlistPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogCtx).pop(),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Colors.grey[350]),
               onPressed: () async {
                 final raw = titleController.text.trim();
                 if (raw.isEmpty) {
@@ -113,7 +120,11 @@ class _BoardlistPageState extends State<BoardlistPage> {
                 context.read<BoardlistCubit>().createBoardList(creds);
                 if (mounted) Navigator.of(dialogCtx).pop();
               },
-              child: const Text('Create'),
+              child: Text(
+                'Create',
+                style:
+                    GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 15),
+              ),
             ),
           ],
         );
@@ -336,7 +347,7 @@ class _BoardlistPageState extends State<BoardlistPage> {
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: Colors.grey.shade400,
+            backgroundColor: Colors.grey[350],
             onPressed: _showCreateListDialog,
             label: Text(
               'Add list',
@@ -494,7 +505,9 @@ class _BoardlistPageState extends State<BoardlistPage> {
                         child: Column(
                           children: [
                             SizedBox(height: 20),
-                            Lottie.asset('asset/ani/emptys.json', height: 200),
+                            Lottie.asset('asset/ani/emptys.json',
+                                height:
+                                    MediaQuery.of(context).size.height * 0.2),
                             SizedBox(height: 16),
                             Text(
                               'Create your first card to get started!',
@@ -585,6 +598,7 @@ class _ListActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<_ListAction>(
+      color: Colors.grey.shade300,
       onSelected: (value) {
         switch (value) {
           case _ListAction.edit:
@@ -595,9 +609,17 @@ class _ListActions extends StatelessWidget {
             break;
         }
       },
-      itemBuilder: (context) => const [
-        PopupMenuItem(value: _ListAction.edit, child: Text('Edit')),
-        PopupMenuItem(value: _ListAction.delete, child: Text('Delete')),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+            value: _ListAction.edit,
+            child: Text('Edit',
+                style: GoogleFonts.alef(
+                    color: Colors.grey.shade600, fontSize: 16))),
+        PopupMenuItem(
+            value: _ListAction.delete,
+            child: Text('Delete',
+                style: GoogleFonts.alef(
+                    color: Colors.grey.shade600, fontSize: 16))),
       ],
     );
   }

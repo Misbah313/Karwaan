@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/data/repositories/attachment/attachment_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/auth/auth_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/board/board_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/boardcard/board_card_remote_repo.dart';
@@ -13,6 +14,7 @@ import 'package:karwaan_flutter/data/repositories/checklistItem/checklist_item_r
 import 'package:karwaan_flutter/data/repositories/comment/comment_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/label/label_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/workspace/workspace_remote_repo.dart';
+import 'package:karwaan_flutter/domain/repository/attachment/attachment_repo.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
@@ -43,6 +45,7 @@ void main() async {
   final checklistRepo = ChecklistRemoteRepo(serverpodClientService);
   final checklistItemRepo = ChecklistItemRemoteRepo(serverpodClientService);
   final commentRepo = CommentRemoteRepo(serverpodClientService);
+  final attachmentRepo = AttachmentRemoteRepo(serverpodClientService);
 
   runApp(
     MultiProvider(
@@ -57,6 +60,7 @@ void main() async {
         Provider<ChecklistRepo>(create: (_) => checklistRepo),
         Provider<ChecklistItemRepo>(create: (_) => checklistItemRepo),
         Provider<CommentRepo>(create: (_) => commentRepo),
+        Provider<AttachmentRepo>(create: (_) => attachmentRepo),
         BlocProvider<AuthCubit>(
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
