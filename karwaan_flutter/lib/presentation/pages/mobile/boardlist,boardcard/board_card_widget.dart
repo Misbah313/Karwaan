@@ -6,13 +6,16 @@ import 'package:karwaan_flutter/domain/models/boardcard/board_card_credentails.d
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_credentails.dart';
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_state.dart';
 import 'package:karwaan_flutter/domain/models/label/label_state.dart';
+import 'package:karwaan_flutter/domain/repository/attachment/attachment_repo.dart';
 import 'package:karwaan_flutter/domain/repository/checklist/checklist_repo.dart';
 import 'package:karwaan_flutter/domain/repository/comment/comment_repo.dart';
+import 'package:karwaan_flutter/presentation/cubits/attachment/attachment_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/cardlabel/cardlabel_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/checklist/checklist_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/comment/comment_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/attachment/attachment_dialog.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/checklist/checklist_dialog.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/comment/comment_dialog.dart';
 import 'package:lottie/lottie.dart';
@@ -64,155 +67,168 @@ class CardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 3)],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top label color strips
-          BlocBuilder<CardlabelCubit, CardlabelState>(
-            builder: (context, state) {
-              if (state is CardLabelLoading || state is CardLabelInitial) {
-                return Center(
-                  child: Lottie.asset('asset/ani/load.json'),
-                );
-              }
-              if (state is CardLabelForCardListLoaded) {
-                final cardLabels = state.labels;
-                if (cardLabels.isEmpty) return const SizedBox();
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    children: cardLabels.map((label) {
-                      return Container(
-                        width: 40,
-                        height: 4,
-                        margin: const EdgeInsets.only(left: 4, top: 4),
-                        decoration: BoxDecoration(
-                          color: _parseLabelColor(label.color),
-                          borderRadius: BorderRadius.circular(2),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top label color strips
+            BlocBuilder<CardlabelCubit, CardlabelState>(
+              builder: (context, state) {
+                if (state is CardLabelLoading || state is CardLabelInitial) {
+                  return Center(
+                    child: Lottie.asset('asset/ani/load.json',
+                        height: MediaQuery.of(context).size.height * 0.2),
+                  );
+                }
+                if (state is CardLabelForCardListLoaded) {
+                  final cardLabels = state.labels;
+                  if (cardLabels.isEmpty) return const SizedBox();
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: cardLabels.map((label) {
+                        return Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(left: 4, top: 4),
+                          decoration: BoxDecoration(
+                            color: _parseLabelColor(label.color),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+
+            // Main card content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                children: [
+                  // Checkbox for completion
+                  Checkbox(
+                    activeColor: Colors.green,
+                    checkColor: Colors.grey.shade300,
+                    side: BorderSide(color: Colors.grey.shade400),
+                    value: card.isCompleted,
+                    onChanged: (val) {
+                      cardCubit.updateBoardCard(
+                        BoardCardCredentails(
+                          cardId: card.id,
+                          newTitle: card.title,
+                          newDec: card.description,
+                          isCompleted: val ?? false,
                         ),
                       );
-                    }).toList(),
+                    },
                   ),
-                );
-              }
-              return const SizedBox();
-            },
-          ),
 
-          // Main card content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              children: [
-                // Checkbox for completion
-                Checkbox(
-                  activeColor: Colors.green,
-                  checkColor: Colors.grey.shade300,
-                  side: BorderSide(color: Colors.grey.shade400),
-                  value: card.isCompleted,
-                  onChanged: (val) {
-                    cardCubit.updateBoardCard(
-                      BoardCardCredentails(
-                        cardId: card.id,
-                        newTitle: card.title,
-                        newDec: card.description,
-                        isCompleted: val ?? false,
+                  // Task title
+                  Expanded(
+                    child: Text(
+                      card.title,
+                      style: GoogleFonts.alef(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade800,
+                        decoration: card.isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
+                        decorationColor: Colors.grey.shade700,
                       ),
-                    );
-                  },
-                ),
-
-                // Task title
-                Expanded(
-                  child: Text(
-                    card.title,
-                    style: GoogleFonts.alef(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade800,
-                      decoration:
-                          card.isCompleted ? TextDecoration.lineThrough : null,
-                      decorationColor: Colors.grey.shade700,
                     ),
                   ),
-                ),
 
-                // Popup menu for card actions
-                PopupMenuButton<_CardAction>(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(10),
-                  icon: Icon(
-                    Icons.more_vert,
-                    size: 20,
-                    color: Colors.grey.shade700,
+                  // Popup menu for card actions
+                  PopupMenuButton<_CardAction>(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(10),
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: 20,
+                      color: Colors.grey.shade700,
+                    ),
+                    onSelected: (action) {
+                      switch (action) {
+                        case _CardAction.edit:
+                          _showEditCardDialog(context, card, cardCubit);
+                          break;
+                        case _CardAction.delete:
+                          confirmDeleteCard(card.id);
+                          break;
+                        case _CardAction.editLabels:
+                          _showEditLabelsDialog(context, card);
+                          break;
+                        case _CardAction.checklist:
+                          _showChecklistDialogPage(context, card.id);
+                          break;
+                        case _CardAction.comment:
+                          _showCommentDialogPage(context, card.id);
+                          break;
+                        case _CardAction.attachment:
+                          _showAttachmentDialogPage(context, card.id);
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: _CardAction.edit,
+                        child: Text('Edit',
+                            style: GoogleFonts.alef(
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w500)),
+                      ),
+                      PopupMenuItem(
+                        value: _CardAction.editLabels,
+                        child: Text('Edit Labels',
+                            style: GoogleFonts.alef(
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w500)),
+                      ),
+                      PopupMenuItem(
+                        value: _CardAction.delete,
+                        child: Text('Delete',
+                            style: GoogleFonts.alef(
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w500)),
+                      ),
+                      PopupMenuItem(
+                        value: _CardAction.checklist,
+                        child: Text('Checklist',
+                            style: GoogleFonts.alef(
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w500)),
+                      ),
+                      PopupMenuItem(
+                        value: _CardAction.comment,
+                        child: Text('Comments',
+                            style: GoogleFonts.alef(
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w500)),
+                      ),
+                      PopupMenuItem(
+                        value: _CardAction.attachment,
+                        child: Text('Attachments',
+                            style: GoogleFonts.alef(
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w500)),
+                      ),
+                    ],
                   ),
-                  onSelected: (action) {
-                    switch (action) {
-                      case _CardAction.edit:
-                        _showEditCardDialog(context, card, cardCubit);
-                        break;
-                      case _CardAction.delete:
-                        confirmDeleteCard(card.id);
-                        break;
-                      case _CardAction.editLabels:
-                        _showEditLabelsDialog(context, card);
-                        break;
-                      case _CardAction.checklist:
-                        _showChecklistDialogPage(context, card.id);
-                        break;
-                      case _CardAction.comment:
-                        _showCommentDialogPage(context, card.id);
-                        break;
-                    }
-                  },
-                  itemBuilder: (_) => [
-                    PopupMenuItem(
-                      value: _CardAction.edit,
-                      child: Text('Edit',
-                          style: GoogleFonts.alef(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    PopupMenuItem(
-                      value: _CardAction.editLabels,
-                      child: Text('Edit Labels',
-                          style: GoogleFonts.alef(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    PopupMenuItem(
-                      value: _CardAction.delete,
-                      child: Text('Delete',
-                          style: GoogleFonts.alef(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    PopupMenuItem(
-                      value: _CardAction.checklist,
-                      child: Text('Checklist',
-                          style: GoogleFonts.alef(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    PopupMenuItem(
-                      value: _CardAction.comment,
-                      child: Text('Comments',
-                          style: GoogleFonts.alef(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 // Card actions enum
-enum _CardAction { edit, delete, editLabels, checklist, comment }
+enum _CardAction { edit, delete, editLabels, checklist, comment, attachment }
 
 // Edit card dialog
 Future<void> _showEditCardDialog(
@@ -467,6 +483,21 @@ void _showCommentDialogPage(BuildContext context, int cardId) {
       return BlocProvider.value(
         value: cubit,
         child: CommentDialog(cardId: cardId, commentCubit: cubit),
+      );
+    },
+  );
+}
+
+// show attachment dialog page
+void _showAttachmentDialogPage(BuildContext context, int cardId) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      final cubit = AttachmentCubit(context.read<AttachmentRepo>());
+      cubit.listAttachment(cardId);
+      return BlocProvider.value(
+        value: cubit,
+        child: AttachmentDialog(cardId: cardId, attachmentCubit: cubit),
       );
     },
   );
