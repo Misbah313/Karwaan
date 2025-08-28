@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_state.dart';
@@ -21,8 +20,8 @@ class WorkspaceMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ListTile(
-            leading: const Icon(Icons.people),
-            title: const Text('View Members'),
+            leading:  Icon(Icons.people, color: Theme.of(context).iconTheme.color,),
+            title:  Text('View Members', style: Theme.of(context).textTheme.bodyMedium,),
             onTap: () {
               Navigator.pop(context);
               final cubit = context.read<WorkspaceMemberCubit>();
@@ -30,16 +29,16 @@ class WorkspaceMenu extends StatelessWidget {
               _showMemberDialog(context, cubit);
             }),
         ListTile(
-          leading: const Icon(Icons.exit_to_app),
-          title: const Text('Leave Workspace'),
+          leading:  Icon(Icons.exit_to_app, color: Theme.of(context).iconTheme.color),
+          title:  Text('Leave Workspace',  style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             _showLeaveConfirmationDialog(context, workspace.id);
           },
         ),
         ListTile(
-          leading: const Icon(Icons.add_circle_outline_outlined),
-          title: const Text('Add member'),
+          leading:  Icon(Icons.add_circle_outline_outlined, color: Theme.of(context).iconTheme.color),
+          title:  Text('Add member',  style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             final cubit = context.read<WorkspaceMemberCubit>();
@@ -48,16 +47,16 @@ class WorkspaceMenu extends StatelessWidget {
           },
         ),
         ListTile(
-          leading: const Icon(Icons.delete_outline_rounded),
-          title: const Text('Delete Workspace'),
+          leading:  Icon(Icons.delete_outline_rounded, color: Theme.of(context).iconTheme.color),
+          title:  Text('Delete Workspace',  style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             _showDeleteWorkspaceDialog(context, workspace.id);
           },
         ),
         ListTile(
-          leading: const Icon(Icons.update),
-          title: const Text('Update Worksace'),
+          leading:  Icon(Icons.update, color: Theme.of(context).iconTheme.color),
+          title:  Text('Update Worksace',  style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             _showUpdateWorkspaceDialog(context, workspace.id);
@@ -101,21 +100,21 @@ class WorkspaceMenu extends StatelessWidget {
               child: AlertDialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
-                backgroundColor: Colors.grey.shade300,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 title: Text(
                   'Leave Workspace?',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.bodyLarge
                 ),
                 content: Text(
                   'Are you sure you want to leave this workspace?',
-                  style: GoogleFonts.alef(),
+                  style: Theme.of(context).textTheme.bodyMedium
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text(
+                    child:  Text(
                       'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                      style: Theme.of(context).textTheme.titleSmall
                     ),
                   ),
                   BlocConsumer<WorkspaceMemberCubit, WorkspaceMemberState>(
@@ -146,7 +145,7 @@ class WorkspaceMenu extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: Colors.grey.shade300),
+                            backgroundColor: Theme.of(context).colorScheme.primary),
                         onPressed: state is MemberLoadingState
                             ? null
                             : () {
@@ -156,7 +155,7 @@ class WorkspaceMenu extends StatelessWidget {
                               },
                         child: state is MemberLoadingState
                             ? const CircularProgressIndicator()
-                            : const Text(
+                            :  Text(
                                 'Leave',
                                 style: TextStyle(color: Colors.red),
                               ),
@@ -178,22 +177,21 @@ class WorkspaceMenu extends StatelessWidget {
         child: AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: Colors.grey.shade300,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
             'Delete Workspace?',
-            style: GoogleFonts.poppins(
-                color: Colors.red, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyLarge
           ),
           content: Text(
             'Are you sure want to delete this workspace?',
-            style: GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 16),
+            style: Theme.of(context).textTheme.bodyMedium
           ),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Cancel',
-                  style: TextStyle(color: Colors.grey),
+                  style: Theme.of(context).textTheme.titleSmall
                 )),
             BlocConsumer<WorkspaceCubit, WorkspaceState>(
               listener: (context, state) {
@@ -217,7 +215,7 @@ class WorkspaceMenu extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: Colors.grey.shade300),
+                        backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: state is WorkspaceLoading
                         ? null
                         : () {
@@ -252,8 +250,8 @@ class WorkspaceMenu extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)
                 ),
-                backgroundColor: Colors.grey.shade300,
-                title: Text('Update workspace!', style: GoogleFonts.poppins(fontWeight: FontWeight.bold),),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                title: Text('Update workspace!', style: Theme.of(context).textTheme.bodyLarge),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -272,7 +270,7 @@ class WorkspaceMenu extends StatelessWidget {
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel', style: TextStyle(color: Colors.grey),)),
+                      child: Text('Cancel', style: Theme.of(context).textTheme.titleSmall)),
                   BlocConsumer<WorkspaceCubit, WorkspaceState>(
                     listener: (context, state) {
                       if (state is WorkspaceListLoaded) {
@@ -297,7 +295,7 @@ class WorkspaceMenu extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)
                           ),
-                          backgroundColor: Colors.grey.shade300
+                          backgroundColor: Theme.of(context).colorScheme.primary
                         ),
                           onPressed: state is WorkspaceLoading
                               ? null
@@ -324,7 +322,7 @@ class WorkspaceMenu extends StatelessWidget {
                                 },
                           child: state is WorkspaceLoading
                               ? const CircularProgressIndicator()
-                              :  Text('Update', style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w400),));
+                              :  Text('Update', style: Theme.of(context).textTheme.bodySmall));
                     },
                   )
                 ],

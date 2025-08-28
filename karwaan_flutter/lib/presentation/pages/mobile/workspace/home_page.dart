@@ -9,6 +9,7 @@ import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_state.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/auth/profile_page.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/workspace/workspace_card.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/my_drawer.dart';
@@ -50,13 +51,8 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height: 20),
           Lottie.asset('asset/ani/emptys.json', height: 250),
           SizedBox(height: 16),
-          Text(
-            'Create your first workspace to get started!',
-            style: GoogleFonts.alef(
-                fontSize: 16,
-                color: Colors.grey.shade400,
-                fontWeight: FontWeight.w400),
-          )
+          Text('Create your first workspace to get started!',
+              style: Theme.of(context).textTheme.bodyMedium)
         ],
       ),
     );
@@ -89,14 +85,8 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 20),
         Align(
           alignment: Alignment.center,
-          child: Text(
-            'Tap on the workspace containers!',
-            style: GoogleFonts.alef(
-              color: Colors.grey.shade400,
-              fontSize: 15,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
+          child: Text('Tap on the workspace containers!',
+              style: Theme.of(context).textTheme.bodyMedium),
         ),
       ],
     );
@@ -114,7 +104,9 @@ class _HomePageState extends State<HomePage> {
           width: isActive ? 16 : 8,
           height: 8,
           decoration: BoxDecoration(
-              color: isActive ? Colors.grey.shade800 : Colors.grey.shade400,
+              color: isActive
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(4)),
         );
       }),
@@ -132,10 +124,10 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         title: Text(
           'Create new workspace',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -155,13 +147,11 @@ class _HomePageState extends State<HomePage> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey, fontSize: 15),
-              )),
+              child: Text('Cancel',
+                  style: Theme.of(context).textTheme.titleSmall)),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade400,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10))),
               onPressed: () async {
@@ -205,10 +195,8 @@ class _HomePageState extends State<HomePage> {
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(
-                      'Create',
-                      style: TextStyle(color: Colors.white),
-                    ))
+                  : Text('Create',
+                      style: Theme.of(context).textTheme.bodySmall))
         ],
       ),
     );
@@ -245,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                 username = authState.user.name;
               }
               return Scaffold(
-                backgroundColor: myDeafultBackgroundColor,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 drawer: MyDrawer(),
                 body: SafeArea(
                   child: Padding(
@@ -266,18 +254,27 @@ class _HomePageState extends State<HomePage> {
                                             Scaffold.of(context).openDrawer(),
                                         icon: Icon(
                                           Icons.menu,
-                                          color: Colors.black,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
                                         )),
                                   ),
                                 ],
                               ),
 
-                              // drawer or something
-                              CircleAvatar(
-                                backgroundColor: Colors.grey.shade400,
-                                child: Icon(
-                                  Icons.person_2_outlined,
-                                  color: Colors.grey.shade600,
+                              // profile page
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ProfilePage(),
+                                  ));
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  child: Icon(
+                                    Icons.person_2_outlined,
+                                    color: Theme.of(context).iconTheme.color,
+                                  ),
                                 ),
                               ),
                             ],
@@ -289,32 +286,22 @@ class _HomePageState extends State<HomePage> {
                           Text.rich(TextSpan(children: [
                             TextSpan(
                                 text: 'Hello, ',
-                                style: GoogleFonts.alef(
-                                    fontSize: 28, fontWeight: FontWeight.bold)),
+                                style: Theme.of(context).textTheme.bodyLarge),
                             TextSpan(
                                 text: username.isNotEmpty
                                     ? '$username!'
                                     : 'Guest!',
-                                style: GoogleFonts.alef(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 28,
-                                    color: Colors.grey.shade400)),
+                                style: Theme.of(context).textTheme.displayMedium),
                           ])),
-                          Text(
-                            'A great day to get better.',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade600, fontSize: 16),
-                          ),
+                          Text('A great day to get better.',
+                              style: Theme.of(context).textTheme.bodySmall),
 
                           const SizedBox(height: 15),
 
                           // divider
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 14.0),
-                            child: Divider(
-                                thickness: 1, color: Colors.grey.shade400),
-                          ),
+                          Divider(
+                              thickness: 1,
+                              color: Theme.of(context).dividerColor),
 
                           const SizedBox(height: 20),
 
@@ -325,19 +312,15 @@ class _HomePageState extends State<HomePage> {
                               Expanded(
                                 child: ListTile(
                                   contentPadding: EdgeInsets.zero,
-                                  title: Text(
-                                    'Workspaces',
-                                    style: GoogleFonts.alef(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 28,
-                                    ),
-                                  ),
+                                  title: Text('Workspaces',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge),
                                   subtitle: Text(
-                                    'You have ${state.workspaces.length} workspaces',
-                                    style: GoogleFonts.alef(
-                                        fontSize: 16,
-                                        color: Colors.grey.shade600),
-                                  ),
+                                      'You have ${state.workspaces.length} workspaces',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
                                 ),
                               ),
                               GestureDetector(
@@ -346,21 +329,26 @@ class _HomePageState extends State<HomePage> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 8),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey.shade400,
+                                        gradient: LinearGradient(colors: [
+                                          Theme.of(context).colorScheme.surface,
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                        ]),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
                                         children: [
                                           Icon(Icons.add,
-                                              color: Colors.grey.shade600,
+                                              color: Theme.of(context)
+                                                  .iconTheme
+                                                  .color,
                                               size: 18),
                                           SizedBox(width: 4),
-                                          Text(
-                                            'Add',
-                                            style: GoogleFonts.alef(
-                                                color: Colors.grey.shade600,
-                                                fontSize: 15),
-                                          )
+                                          Text('Add',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall)
                                         ],
                                       ))),
                             ],

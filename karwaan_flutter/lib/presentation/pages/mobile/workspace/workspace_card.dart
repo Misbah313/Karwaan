@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
@@ -23,14 +22,11 @@ class WorkspaceCard extends StatelessWidget {
               child: ListTile(
             title: Text(workspace.workspaceName,
                 style:
-                    GoogleFonts.alef(fontSize: 20, fontWeight: FontWeight.bold),
+                    Theme.of(context).textTheme.bodyLarge,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis),
             subtitle: Text(workspace.workspaceDescription,
-                style: GoogleFonts.alef(
-                    color: Colors.grey.shade600,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w200),
+                style: Theme.of(context).textTheme.bodyMedium,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis),
           )),
@@ -38,7 +34,7 @@ class WorkspaceCard extends StatelessWidget {
               onPressed: () => _showWorkspaceMenu(context),
               icon: Icon(
                 Icons.more_vert,
-                color: Colors.grey.shade600,
+                color: Theme.of(context).iconTheme.color,
               )),
         ],
       ),
@@ -55,14 +51,14 @@ class WorkspaceCard extends StatelessWidget {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
-                  colors: [Colors.grey.shade400, Colors.grey.shade200])),
+                  colors: [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.onSurface])),
           child: Row(
             children: [
-              Icon(Icons.calendar_today, size: 16, color: Colors.white),
+              Icon(Icons.calendar_today, size: 16, color: Theme.of(context).iconTheme.color),
               SizedBox(width: 4),
               Text(
                 'Created At ${_formatDate(workspace.createdAt)}',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall
               ),
             ],
           ),
@@ -76,7 +72,7 @@ class WorkspaceCard extends StatelessWidget {
   // show workspace menu
   void _showWorkspaceMenu(BuildContext context) {
     showBottomSheet(
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       context: context,
       builder: (bottomSheetContext) {
         return BlocProvider.value(
@@ -110,11 +106,11 @@ class WorkspaceCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: [Colors.grey.shade400, Colors.grey.shade200],
+              colors: [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.onSurface],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight),
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.grey.shade100, blurRadius: 6)],
+          boxShadow: [BoxShadow(color: Colors.blueGrey.shade100, blurRadius: 6)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
