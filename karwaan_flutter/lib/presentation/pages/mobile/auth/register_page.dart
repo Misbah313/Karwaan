@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_credentials.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
@@ -92,7 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: myDeafultBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
@@ -111,9 +110,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   height: 50,
                   width: MediaQuery.of(context).size.width * 0.8,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.blue.shade300),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: Center(
                     child: Padding(
@@ -123,10 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         children: [
                           Text(
                             'Sign up with Google',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w300,
-                              color: Colors.grey.shade500,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
                           ),
                           Image.asset(
                             'asset/images/google.png',
@@ -146,24 +142,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Colors.blue.shade300,
+                          color: Theme.of(context).dividerColor
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Text(
                           'OR',
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.grey.shade700,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
                         ),
                       ),
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Colors.blue.shade300,
+                          color: Theme.of(context).dividerColor,
                         ),
                       ),
                     ],
@@ -172,11 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 lowSizedBox,
                 Text(
                   'With your email and password',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.grey.shade700,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium
                 ),
                 const SizedBox(height: 15),
                 Textfield(
@@ -217,11 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     Text(
                       "Already have an account? ",
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.grey.shade600,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
                     ),
                     GestureDetector(
                       onTap: () {
@@ -259,11 +243,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                       child: Text(
                         "Log In",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.blue.shade600,
-                        ),
+                        style:Theme.of(context).textTheme.titleMedium
                       ),
                     ),
                   ],

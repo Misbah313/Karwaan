@@ -11,7 +11,7 @@ class IntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: myDeafultBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -28,11 +28,7 @@ class IntroPage extends StatelessWidget {
               // Welcome Message
               Text(
                 "Welcome to Karwaan",
-                style: GoogleFonts.poppins(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blue[800],
-                ),
+                style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
 
@@ -41,11 +37,7 @@ class IntroPage extends StatelessWidget {
               // Subtitle
               Text(
                 "Organize tasks, stay focused, and achieve goals with your team",
-                style: GoogleFonts.openSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.grey[600],
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
 
@@ -95,15 +87,15 @@ class IntroPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1976D2), Color(0xFF2196F3)],
+          gradient:  LinearGradient(
+            colors: [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.onSurface],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.secondary,
               blurRadius: 8,
               offset: const Offset(0, 4),
             )
@@ -114,17 +106,13 @@ class IntroPage extends StatelessWidget {
           innerColor: Colors.white.withOpacity(0.2),
           outerColor: Colors.transparent,
           text: "Slide to Continue",
-          textStyle: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.5,
-          ),
+          textStyle: Theme.of(context).textTheme.bodyMedium,
           borderRadius: 12,
           onSubmit: () async => _navigateToLogin(context),
-          submittedIcon: const Icon(Icons.check, color: Colors.white),
-          sliderButtonIcon: const Icon(
+          submittedIcon:  Icon(Icons.check, color: Theme.of(context).iconTheme.color),
+          sliderButtonIcon:  Icon(
             Icons.arrow_forward_rounded,
-            color: Colors.white,
+            color: Theme.of(context).iconTheme.color,
           ),
           sliderButtonIconSize: 20,
           sliderButtonIconPadding: 10,
@@ -215,22 +203,19 @@ class _FeatureItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.blue[50],
+            color: Theme.of(context).colorScheme.primary,
             shape: BoxShape.circle,
           ),
           child: Icon(
             icon,
             size: 28,
-            color: Colors.blue[600],
+            color: Theme.of(context).iconTheme.color,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           label,
-          style: GoogleFonts.openSans(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
+          style: Theme.of(context).textTheme.bodySmall
         ),
       ],
     );

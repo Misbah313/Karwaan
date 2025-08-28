@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_credentials.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
@@ -34,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: myDeafultBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -50,9 +49,10 @@ class _LoginPageState extends State<LoginPage> {
                   height: 50,
                   width: MediaQuery.of(context).size.width * 0.8,
                   decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.blue.shade300)),
+                      border:
+                          Border.all(color: Theme.of(context).dividerColor)),
                   child: Center(
                       child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -60,11 +60,12 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Login with your google account ',
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.grey.shade500,
-                                fontSize: 15)),
-                        Image.asset('asset/images/google.png', height: 25, width: 25,)
+                            style: Theme.of(context).textTheme.bodyMedium),
+                        Image.asset(
+                          'asset/images/google.png',
+                          height: 25,
+                          width: 25,
+                        )
                       ],
                     ),
                   )),
@@ -78,39 +79,26 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Expanded(
                         child: Divider(
-                          thickness: 1,
-                          color: Colors.blue.shade300,
-                        ),
+                            thickness: 1,
+                            color: Theme.of(context).dividerColor),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 15),
-                        child: Text(
-                          'OR',
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
+                        child: Text('OR',
+                            style: Theme.of(context).textTheme.bodySmall),
                       ),
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Colors.blue.shade300,
+                          color: Theme.of(context).dividerColor,
                         ),
                       ),
                     ],
                   ),
                 ),
                 lowSizedBox,
-                Text(
-                  'With your email and password.',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
+                Text('With your email and password.',
+                    style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 15),
                 Textfield(
                   text: 'Email',
@@ -141,22 +129,26 @@ class _LoginPageState extends State<LoginPage> {
                             setState(() => isProcessing = true);
                             try {
                               final authCubit = context.read<AuthCubit>();
+                              final authRepo =
+                                  context.read<AuthRepo>(); 
+
                               final credentials = AuthCredential(
                                 email: emailController.text.trim(),
                                 password: pwController.text.trim(),
                               );
                               await authCubit.login(credentials);
 
-                              await Future.delayed(Duration(milliseconds: 300));
+                              await Future.delayed(
+                                  const Duration(milliseconds: 300));
 
-                              // Critical change: Use pushAndRemoveUntil to completely reset navigation
                               if (mounted) {
                                 Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
                                     builder: (_) => BlocProvider.value(
                                       value: authCubit,
                                       child: AuthGate(
-                                          authRepo: context.read<AuthRepo>()),
+                                          authRepo:
+                                              authRepo), 
                                     ),
                                   ),
                                   (route) => false,
@@ -188,14 +180,8 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Don't have an account?  ",
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
+                    Text("Don't have an account?  ",
+                        style: Theme.of(context).textTheme.bodySmall),
                     GestureDetector(
                       onTap: () async {
                         await Navigator.pushReplacement(
@@ -205,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                                 const Duration(milliseconds: 600),
                             pageBuilder:
                                 (context, animation, secondaryAnimation) =>
-                                     const RegisterPage(),
+                                    const RegisterPage(),
                             transitionsBuilder: (
                               context,
                               animation,
@@ -230,14 +216,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
                       },
-                      child: Text(
-                        "Sign Up",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.blue.shade600,
-                        ),
-                      ),
+                      child: Text("Sign Up",
+                          style: Theme.of(context).textTheme.titleMedium),
                     ),
                   ],
                 ),
