@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/board/board_details.dart';
 import 'package:karwaan_flutter/domain/models/board/board_state.dart';
 import 'package:karwaan_flutter/domain/models/board/create_board_credentials.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/mobile/auth/profile_page.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/board/board_details_card.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/my_drawer.dart';
@@ -45,13 +45,8 @@ class _BoardPageState extends State<BoardPage> {
           SizedBox(height: 20),
           Lottie.asset('asset/ani/emptys.json', height: 250),
           SizedBox(height: 16),
-          Text(
-            'Create your first board to get started!',
-            style: GoogleFonts.alef(
-                fontSize: 16,
-                color: Colors.grey.shade400,
-                fontWeight: FontWeight.w400),
-          )
+          Text('Create your first board to get started!',
+              style: Theme.of(context).textTheme.bodyMedium)
         ],
       ),
     );
@@ -91,11 +86,9 @@ class _BoardPageState extends State<BoardPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
-        title: Text(
-          'Create new board',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text('Create new board',
+            style: Theme.of(context).textTheme.bodyLarge),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -114,13 +107,11 @@ class _BoardPageState extends State<BoardPage> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey, fontSize: 15),
-              )),
+              child: Text('Cancel',
+                  style: Theme.of(context).textTheme.titleSmall)),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade400,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10))),
               onPressed: () async {
@@ -165,10 +156,8 @@ class _BoardPageState extends State<BoardPage> {
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(
-                      'Create',
-                      style: TextStyle(color: Colors.white),
-                    ))
+                  : Text('Create',
+                      style: Theme.of(context).textTheme.bodySmall))
         ],
       ),
     );
@@ -196,7 +185,7 @@ class _BoardPageState extends State<BoardPage> {
         }
       },
       child: Scaffold(
-          backgroundColor: myDeafultBackgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: BlocBuilder<BoardCubit, BoardState>(
             builder: (context, state) {
               // Loading, initial state on the boards
@@ -209,7 +198,7 @@ class _BoardPageState extends State<BoardPage> {
               else if (state is BoardsFromWorkspaceLoaded) {
                 // get the parent workspace name and dispaly it on the appbar
                 return Scaffold(
-                  backgroundColor: myDeafultBackgroundColor,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   drawer: MyDrawer(),
                   body: SafeArea(
                       child: Padding(
@@ -222,26 +211,36 @@ class _BoardPageState extends State<BoardPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+
+                              // drawer
                               Row(
                                 children: [
                                   Builder(
                                     builder: (context) => IconButton(
                                         onPressed: () =>
                                             Scaffold.of(context).openDrawer(),
-                                        icon: Icon(
-                                          Icons.menu,
-                                          color: Colors.black,
-                                        )),
+                                        icon: Icon(Icons.menu,
+                                            color: Theme.of(context)
+                                                .iconTheme
+                                                .color)),
                                   ),
                                 ],
                               ),
 
-                              // drawer or something
-                              CircleAvatar(
-                                backgroundColor: Colors.grey.shade400,
-                                child: Icon(
-                                  Icons.person_2_outlined,
-                                  color: Colors.grey.shade600,
+                               // profile page
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ProfilePage(),
+                                  ));
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  child: Icon(
+                                    Icons.person_2_outlined,
+                                    color: Theme.of(context).iconTheme.color,
+                                  ),
                                 ),
                               ),
                             ],
@@ -254,32 +253,24 @@ class _BoardPageState extends State<BoardPage> {
                             TextSpan(
                                 // name of the parent board
                                 text: '${widget.workspaceName}, ',
-                                style: GoogleFonts.alef(
-                                    fontSize: 28, fontWeight: FontWeight.bold)),
+                                style: Theme.of(context).textTheme.bodyLarge),
                             TextSpan(
                                 // hard code
                                 text: 'Boards!',
-                                style: GoogleFonts.alef(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 28,
-                                    color: Colors.grey.shade400)),
+                                style:
+                                    Theme.of(context).textTheme.displayMedium),
                           ])),
                           Text(
-                            // parent workspace description
-                            '${widget.workspaceDec}.',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade600, fontSize: 16),
-                          ),
+                              // parent workspace description
+                              '${widget.workspaceDec}.',
+                              style: Theme.of(context).textTheme.bodySmall),
 
                           const SizedBox(height: 15),
 
                           // divider
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 14.0),
-                            child: Divider(
-                                thickness: 1, color: Colors.grey.shade400),
-                          ),
+                          Divider(
+                              thickness: 1,
+                              color: Theme.of(context).dividerColor),
 
                           const SizedBox(height: 20),
 
@@ -290,19 +281,15 @@ class _BoardPageState extends State<BoardPage> {
                               Expanded(
                                 child: ListTile(
                                   contentPadding: EdgeInsets.zero,
-                                  title: Text(
-                                    'Boards',
-                                    style: GoogleFonts.alef(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 28,
-                                    ),
-                                  ),
+                                  title: Text('Boards',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge),
                                   subtitle: Text(
-                                    'You have ${state.boards.length} boards.',
-                                    style: GoogleFonts.alef(
-                                        fontSize: 16,
-                                        color: Colors.grey.shade600),
-                                  ),
+                                      'You have ${state.boards.length} boards.',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
                                 ),
                               ),
                               GestureDetector(
@@ -311,21 +298,23 @@ class _BoardPageState extends State<BoardPage> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 8),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey.shade400,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Row(
                                         children: [
                                           Icon(Icons.add,
-                                              color: Colors.grey.shade600,
+                                              color: Theme.of(context)
+                                                  .iconTheme
+                                                  .color,
                                               size: 18),
                                           SizedBox(width: 4),
-                                          Text(
-                                            'Add',
-                                            style: GoogleFonts.alef(
-                                                color: Colors.grey.shade600,
-                                                fontSize: 15),
-                                          )
+                                          Text('Add',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall)
                                         ],
                                       ))),
                             ],
@@ -357,10 +346,7 @@ class _BoardPageState extends State<BoardPage> {
 
                         Text(
                           "Oops! Something went wrong, but don't worry, you can try again.",
-                          style: GoogleFonts.alef(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
@@ -368,23 +354,23 @@ class _BoardPageState extends State<BoardPage> {
                         Text(
                           state
                               .error, // show the actual error if it's user-friendly
-                          style: GoogleFonts.alef(
-                            fontSize: 15,
-                            color: Colors.grey.shade600,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall,
                           textAlign: TextAlign.center,
                         ),
 
                         const SizedBox(height: 20),
 
                         ElevatedButton.icon(
-                          onPressed: () =>
-                              context.read<BoardCubit>().getBoardsByWorkspace(widget.workspaceId),
+                          onPressed: () => context
+                              .read<BoardCubit>()
+                              .getBoardsByWorkspace(widget.workspaceId),
                           icon: Icon(Icons.refresh, size: 18),
                           label: Text('Retry'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade400,
-                            foregroundColor: Colors.black,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSurface,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -399,10 +385,15 @@ class _BoardPageState extends State<BoardPage> {
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Something went wrong for the boards. Please Retry!'),
+                    Text(
+                      'Something went wrong for the boards. Please Retry!',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     TextButton(
-                        onPressed: () => context.read<BoardCubit>().getBoardsByWorkspace(widget.workspaceId),
-                        child: const Text('Retry'))
+                        onPressed: () => context
+                            .read<BoardCubit>()
+                            .getBoardsByWorkspace(widget.workspaceId),
+                        child:  Text('Retry', style: Theme.of(context).textTheme.bodySmall,))
                   ],
                 ));
               }

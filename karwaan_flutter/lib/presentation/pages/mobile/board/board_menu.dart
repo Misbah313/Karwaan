@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/board/board_credentials.dart';
 import 'package:karwaan_flutter/domain/models/board/board_details.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_state.dart';
@@ -24,24 +23,24 @@ class BoardMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ListTile(
-          title: Text('Update board'),
-          leading: Icon(Icons.update),
+          title: Text('Update board', style: Theme.of(context).textTheme.bodyMedium),
+          leading: Icon(Icons.update, color: Theme.of(context).iconTheme.color),
           onTap: () {
             Navigator.pop(context);
-            _showUpdateWorkspaceDialog(context, board.id);
+            _showUpdateBoardialog(context, board.id);
           },
         ),
         ListTile(
           leading: Icon(Icons.delete_outline, color: Colors.red),
-          title: const Text('Delete board'),
+          title:  Text('Delete board', style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
-            _showDeleteWorkspaceDialog(context, board.id);
+            _showDeleteBoardDialog(context, board.id);
           },
         ),
         ListTile(
-          leading: Icon(Icons.people),
-          title: const Text('View member'),
+          leading: Icon(Icons.people, color: Theme.of(context).iconTheme.color),
+          title:  Text('View member', style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             final cubit = context.read<BoardMemberCubit>();
@@ -50,8 +49,8 @@ class BoardMenu extends StatelessWidget {
           },
         ),
         ListTile(
-          leading: Icon(Icons.person_add_alt_1_rounded),
-          title: const Text('Add member'),
+          leading: Icon(Icons.person_add_alt_1_rounded, color: Theme.of(context).iconTheme.color),
+          title:  Text('Add member', style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             final cubit = context.read<BoardMemberCubit>();
@@ -60,16 +59,16 @@ class BoardMenu extends StatelessWidget {
           },
         ),
         ListTile(
-          leading: Icon(Icons.exit_to_app_sharp),
-          title: const Text('Leave board'),
+          leading: Icon(Icons.exit_to_app_sharp, color: Theme.of(context).iconTheme.color),
+          title:  Text('Leave board', style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             _showLeaveConfirmationDialog(context, board.id);
           },
         ),
         ListTile(
-          leading: Icon(Icons.label),
-          title: const Text('Manage labels'),
+          leading: Icon(Icons.label, color: Theme.of(context).iconTheme.color),
+          title:  Text('Manage labels', style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             Navigator.pop(context);
             _showLabelDialog(context);
@@ -79,7 +78,7 @@ class BoardMenu extends StatelessWidget {
     );
   }
 
-  void _showUpdateWorkspaceDialog(BuildContext context, int boardId) {
+  void _showUpdateBoardialog(BuildContext context, int boardId) {
     final cubit = context.read<BoardCubit>();
     final newNameController = TextEditingController();
     final newDecController = TextEditingController();
@@ -91,10 +90,10 @@ class BoardMenu extends StatelessWidget {
             child: AlertDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
-              backgroundColor: Colors.grey.shade300,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               title: Text(
                 'Update Board!',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.bodyLarge
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -116,7 +115,7 @@ class BoardMenu extends StatelessWidget {
                     onPressed: () => Navigator.pop(context),
                     child: Text(
                       'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                      style: Theme.of(context).textTheme.titleSmall
                     )),
                 BlocConsumer<BoardCubit, BoardState>(
                   listener: (context, state) {
@@ -133,7 +132,7 @@ class BoardMenu extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: Colors.grey.shade300),
+                            backgroundColor: Theme.of(context).scaffoldBackgroundColor),
                         onPressed: state is BoardLoading
                             ? null
                             : () {
@@ -160,9 +159,7 @@ class BoardMenu extends StatelessWidget {
                             ? const CircularProgressIndicator()
                             : Text(
                                 'Update',
-                                style: TextStyle(
-                                    color: Colors.grey.shade800,
-                                    fontWeight: FontWeight.w400),
+                                style: Theme.of(context).textTheme.bodySmall
                               ));
                   },
                 )
@@ -170,7 +167,7 @@ class BoardMenu extends StatelessWidget {
             )));
   }
 
-  void _showDeleteWorkspaceDialog(BuildContext context, int boardId) {
+  void _showDeleteBoardDialog(BuildContext context, int boardId) {
     final cubit = context.read<BoardCubit>();
 
     showDialog(
@@ -180,22 +177,21 @@ class BoardMenu extends StatelessWidget {
         child: AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: Colors.grey.shade300,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
             'Delete Board?',
-            style: GoogleFonts.poppins(
-                color: Colors.red, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyLarge
           ),
           content: Text(
             'Are you sure want to delete this board?',
-            style: GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 16),
+            style: Theme.of(context).textTheme.bodyMedium
           ),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Cancel',
-                  style: TextStyle(color: Colors.grey),
+                  style: Theme.of(context).textTheme.titleSmall
                 )),
             BlocConsumer<BoardCubit, BoardState>(
               listener: (context, state) {
@@ -219,7 +215,7 @@ class BoardMenu extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: Colors.grey.shade300),
+                        backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: state is BoardLoading
                         ? null
                         : () {
@@ -227,7 +223,7 @@ class BoardMenu extends StatelessWidget {
                           },
                     child: state is BoardLoading
                         ? const CircularProgressIndicator()
-                        : const Text(
+                        :  Text(
                             'Delete',
                             style: TextStyle(color: Colors.red),
                           ));
@@ -271,21 +267,21 @@ class BoardMenu extends StatelessWidget {
               child: AlertDialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
-                backgroundColor: Colors.grey.shade300,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 title: Text(
                   'Leave board?',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.bodyLarge
                 ),
                 content: Text(
                   'Are you sure you want to leave this board?',
-                  style: GoogleFonts.alef(),
+                  style: Theme.of(context).textTheme.bodyMedium
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text(
+                    child:  Text(
                       'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                      style: Theme.of(context).textTheme.titleSmall
                     ),
                   ),
                   BlocConsumer<BoardMemberCubit, BoardMemberState>(
@@ -316,7 +312,7 @@ class BoardMenu extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: Colors.grey.shade300),
+                            backgroundColor: Theme.of(context).colorScheme.primary),
                         onPressed: state is BoardMemberLoading
                             ? null
                             : () {
@@ -326,9 +322,9 @@ class BoardMenu extends StatelessWidget {
                               },
                         child: state is BoardMemberLoading
                             ? const CircularProgressIndicator()
-                            : const Text(
+                            :  Text(
                                 'Leave',
-                                style: TextStyle(color: Colors.red),
+                                style: Theme.of(context).textTheme.bodySmall
                               ),
                       );
                     },
