@@ -50,6 +50,9 @@ comment:
   - getCommentsForCard:
   - updateComment:
   - deleteComment:
+file:
+  - uploadProfilePicture:
+  - deleteProfilePicture:
 label:
   - createLabel:
   - getLabelsForBoard:
