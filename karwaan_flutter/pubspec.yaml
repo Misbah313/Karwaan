@@ -41,6 +41,7 @@ dependencies:
   connectivity_plus: ^6.1.4
   get_it: ^8.2.0
   flutter_reorderable_list: ^1.3.1
+  image_picker: ^1.2.0
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -65,23 +66,14 @@ flutter:
      - asset/images/karwaan.png
      - asset/images/logo.png
      - asset/images/google.png
-     - asset/ani/ani1.json
-     - asset/ani/cloud.json
-     - asset/ani/girl.json
-     - asset/ani/girl2.json
-     - asset/ani/hi.json
-     - asset/ani/home.json
-     - asset/ani/loading.json
-     - asset/ani/loading1.json
-     - asset/ani/prof.json
-     - asset/ani/sunny.json
      - asset/ani/development.json
      - asset/ani/workspace.json
      - asset/ani/error.json
      - asset/ani/dataSecure.json
-     - asset/ani/success.json
+     - asset/ani/registered.json
      - asset/ani/load.json
      - asset/ani/emptys.json
+     - asset/ani/deleted.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
