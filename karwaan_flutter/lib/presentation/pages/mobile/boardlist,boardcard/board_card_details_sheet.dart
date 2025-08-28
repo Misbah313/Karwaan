@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card.dart';
 
 class CardDetailSheet extends StatelessWidget {
@@ -21,16 +20,15 @@ class CardDetailSheet extends StatelessWidget {
                   child: ListTile(
                 title: Text(
                   card.title,
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 subtitle: Text(
                   card.description,
-                  style: GoogleFonts.alef(
-                      color: Colors.grey.shade600, fontSize: 16),
+                  style: Theme.of(context).textTheme.bodyMedium
                 ),
               )),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
