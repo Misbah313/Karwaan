@@ -140,6 +140,8 @@ class TestEndpoints {
 
   late final _CommentEndpoint comment;
 
+  late final _FileEndpoint file;
+
   late final _LabelEndpoint label;
 
   late final _TokenEndpoint token;
@@ -197,6 +199,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     comment = _CommentEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    file = _FileEndpoint(
       endpoints,
       serializationManager,
     );
@@ -1753,6 +1759,81 @@ class _CommentEndpoint {
             'commentId': commentId,
             'token': token,
           }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _FileEndpoint {
+  _FileEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> uploadProfilePicture(
+    _i1.TestSessionBuilder sessionBuilder,
+    int userId,
+    String fileName,
+    List<int> fileBytes,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'file',
+        method: 'uploadProfilePicture',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'file',
+          methodName: 'uploadProfilePicture',
+          parameters: _i1.testObjectToJson({
+            'userId': userId,
+            'fileName': fileName,
+            'fileBytes': fileBytes,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<bool> deleteProfilePicture(
+    _i1.TestSessionBuilder sessionBuilder,
+    int userId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'file',
+        method: 'deleteProfilePicture',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'file',
+          methodName: 'deleteProfilePicture',
+          parameters: _i1.testObjectToJson({'userId': userId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
