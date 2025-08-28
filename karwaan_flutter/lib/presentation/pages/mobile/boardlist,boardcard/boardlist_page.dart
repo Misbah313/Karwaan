@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card_state.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/create_board_card_credentails.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/boardlist.dart';
@@ -17,7 +16,6 @@ import 'package:karwaan_flutter/presentation/cubits/cardlabel/cardlabel_cubit.da
 import 'package:karwaan_flutter/presentation/cubits/checklist/checklist_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/board_card_widget.dart';
-import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 import 'package:lottie/lottie.dart';
 
@@ -73,9 +71,9 @@ class _BoardlistPageState extends State<BoardlistPage> {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          backgroundColor: Colors.grey.shade300,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text('Create new list',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+              style: Theme.of(context).textTheme.bodyLarge),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -89,16 +87,14 @@ class _BoardlistPageState extends State<BoardlistPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogCtx).pop(),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey),
-              ),
+              child:
+                  Text('Cancel', style: Theme.of(context).textTheme.titleSmall),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey[350]),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () async {
                 final raw = titleController.text.trim();
                 if (raw.isEmpty) {
@@ -120,11 +116,8 @@ class _BoardlistPageState extends State<BoardlistPage> {
                 context.read<BoardlistCubit>().createBoardList(creds);
                 if (mounted) Navigator.of(dialogCtx).pop();
               },
-              child: Text(
-                'Create',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 15),
-              ),
+              child:
+                  Text('Create', style: Theme.of(context).textTheme.bodySmall),
             ),
           ],
         );
@@ -141,9 +134,9 @@ class _BoardlistPageState extends State<BoardlistPage> {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          backgroundColor: Colors.grey.shade300,
-          title: Text('Rename list',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title:
+              Text('Rename list', style: Theme.of(context).textTheme.bodyLarge),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -157,9 +150,16 @@ class _BoardlistPageState extends State<BoardlistPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogCtx).pop(),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 final raw = controller.text.trim();
                 if (raw.isEmpty) {
@@ -174,7 +174,10 @@ class _BoardlistPageState extends State<BoardlistPage> {
                 context.read<BoardlistCubit>().updateBoardList(creds);
                 if (mounted) Navigator.of(dialogCtx).pop();
               },
-              child: const Text('Update'),
+              child: Text(
+                'Update',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
           ],
         );
@@ -190,22 +193,34 @@ class _BoardlistPageState extends State<BoardlistPage> {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          backgroundColor: Colors.grey.shade300,
-          title: const Text('Delete list'),
-          content: Text(
-            'Are you sure you want to delete this list? This cannot be undone.',
-            style: GoogleFonts.alef(fontSize: 16, color: Colors.black87),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Delete list',
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
+          content: Text(
+              'Are you sure you want to delete this list? This cannot be undone.',
+              style: Theme.of(context).textTheme.bodyMedium),
           actions: [
             TextButton(
                 onPressed: () => Navigator.of(dialogCtx).pop(),
-                child: const Text('Cancel')),
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleSmall,
+                )),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 context.read<BoardlistCubit>().deleteBoardList(listId);
                 if (mounted) Navigator.of(dialogCtx).pop();
               },
-              child: const Text('Delete'),
+              child: Text(
+                'Delete',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
           ],
         );
@@ -225,28 +240,34 @@ class _BoardlistPageState extends State<BoardlistPage> {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          backgroundColor: Colors.grey.shade300,
-          title: const Text('Add card'),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text('Add card', style: Theme.of(context).textTheme.bodyLarge),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(hintText: 'Card title'),
-              ),
+              Textfield(
+                  text: 'Card Title',
+                  obsecureText: false,
+                  controller: titleController),
               const SizedBox(height: 8),
-              TextField(
-                controller: descController,
-                decoration: const InputDecoration(hintText: 'Card description'),
-                maxLines: 3,
-              ),
+              Textfield(
+                  text: 'Card description',
+                  obsecureText: false,
+                  controller: descController),
             ],
           ),
           actions: [
             TextButton(
                 onPressed: () => Navigator.of(dialogCtx).pop(),
-                child: const Text('Cancel')),
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleSmall,
+                )),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 final title = titleController.text.trim();
                 if (title.isEmpty) {
@@ -266,7 +287,10 @@ class _BoardlistPageState extends State<BoardlistPage> {
                 cardCubit.createBoardCard(creds);
                 if (mounted) Navigator.of(dialogCtx).pop();
               },
-              child: const Text('Add'),
+              child: Text(
+                'Add',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
           ],
         );
@@ -309,14 +333,13 @@ class _BoardlistPageState extends State<BoardlistPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.grey.shade400,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          iconTheme: Theme.of(context).iconTheme,
           centerTitle: true,
-          title: Text(
-            widget.boardName,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-          ),
+          title: Text(widget.boardName,
+              style: Theme.of(context).textTheme.bodyLarge),
         ),
-        backgroundColor: myDeafultBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: BlocBuilder<BoardlistCubit, BoardlistState>(
             builder: (context, state) {
@@ -347,18 +370,13 @@ class _BoardlistPageState extends State<BoardlistPage> {
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: Colors.grey[350],
+            backgroundColor: Theme.of(context).colorScheme.primary,
             onPressed: _showCreateListDialog,
-            label: Text(
-              'Add list',
-              style: GoogleFonts.alef(
-                  color: Colors.grey.shade800,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500),
-            ),
+            label:
+                Text('Add list', style: Theme.of(context).textTheme.bodyMedium),
             icon: Icon(
               Icons.add,
-              color: Colors.grey.shade800,
+              color: Theme.of(context).iconTheme.color,
             )),
       ),
     );
@@ -374,23 +392,16 @@ class _BoardlistPageState extends State<BoardlistPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 8),
-            Text(
-              'No lists yet!',
-              style: GoogleFonts.poppins(fontSize: 16),
-            ),
+            Text('No lists yet!',
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 8),
             ElevatedButton.icon(
               onPressed: _showCreateListDialog,
-              label: Text(
-                'Create your first list',
-                style: GoogleFonts.alef(
-                    fontSize: 17,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500),
-              ),
+              label: Text('Create your first list',
+                  style: Theme.of(context).textTheme.bodySmall),
               icon: Icon(
                 Icons.add,
-                color: Colors.grey.shade600,
+                color: Theme.of(context).iconTheme.color,
               ),
             )
           ],
@@ -413,7 +424,6 @@ class _BoardlistPageState extends State<BoardlistPage> {
     // Ensure initial fetch after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (cardCubit.state is! BoardCardListLoaded) {
-        debugPrint('Fetching cards for list ${list.id}');
         cardCubit.getListByBoardCard(list.id);
       }
     });
@@ -425,7 +435,10 @@ class _BoardlistPageState extends State<BoardlistPage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
-          colors: [Colors.grey.shade400, Colors.grey.shade200],
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.onSurface
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -436,13 +449,8 @@ class _BoardlistPageState extends State<BoardlistPage> {
           // Header with title + actions
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-            title: Text(
-              list.boardlistTitle,
-              style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade800,
-                  fontSize: 20),
-            ),
+            title: Text(list.boardlistTitle,
+                style: Theme.of(context).textTheme.bodyMedium),
             trailing: _ListActions(
               onEdit: () => _showUpdateListDialog(list),
               onDelete: () => _confirmDeleteList(list.id),
@@ -509,13 +517,8 @@ class _BoardlistPageState extends State<BoardlistPage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.2),
                             SizedBox(height: 16),
-                            Text(
-                              'Create your first card to get started!',
-                              style: GoogleFonts.alef(
-                                  fontSize: 15,
-                                  color: Colors.grey.shade600,
-                                  fontWeight: FontWeight.w400),
-                            )
+                            Text('Create your first card to get started!',
+                                style: Theme.of(context).textTheme.bodySmall)
                           ],
                         ),
                       );
@@ -565,17 +568,17 @@ class _BoardlistPageState extends State<BoardlistPage> {
             child: SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Theme.of(context).dividerColor),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: () => _showAddCardDialog(list.id),
-                label: Text(
-                  'Add card',
-                  style: GoogleFonts.alef(
-                      fontSize: 16,
-                      color: Colors.grey.shade800,
-                      fontWeight: FontWeight.w400),
-                ),
+                label: Text('Add card',
+                    style: Theme.of(context).textTheme.bodySmall),
                 icon: Icon(
                   Icons.add,
-                  color: Colors.grey.shade800,
+                  color: Theme.of(context).iconTheme.color,
                 ),
               ),
             ),
@@ -598,7 +601,7 @@ class _ListActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<_ListAction>(
-      color: Colors.grey.shade300,
+      color: Theme.of(context).scaffoldBackgroundColor,
       onSelected: (value) {
         switch (value) {
           case _ListAction.edit:
@@ -612,14 +615,11 @@ class _ListActions extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
             value: _ListAction.edit,
-            child: Text('Edit',
-                style: GoogleFonts.alef(
-                    color: Colors.grey.shade600, fontSize: 16))),
+            child: Text('Edit', style: Theme.of(context).textTheme.bodyMedium)),
         PopupMenuItem(
             value: _ListAction.delete,
-            child: Text('Delete',
-                style: GoogleFonts.alef(
-                    color: Colors.grey.shade600, fontSize: 16))),
+            child:
+                Text('Delete', style: Theme.of(context).textTheme.bodyMedium)),
       ],
     );
   }
@@ -645,13 +645,18 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 12),
             Text(message,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.alef(
-                    fontSize: 16, fontWeight: FontWeight.w600)),
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 12),
             ElevatedButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry')),
+                icon: Icon(
+                  Icons.refresh,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                label: Text(
+                  'Retry',
+                  style: Theme.of(context).textTheme.bodySmall,
+                )),
           ],
         ),
       ),
@@ -677,12 +682,18 @@ class _ErrorCardsView extends StatelessWidget {
             const SizedBox(height: 8),
             Text(message,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.alef(fontSize: 14)),
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 12),
             OutlinedButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry')),
+                icon: Icon(
+                  Icons.refresh,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                label: Text(
+                  'Retry',
+                  style: Theme.of(context).textTheme.bodySmall,
+                )),
           ],
         ),
       ),

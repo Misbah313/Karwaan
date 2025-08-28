@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/label/create_label_credentails.dart';
 import 'package:karwaan_flutter/domain/models/label/label_state.dart';
 import 'package:karwaan_flutter/domain/models/label/update_label_credentails.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 
 class LabelDialogContent extends StatelessWidget {
   final int boardId;
@@ -68,10 +68,10 @@ class LabelDialogContent extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          backgroundColor: Colors.grey.shade300,
-          title: const Text(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title:  Text(
             'Labels',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyLarge
           ),
           content: SizedBox(
             width: double.maxFinite,
@@ -94,18 +94,18 @@ class LabelDialogContent extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Close',
-                style: TextStyle(color: Colors.grey),
+                style:  Theme.of(context).textTheme.titleSmall
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey.shade200),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () => _showCreateDialog(context),
               child: Text(
                 'Create Label',
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ),
             ),
           ],
@@ -134,13 +134,12 @@ class LabelDialogContent extends StatelessWidget {
           children: [
             Text(
               label.title,
-              style: GoogleFonts.alef(
-                  color: Colors.grey.shade200, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyMedium
             ),
             const SizedBox(width: 8),
             GestureDetector(
               onTap: () => context.read<LabelCubit>().deleteLabel(label.id),
-              child: Icon(Icons.close, size: 18, color: Colors.grey.shade200),
+              child: Icon(Icons.close, size: 18, color: Theme.of(context).iconTheme.color),
             ),
           ],
         ),
@@ -159,16 +158,12 @@ class LabelDialogContent extends StatelessWidget {
               builder: (statefulContext, setState) => AlertDialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
-                backgroundColor: Colors.grey.shade300,
+                backgroundColor: Theme.of(dialogContext).scaffoldBackgroundColor,
                 title: const Text('Create Label'),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextField(
-                      controller: createController,
-                      decoration:
-                          const InputDecoration(hintText: 'Label title'),
-                    ),
+                    Textfield(text: 'Label Title', obsecureText: false, controller: createController),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -211,14 +206,14 @@ class LabelDialogContent extends StatelessWidget {
                     onPressed: () => Navigator.pop(dialogContext),
                     child: Text(
                       'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                      style: Theme.of(dialogContext).textTheme.titleSmall,
                     ),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: Colors.grey.shade400),
+                        backgroundColor: Theme.of(dialogContext).colorScheme.primary),
                     onPressed: () {
                       if (createController.text.trim().isNotEmpty) {
                         parentContext.read<LabelCubit>().createLabel(
@@ -234,7 +229,7 @@ class LabelDialogContent extends StatelessWidget {
                     child: Text(
                       'Create',
                       style:
-                          TextStyle(color: Colors.grey.shade700, fontSize: 15),
+                          Theme.of(dialogContext).textTheme.bodySmall
                     ),
                   ),
                 ],
@@ -252,8 +247,8 @@ class LabelDialogContent extends StatelessWidget {
         builder: (statefulContext, setState) => AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: Colors.grey.shade300,
-          title: const Text('Update Label'),
+          backgroundColor: Theme.of(dialogContext).scaffoldBackgroundColor,
+          title:  Text('Update Label', style: Theme.of(dialogContext).textTheme.bodyLarge,),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -295,14 +290,14 @@ class LabelDialogContent extends StatelessWidget {
               onPressed: () => Navigator.pop(dialogContext),
               child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(dialogContext).textTheme.titleSmall
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey.shade400),
+                  backgroundColor: Theme.of(dialogContext).colorScheme.primary),
               onPressed: () {
                 parentContext.read<LabelCubit>().updateLabel(
                       UpdateLabelCredentails(
@@ -315,7 +310,7 @@ class LabelDialogContent extends StatelessWidget {
               },
               child: Text(
                 'Update',
-                style: TextStyle(color: Colors.grey.shade700, fontSize: 16),
+                style: Theme.of(dialogContext).textTheme.bodySmall
               ),
             ),
           ],

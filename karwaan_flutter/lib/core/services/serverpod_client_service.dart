@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:karwaan_client/karwaan_client.dart';
 import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
@@ -108,8 +110,6 @@ class ServerpodClientService {
     return token != null && token.isNotEmpty;
   }
 
-  // refresh token(will add later: it avoid forcing user to login again when access token expires(note: you've set the token for 30 days)).
-
   // get token
   Future<String?> getToken() async {
     final token = await _authTokenStorage.getToken();
@@ -127,7 +127,39 @@ class ServerpodClientService {
     }
   }
 
-  // update user
+// Upload profile picture
+  Future<String> uploadProfilePicture(File imageFile, int userId) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final fileName = imageFile.path.split('/').last;
+
+      final result = await client.file.uploadProfilePicture(
+        userId,
+        fileName,
+        bytes,
+      );
+
+      return result;
+    } catch (e) {
+      throw Exception('Failed to upload profile picture: $e');
+    }
+  }
+
+// Delete profile picture
+  Future<bool> deleteProfilePicture(int userId) async {
+    try {
+      return await client.file.deleteProfilePicture(userId);
+    } catch (e) {
+      throw Exception('Failed to delete profile picture: $e');
+    }
+  }
+
+  // get profile picture
+  String getProfilePictureUrl(String? filename) {
+    if (filename == null || filename.isEmpty) return '';
+
+    return 'http://10.136.73.89:8082/files/profile_pictures/$filename';
+  }
 
   // =============================================== WORKSPACE ====================================================== //
 

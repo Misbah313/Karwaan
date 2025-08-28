@@ -699,6 +699,36 @@ class EndpointComment extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointFile extends _i1.EndpointRef {
+  EndpointFile(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'file';
+
+  _i2.Future<String> uploadProfilePicture(
+    int userId,
+    String fileName,
+    List<int> fileBytes,
+  ) =>
+      caller.callServerEndpoint<String>(
+        'file',
+        'uploadProfilePicture',
+        {
+          'userId': userId,
+          'fileName': fileName,
+          'fileBytes': fileBytes,
+        },
+      );
+
+  _i2.Future<bool> deleteProfilePicture(int userId) =>
+      caller.callServerEndpoint<bool>(
+        'file',
+        'deleteProfilePicture',
+        {'userId': userId},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointLabel extends _i1.EndpointRef {
   EndpointLabel(_i1.EndpointCaller caller) : super(caller);
 
@@ -1034,6 +1064,7 @@ class Client extends _i1.ServerpodClientShared {
     checklist = EndpointChecklist(this);
     checklistItem = EndpointChecklistItem(this);
     comment = EndpointComment(this);
+    file = EndpointFile(this);
     label = EndpointLabel(this);
     token = EndpointToken(this);
     user = EndpointUser(this);
@@ -1062,6 +1093,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointComment comment;
 
+  late final EndpointFile file;
+
   late final EndpointLabel label;
 
   late final EndpointToken token;
@@ -1086,6 +1119,7 @@ class Client extends _i1.ServerpodClientShared {
         'checklist': checklist,
         'checklistItem': checklistItem,
         'comment': comment,
+        'file': file,
         'label': label,
         'token': token,
         'user': user,

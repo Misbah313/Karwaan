@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 // In your button.dart file
 class Button extends StatelessWidget {
@@ -23,15 +22,15 @@ class Button extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1976D2), Color(0xFF2196F3)],
+          gradient:  LinearGradient(
+            colors: [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.onSurface],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.shade100,
+              color: Theme.of(context).colorScheme.primary,
               blurRadius: 10,
               spreadRadius: 2,
             ),
@@ -50,11 +49,7 @@ class Button extends StatelessWidget {
               : child ??
                   Text(
                     text,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium
                   ),
         ),
       ),

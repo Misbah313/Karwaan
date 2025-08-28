@@ -27,6 +27,7 @@ class AuthRemoteRepo implements AuthRepo {
         name: user.name,
         email: user.email,
         token: '', // Explicit empty token
+        profileImage: user.profileImage, // ADD THIS LINE
       );
     } catch (e) {
       debugPrint('Registration error: $e');
@@ -47,7 +48,8 @@ class AuthRemoteRepo implements AuthRepo {
         throw Exception('Server returned empty token');
       }
 
-      return authres.toDomain();
+      return authres
+          .toDomain(); // This will now include profileImage via the mapper
     } catch (e) {
       debugPrint('Login failed for ${credential.email}: $e');
       rethrow;
@@ -71,12 +73,11 @@ class AuthRemoteRepo implements AuthRepo {
   // validate token
   @override
   Future<AuthUser?> validateToken(String incomingToken) async {
-    // Renamed parameter
     try {
       final user = await _clientService.getCurrentUser();
       if (user == null) return null;
 
-      final storedToken = await _clientService.getToken(); // Renamed variable
+      final storedToken = await _clientService.getToken();
       if (storedToken != incomingToken) {
         debugPrint(
             'Token mismatch: stored $storedToken vs incoming $incomingToken');
@@ -88,16 +89,13 @@ class AuthRemoteRepo implements AuthRepo {
         name: user.name,
         email: user.email,
         token: storedToken ?? '',
+        profileImage: user.profileImage, // ADD THIS LINE
       );
     } catch (e) {
       debugPrint('Token validation error: $e');
       return null;
     }
   }
-
-  /* check login status
-  @override
-  Future<bool> get isLoggedIn => _clientService.isLoggedIn; */
 
   // delete user
   @override

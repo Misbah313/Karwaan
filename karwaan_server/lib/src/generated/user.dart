@@ -17,6 +17,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required this.name,
     required this.email,
     required this.password,
+    this.profileImage,
   });
 
   factory User({
@@ -24,6 +25,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required String name,
     required String email,
     required String password,
+    String? profileImage,
   }) = _UserImpl;
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,6 +34,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       name: jsonSerialization['name'] as String,
       email: jsonSerialization['email'] as String,
       password: jsonSerialization['password'] as String,
+      profileImage: jsonSerialization['profileImage'] as String?,
     );
   }
 
@@ -48,6 +51,8 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   String password;
 
+  String? profileImage;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -59,6 +64,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? name,
     String? email,
     String? password,
+    String? profileImage,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -67,6 +73,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       'name': name,
       'email': email,
       'password': password,
+      if (profileImage != null) 'profileImage': profileImage,
     };
   }
 
@@ -77,6 +84,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       'name': name,
       'email': email,
       'password': password,
+      if (profileImage != null) 'profileImage': profileImage,
     };
   }
 
@@ -118,11 +126,13 @@ class _UserImpl extends User {
     required String name,
     required String email,
     required String password,
+    String? profileImage,
   }) : super._(
           id: id,
           name: name,
           email: email,
           password: password,
+          profileImage: profileImage,
         );
 
   /// Returns a shallow copy of this [User]
@@ -134,12 +144,14 @@ class _UserImpl extends User {
     String? name,
     String? email,
     String? password,
+    Object? profileImage = _Undefined,
   }) {
     return User(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,
+      profileImage: profileImage is String? ? profileImage : this.profileImage,
     );
   }
 }
@@ -158,6 +170,10 @@ class UserTable extends _i1.Table<int?> {
       'password',
       this,
     );
+    profileImage = _i1.ColumnString(
+      'profileImage',
+      this,
+    );
   }
 
   late final _i1.ColumnString name;
@@ -166,12 +182,15 @@ class UserTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString password;
 
+  late final _i1.ColumnString profileImage;
+
   @override
   List<_i1.Column> get columns => [
         id,
         name,
         email,
         password,
+        profileImage,
       ];
 }
 

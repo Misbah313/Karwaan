@@ -20,13 +20,14 @@ import '../endpoints/card_label_endpoint.dart' as _i8;
 import '../endpoints/checklist_endpoint.dart' as _i9;
 import '../endpoints/checklist_item_endpoint.dart' as _i10;
 import '../endpoints/comment_endpoint.dart' as _i11;
-import '../endpoints/label_endpoint.dart' as _i12;
-import '../endpoints/token_endpoint.dart' as _i13;
-import '../endpoints/user_endpoint.dart' as _i14;
-import '../endpoints/workspace_endpoint.dart' as _i15;
-import '../endpoints/workspace_member_endpoint.dart' as _i16;
-import '../greeting_endpoint.dart' as _i17;
-import 'package:karwaan_server/src/generated/user.dart' as _i18;
+import '../endpoints/file_endpoint.dart' as _i12;
+import '../endpoints/label_endpoint.dart' as _i13;
+import '../endpoints/token_endpoint.dart' as _i14;
+import '../endpoints/user_endpoint.dart' as _i15;
+import '../endpoints/workspace_endpoint.dart' as _i16;
+import '../endpoints/workspace_member_endpoint.dart' as _i17;
+import '../greeting_endpoint.dart' as _i18;
+import 'package:karwaan_server/src/generated/user.dart' as _i19;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -92,37 +93,43 @@ class Endpoints extends _i1.EndpointDispatch {
           'comment',
           null,
         ),
-      'label': _i12.LabelEndpoint()
+      'file': _i12.FileEndpoint()
+        ..initialize(
+          server,
+          'file',
+          null,
+        ),
+      'label': _i13.LabelEndpoint()
         ..initialize(
           server,
           'label',
           null,
         ),
-      'token': _i13.TokenEndpoint()
+      'token': _i14.TokenEndpoint()
         ..initialize(
           server,
           'token',
           null,
         ),
-      'user': _i14.UserEndpoint()
+      'user': _i15.UserEndpoint()
         ..initialize(
           server,
           'user',
           null,
         ),
-      'workspace': _i15.WorkspaceEndpoint()
+      'workspace': _i16.WorkspaceEndpoint()
         ..initialize(
           server,
           'workspace',
           null,
         ),
-      'workspaceMember': _i16.WorkspaceMemberEndpoint()
+      'workspaceMember': _i17.WorkspaceMemberEndpoint()
         ..initialize(
           server,
           'workspaceMember',
           null,
         ),
-      'greeting': _i17.GreetingEndpoint()
+      'greeting': _i18.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
@@ -1359,6 +1366,60 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['file'] = _i1.EndpointConnector(
+      name: 'file',
+      endpoint: endpoints['file']!,
+      methodConnectors: {
+        'uploadProfilePicture': _i1.MethodConnector(
+          name: 'uploadProfilePicture',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'fileName': _i1.ParameterDescription(
+              name: 'fileName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'fileBytes': _i1.ParameterDescription(
+              name: 'fileBytes',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['file'] as _i12.FileEndpoint).uploadProfilePicture(
+            session,
+            params['userId'],
+            params['fileName'],
+            params['fileBytes'],
+          ),
+        ),
+        'deleteProfilePicture': _i1.MethodConnector(
+          name: 'deleteProfilePicture',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['file'] as _i12.FileEndpoint).deleteProfilePicture(
+            session,
+            params['userId'],
+          ),
+        ),
+      },
+    );
     connectors['label'] = _i1.EndpointConnector(
       name: 'label',
       endpoint: endpoints['label']!,
@@ -1391,7 +1452,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['label'] as _i12.LabelEndpoint).createLabel(
+              (endpoints['label'] as _i13.LabelEndpoint).createLabel(
             session,
             params['boardId'],
             params['token'],
@@ -1417,7 +1478,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['label'] as _i12.LabelEndpoint).getLabelsForBoard(
+              (endpoints['label'] as _i13.LabelEndpoint).getLabelsForBoard(
             session,
             params['boardId'],
             params['token'],
@@ -1451,7 +1512,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['label'] as _i12.LabelEndpoint).updateLabel(
+              (endpoints['label'] as _i13.LabelEndpoint).updateLabel(
             session,
             params['labelId'],
             params['token'],
@@ -1477,7 +1538,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['label'] as _i12.LabelEndpoint).deleteLabel(
+              (endpoints['label'] as _i13.LabelEndpoint).deleteLabel(
             session,
             params['labelId'],
             params['token'],
@@ -1502,7 +1563,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['token'] as _i13.TokenEndpoint).validateToken(
+              (endpoints['token'] as _i14.TokenEndpoint).validateToken(
             session,
             params['token'],
           ),
@@ -1520,7 +1581,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['token'] as _i13.TokenEndpoint).logout(
+              (endpoints['token'] as _i14.TokenEndpoint).logout(
             session,
             params['token'],
           ),
@@ -1544,7 +1605,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i14.UserEndpoint).getUserById(
+              (endpoints['user'] as _i15.UserEndpoint).getUserById(
             session,
             params['userId'],
           ),
@@ -1556,14 +1617,14 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i14.UserEndpoint).getAllUsers(session),
+              (endpoints['user'] as _i15.UserEndpoint).getAllUsers(session),
         ),
         'updateUser': _i1.MethodConnector(
           name: 'updateUser',
           params: {
             'updatedUser': _i1.ParameterDescription(
               name: 'updatedUser',
-              type: _i1.getType<_i18.User>(),
+              type: _i1.getType<_i19.User>(),
               nullable: false,
             )
           },
@@ -1571,7 +1632,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i14.UserEndpoint).updateUser(
+              (endpoints['user'] as _i15.UserEndpoint).updateUser(
             session,
             params['updatedUser'],
           ),
@@ -1589,7 +1650,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i14.UserEndpoint).deleteUser(
+              (endpoints['user'] as _i15.UserEndpoint).deleteUser(
             session,
             params['id'],
           ),
@@ -1623,7 +1684,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspace'] as _i15.WorkspaceEndpoint)
+              (endpoints['workspace'] as _i16.WorkspaceEndpoint)
                   .createWorkspace(
             session,
             params['name'],
@@ -1644,7 +1705,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspace'] as _i15.WorkspaceEndpoint)
+              (endpoints['workspace'] as _i16.WorkspaceEndpoint)
                   .getUserWorkspace(
             session,
             params['token'],
@@ -1678,7 +1739,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspace'] as _i15.WorkspaceEndpoint)
+              (endpoints['workspace'] as _i16.WorkspaceEndpoint)
                   .updateWorkspace(
             session,
             params['workspaceId'],
@@ -1705,7 +1766,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspace'] as _i15.WorkspaceEndpoint)
+              (endpoints['workspace'] as _i16.WorkspaceEndpoint)
                   .deleteWorkspace(
             session,
             params['workspaceId'],
@@ -1741,7 +1802,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspaceMember'] as _i16.WorkspaceMemberEndpoint)
+              (endpoints['workspaceMember'] as _i17.WorkspaceMemberEndpoint)
                   .addMemberToWorkspace(
             session,
             params['userToAddId'],
@@ -1772,7 +1833,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspaceMember'] as _i16.WorkspaceMemberEndpoint)
+              (endpoints['workspaceMember'] as _i17.WorkspaceMemberEndpoint)
                   .removeMemberFromWorkspace(
             session,
             params['workspaceId'],
@@ -1798,7 +1859,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspaceMember'] as _i16.WorkspaceMemberEndpoint)
+              (endpoints['workspaceMember'] as _i17.WorkspaceMemberEndpoint)
                   .getWorkspaceMember(
             session,
             params['workspaceId'],
@@ -1833,7 +1894,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspaceMember'] as _i16.WorkspaceMemberEndpoint)
+              (endpoints['workspaceMember'] as _i17.WorkspaceMemberEndpoint)
                   .changeMemberRole(
             session,
             params['workspaceId'],
@@ -1860,7 +1921,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspaceMember'] as _i16.WorkspaceMemberEndpoint)
+              (endpoints['workspaceMember'] as _i17.WorkspaceMemberEndpoint)
                   .leaveWorkspace(
             session,
             params['workspaceId'],
@@ -1895,7 +1956,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['workspaceMember'] as _i16.WorkspaceMemberEndpoint)
+              (endpoints['workspaceMember'] as _i17.WorkspaceMemberEndpoint)
                   .addMemberByEmail(
             session,
             params['email'],
@@ -1923,7 +1984,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['greeting'] as _i17.GreetingEndpoint).hello(
+              (endpoints['greeting'] as _i18.GreetingEndpoint).hello(
             session,
             params['name'],
           ),

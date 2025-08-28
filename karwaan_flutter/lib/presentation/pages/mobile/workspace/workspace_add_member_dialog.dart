@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_state.dart';
@@ -36,10 +35,10 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
       },
       child: AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Add Member',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -52,21 +51,21 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
               ),
               middleSizedBox,
               DropdownButtonFormField<String>(
-                dropdownColor: Colors.grey.shade300,
+                dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(10),
                 value: selectedRole,
                 decoration: InputDecoration(
                   labelText: 'Role',
-                  labelStyle: GoogleFonts.alef(color: Colors.grey.shade600),
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.grey.shade600)
+                    borderSide: BorderSide(color: Theme.of(context).dividerColor)
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.grey.shade800)
+                    borderSide: BorderSide(color: Theme.of(context).dividerColor)
                   )    
                 ),
                 items: ['member', 'admin', 'moderator'].map((role) {
@@ -74,8 +73,7 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
                     value: role,
                     child: Text(
                       role,
-                      style: GoogleFonts.alef(
-                          fontSize: 18, fontWeight: FontWeight.w200),
+                      style: Theme.of(context).textTheme.bodySmall
                     ),
                   );
                 }).toList(),
@@ -87,9 +85,9 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child:  Text(
               'Cancel',
-              style: TextStyle(color: Colors.grey, fontSize: 15),
+              style: Theme.of(context).textTheme.titleSmall
             ),
           ),
           BlocBuilder<WorkspaceMemberCubit, WorkspaceMemberState>(
@@ -98,7 +96,7 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    backgroundColor: Colors.grey.shade400),
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor),
                 onPressed: state is MemberLoadingState
                     ? null
                     : () async {
@@ -134,8 +132,7 @@ class WorkspaceAddMemberDialog extends StatelessWidget {
                     ? const CircularProgressIndicator(color: Colors.white)
                     : Text(
                         'Add',
-                        style: TextStyle(
-                            color: Colors.grey.shade700, fontSize: 15),
+                        style: Theme.of(context).textTheme.bodySmall
                       ),
               );
             },

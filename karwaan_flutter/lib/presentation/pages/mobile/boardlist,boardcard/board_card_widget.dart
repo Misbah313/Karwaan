@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card_credentails.dart';
 import 'package:karwaan_flutter/domain/models/cardlabel/cardlabel_credentails.dart';
@@ -18,6 +17,7 @@ import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/attachment/attachment_dialog.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/checklist/checklist_dialog.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/comment/comment_dialog.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 import 'package:lottie/lottie.dart';
 
 class CardWidget extends StatelessWidget {
@@ -36,22 +36,28 @@ class CardWidget extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            backgroundColor: Colors.grey.shade300,
-            title: const Text('Delete Card'),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            title:  Text('Delete Card', style: Theme.of(context).textTheme.bodyLarge,),
             content: Text(
               'Are you sure you want to delete this card? This cannot be undone.',
-              style: GoogleFonts.alef(fontSize: 16, color: Colors.black87),
+              style: Theme.of(context).textTheme.bodyMedium
             ),
             actions: [
               TextButton(
                   onPressed: () => Navigator.of(dialogCtx).pop(),
-                  child: const Text('Cancel')),
+                  child: Text('Cancel', style: Theme.of(context).textTheme.titleSmall,)),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  backgroundColor: Theme.of(context).colorScheme.primary
+                ),
                 onPressed: () {
                   cardCubit.deleteBoardCard(card.id);
                   Navigator.pop(context);
                 },
-                child: const Text('Delete'),
+                child: Text('Delete', style: Theme.of(context).textTheme.bodySmall,),
               ),
             ],
           );
@@ -63,9 +69,9 @@ class CardWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-            colors: [Colors.blueGrey.shade300, Colors.grey.shade300]),
+            colors: [Theme.of(context).colorScheme.secondary, Theme.of(context).colorScheme.onSecondary]),
         borderRadius: BorderRadius.circular(10),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 3)],
+        boxShadow:  [BoxShadow(color: Colors.blueGrey.shade100, blurRadius: 3)],
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -113,7 +119,7 @@ class CardWidget extends StatelessWidget {
                   Checkbox(
                     activeColor: Colors.green,
                     checkColor: Colors.grey.shade300,
-                    side: BorderSide(color: Colors.grey.shade400),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                     value: card.isCompleted,
                     onChanged: (val) {
                       cardCubit.updateBoardCard(
@@ -131,25 +137,18 @@ class CardWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       card.title,
-                      style: GoogleFonts.alef(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade800,
-                        decoration: card.isCompleted
-                            ? TextDecoration.lineThrough
-                            : null,
-                        decorationColor: Colors.grey.shade700,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
                     ),
                   ),
 
                   // Popup menu for card actions
                   PopupMenuButton<_CardAction>(
-                    color: Colors.grey.shade300,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(10),
                     icon: Icon(
                       Icons.more_vert,
                       size: 20,
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).iconTheme.color,
                     ),
                     onSelected: (action) {
                       switch (action) {
@@ -176,44 +175,32 @@ class CardWidget extends StatelessWidget {
                       PopupMenuItem(
                         value: _CardAction.edit,
                         child: Text('Edit',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w500)),
+                            style: Theme.of(context).textTheme.bodyMedium)
                       ),
                       PopupMenuItem(
                         value: _CardAction.editLabels,
                         child: Text('Edit Labels',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w500)),
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ),
                       PopupMenuItem(
                         value: _CardAction.delete,
                         child: Text('Delete',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w500)),
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ),
                       PopupMenuItem(
                         value: _CardAction.checklist,
                         child: Text('Checklist',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w500)),
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ),
                       PopupMenuItem(
                         value: _CardAction.comment,
                         child: Text('Comments',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w500)),
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ),
                       PopupMenuItem(
                         value: _CardAction.attachment,
                         child: Text('Attachments',
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w500)),
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ),
                     ],
                   ),
@@ -239,20 +226,17 @@ Future<void> _showEditCardDialog(
   await showDialog(
     context: context,
     builder: (dialogCtx) => AlertDialog(
-      backgroundColor: Colors.grey.shade300,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: Text(
         'Edit Card',
-        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.bodyLarge
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-              controller: titleController,
-              decoration: const InputDecoration(labelText: 'Title')),
-          TextField(
-              controller: descController,
-              decoration: const InputDecoration(labelText: 'Description')),
+          Textfield(text: 'Title', obsecureText: false, controller: titleController),
+          const SizedBox(height: 8),
+          Textfield(text: 'Description', obsecureText: false, controller: descController),
         ],
       ),
       actions: [
@@ -260,13 +244,13 @@ Future<void> _showEditCardDialog(
             onPressed: () => Navigator.of(dialogCtx).pop(),
             child: Text(
               'Cancel',
-              style: TextStyle(color: Colors.grey),
+              style: Theme.of(context).textTheme.titleSmall
             )),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              backgroundColor: Colors.grey[350]),
+              backgroundColor: Theme.of(context).colorScheme.primary),
           onPressed: () {
             final newTitle = titleController.text.trim();
             final newDesc = descController.text.trim();
@@ -293,7 +277,7 @@ Future<void> _showEditCardDialog(
           },
           child: Text(
             'Save',
-            style: TextStyle(color: Colors.grey.shade600),
+            style: Theme.of(context).textTheme.bodySmall
           ),
         ),
       ],
@@ -341,10 +325,10 @@ Future<void> _showEditLabelsDialog(BuildContext context, BoardCard card) async {
           child: AlertDialog(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            backgroundColor: Colors.grey.shade300,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             title: Text(
               'Edit Labels',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyLarge
             ),
             content: SizedBox(
               width: double.maxFinite,
@@ -390,11 +374,7 @@ Future<void> _showEditLabelsDialog(BuildContext context, BoardCard card) async {
                                       children: [
                                         Text(
                                           label.title,
-                                          style: GoogleFonts.alef(
-                                            fontSize: 17,
-                                            color: Colors.grey.shade200,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          style: Theme.of(context).textTheme.bodyMedium
                                         ),
                                         IconButton(
                                           icon: Icon(
@@ -447,7 +427,7 @@ Future<void> _showEditLabelsDialog(BuildContext context, BoardCard card) async {
                 onPressed: () => Navigator.pop(dialogContext),
                 child: Text(
                   'Close',
-                  style: TextStyle(color: Colors.grey),
+                  style: Theme.of(context).textTheme.titleSmall
                 ),
               ),
             ],

@@ -5,6 +5,7 @@ import 'package:karwaan_flutter/domain/models/comment/comment_state.dart';
 import 'package:karwaan_flutter/domain/models/comment/create_comment_credentails.dart';
 import 'package:karwaan_flutter/domain/models/comment/update_comment_credentails.dart';
 import 'package:karwaan_flutter/presentation/cubits/comment/comment_cubit.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 import 'package:lottie/lottie.dart';
 
 enum _CommentActions { update, delete }
@@ -22,10 +23,10 @@ class CommentDialog extends StatelessWidget {
       value: commentCubit,
       child: AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Comments',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: BlocListener<CommentCubit, CommentState>(
           listener: (context, state) {
@@ -71,9 +72,7 @@ class CommentDialog extends StatelessWidget {
                   return Center(
                     child: Text(
                       'No comments yet!',
-                      style: GoogleFonts.alef(
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                   );
@@ -90,8 +89,8 @@ class CommentDialog extends StatelessWidget {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               gradient: LinearGradient(colors: [
-                                Colors.blueGrey.shade300,
-                                Colors.grey.shade300
+                                Theme.of(context).colorScheme.secondary,
+                                Theme.of(context).colorScheme.onSecondary
                               ])),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,25 +100,21 @@ class CommentDialog extends StatelessWidget {
                                   child: ListTile(
                                 title: Text(
                                   comment.authorName,
-                                  style: GoogleFonts.alef(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17),
+                                  style: Theme.of(context).textTheme.bodyMedium
                                 ),
                                 subtitle: Text(
                                   comment.content,
-                                  style: GoogleFonts.alef(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15),
+                                  style: Theme.of(context).textTheme.bodySmall,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               )),
 
                               // actions in pop up menu item
                               PopupMenuButton<_CommentActions>(
-                                color: Colors.grey.shade300,
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(10),
                                 icon: Icon(Icons.more_horiz,
-                                    size: 20, color: Colors.grey.shade600),
+                                    size: 20, color: Theme.of(context).iconTheme.color),
                                 onSelected: (action) {
                                   switch (action) {
                                     case _CommentActions.update:
@@ -137,17 +132,13 @@ class CommentDialog extends StatelessWidget {
                                       value: _CommentActions.update,
                                       child: Text(
                                         'Update',
-                                        style: GoogleFonts.alef(
-                                            color: Colors.grey.shade600,
-                                            fontWeight: FontWeight.w500),
+                                        style:Theme.of(context).textTheme.bodyMedium
                                       )),
                                   PopupMenuItem(
                                       value: _CommentActions.delete,
                                       child: Text(
                                         'Delete',
-                                        style: GoogleFonts.alef(
-                                            color: Colors.grey.shade600,
-                                            fontWeight: FontWeight.w500),
+                                        style: Theme.of(context).textTheme.bodyMedium
                                       )),
                                 ],
                               )
@@ -158,7 +149,7 @@ class CommentDialog extends StatelessWidget {
                 );
               }
               return Center(
-                child: Text('Something went wrong, please try again!'),
+                child: Text('Something went wrong, please try again!', style: Theme.of(context).textTheme.bodyMedium),
               );
             },
           ),
@@ -168,20 +159,19 @@ class CommentDialog extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Close',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey[350]),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 _showCreateCommentDialog(context, commentCubit, cardId);
               },
               child: Text(
                 'Add Comment',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ))
         ],
       ),
@@ -196,18 +186,15 @@ class CommentDialog extends StatelessWidget {
       context: context,
       builder: (dialogCtx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Add Comment',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: contentController,
-              decoration: InputDecoration(labelText: 'Content'),
-            )
+            Textfield(text: 'Comment', obsecureText: false, controller: contentController)
           ],
         ),
         actions: [
@@ -215,13 +202,13 @@ class CommentDialog extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey[350]),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 final credentails = CreateCommentCredentails(
                     cardId: cardId, content: contentController.text.trim());
@@ -230,8 +217,7 @@ class CommentDialog extends StatelessWidget {
               },
               child: Text(
                 'Create',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ))
         ],
       ),
@@ -247,18 +233,15 @@ class CommentDialog extends StatelessWidget {
         builder: (dialogCtx) => AlertDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
-              backgroundColor: Colors.grey.shade300,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               title: Text(
                 'Update Comment',
-                style: GoogleFonts.alef(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.bodyLarge
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(
-                    controller: newContentController,
-                    decoration: InputDecoration(labelText: 'New Content'),
-                  )
+                  Textfield(text: 'New Comment', obsecureText: false, controller: newContentController)
                 ],
               ),
               actions: [
@@ -266,13 +249,13 @@ class CommentDialog extends StatelessWidget {
                     onPressed: () => Navigator.pop(context),
                     child: Text(
                       'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                      style: Theme.of(context).textTheme.titleSmall
                     )),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: Colors.grey[350]),
+                        backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: () {
                       final credentails = UpdateCommentCredentails(
                           commentId: commentId,
@@ -282,8 +265,7 @@ class CommentDialog extends StatelessWidget {
                     },
                     child: Text(
                       'Update',
-                      style: GoogleFonts.alef(
-                          color: Colors.grey.shade600, fontSize: 16),
+                      style: Theme.of(context).textTheme.bodySmall
                     ))
               ],
             ));
@@ -297,30 +279,27 @@ class CommentDialog extends StatelessWidget {
         builder: (dialogCtx) => AlertDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
-              backgroundColor: Colors.grey.shade300,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               title: Text(
                 'Delete Comment',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.bodyLarge
               ),
               content: Text(
                 'Are you sure want to delete this comment?',
-                style: GoogleFonts.alef(
-                  fontSize: 17,
-                  color: Colors.black87,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium
               ),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(dialogCtx),
                     child: Text(
                       'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                      style: Theme.of(context).textTheme.titleSmall
                     )),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: Colors.grey[350]),
+                        backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: () {
                       Navigator.pop(dialogCtx);
                       cubit.deleteComment(commentId);

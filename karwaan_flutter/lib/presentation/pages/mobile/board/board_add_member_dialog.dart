@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_credentails.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_state.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
@@ -37,10 +36,10 @@ class BoardAddMemberDialog extends StatelessWidget {
       },
       child: AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Add Member',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -52,29 +51,27 @@ class BoardAddMemberDialog extends StatelessWidget {
                   controller: emailController),
               middleSizedBox,
               DropdownButtonFormField<String>(
-                dropdownColor: Colors.grey.shade300,
+                dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(10),
                 value: selectedRole,
                 decoration: InputDecoration(
                     labelText: 'Role',
-                    labelStyle: GoogleFonts.alef(color: Colors.grey.shade600),
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade600)),
+                        borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade800))),
+                        borderSide: BorderSide(color: Theme.of(context).dividerColor))),
                 items: ['member', 'admin', 'moderator'].map((role) {
                   return DropdownMenuItem(
                     value: role,
                     child: Text(
                       role,
-                      style: GoogleFonts.alef(
-                          fontSize: 18, fontWeight: FontWeight.w200),
-                    ),
+                      style: Theme.of(context).textTheme.bodyMedium)
                   );
                 }).toList(),
                 onChanged: (value) => selectedRole = value,
@@ -87,7 +84,7 @@ class BoardAddMemberDialog extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.grey, fontSize: 15),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           BlocBuilder<BoardMemberCubit, BoardMemberState>(
             builder: (context, state) {
@@ -95,7 +92,7 @@ class BoardAddMemberDialog extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    backgroundColor: Colors.grey.shade400),
+                    backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: state is BoardMemberLoading
                     ? null
                     : () async {
@@ -128,11 +125,10 @@ class BoardAddMemberDialog extends StatelessWidget {
                             .addMemberToBoard(credentials);
                       },
                 child: state is BoardMemberLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ?  CircularProgressIndicator(color: Theme.of(context).iconTheme.color)
                     : Text(
                         'Add',
-                        style: TextStyle(
-                            color: Colors.grey.shade700, fontSize: 15),
+                        style: Theme.of(context).textTheme.bodySmall
                       ),
               );
             },

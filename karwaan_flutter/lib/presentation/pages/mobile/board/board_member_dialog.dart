@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_change_role_model.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_credentails.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_details.dart';
@@ -44,10 +43,10 @@ class BoardMemberDialog extends StatelessWidget {
           return AlertDialog(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            backgroundColor: Colors.grey.shade300,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             title: Text(
               'Members',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyLarge
             ),
             content: SizedBox(
               width: double.maxFinite,
@@ -63,16 +62,15 @@ class BoardMemberDialog extends StatelessWidget {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           gradient: LinearGradient(colors: [
-                            Colors.grey.shade400,
-                            Colors.grey.shade200
+                            Theme.of(context).colorScheme.surface,
+                            Theme.of(context).colorScheme.onSurface
                           ])),
                       child: ListTile(
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 8),
                         title: Text(
                           member.userName,
-                          style: GoogleFonts.poppins(
-                              fontSize: 18, fontWeight: FontWeight.w400),
+                          style: Theme.of(context).textTheme.bodyMedium
                         ),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,15 +78,13 @@ class BoardMemberDialog extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 member.userRole,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 12, fontWeight: FontWeight.w300),
+                                style: Theme.of(context).textTheme.bodySmall
                               ),
                             ),
                             Flexible(
                               child: Text(
                                 'Joined At: ${_formatDate(member.joinedAt)}',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 12, fontWeight: FontWeight.w300),
+                                style: Theme.of(context).textTheme.bodySmall
                               ),
                             ),
                           ],
@@ -107,7 +103,7 @@ class BoardMemberDialog extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Close',
-                  style: TextStyle(color: Colors.grey.shade600),
+                  style: Theme.of(context).textTheme.titleSmall
                 ),
               ),
             ],
@@ -121,8 +117,8 @@ class BoardMemberDialog extends StatelessWidget {
   // Member actions dialog
   Widget _buildMemberActions(BuildContext context, BoardMemberDetails member) {
     return PopupMenuButton<String>(
-      color: Colors.grey.shade300,
-      icon: const Icon(Icons.more_vert),
+      color: Theme.of(context).scaffoldBackgroundColor,
+      icon:  Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color,),
       onSelected: (value) {
         if (value == 'delete') {
           _confirmRemove(context, member);
@@ -140,7 +136,7 @@ class BoardMemberDialog extends StatelessWidget {
               Text(
                 'Remove Member',
                 style:
-                    GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
+                    Theme.of(context).textTheme.bodyMedium
               ),
             ],
           ),
@@ -154,7 +150,7 @@ class BoardMemberDialog extends StatelessWidget {
               Text(
                 'Change Role',
                 style:
-                    GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
+                    Theme.of(context).textTheme.bodyMedium
               ),
             ],
           ),
@@ -169,24 +165,30 @@ class BoardMemberDialog extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Remove Member',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: Text(
           'Remove ${member.userName} from board?',
-          style: GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
+          style: Theme.of(context).textTheme.bodyMedium
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(
+            child:  Text(
               'Cancel',
-              style: TextStyle(color: Colors.grey),
+              style: Theme.of(context).textTheme.titleSmall
             ),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)
+              ),
+              backgroundColor: Theme.of(context).colorScheme.primary
+            ),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Remove', style: TextStyle(color: Colors.red)),
           ),
@@ -219,55 +221,46 @@ class BoardMemberDialog extends StatelessWidget {
         child: AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: Colors.grey.shade300,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
             'Change ${member.userName}\'s Role',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyLarge
           ),
           content: ValueListenableBuilder<String>(
             valueListenable: roleController,
             builder: (context, currentRole, _) {
               return DropdownButtonFormField<String>(
-                dropdownColor: Colors.grey.shade300,
+                dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                 decoration: InputDecoration(
                     labelText: 'New Role',
-                    labelStyle: GoogleFonts.alef(color: Colors.grey.shade600),
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade600)),
+                        borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade800))),
+                        borderSide: BorderSide(color: Theme.of(context).dividerColor))),
                 value: currentRole,
                 items: [
                   DropdownMenuItem(
                       value: 'owner',
                       child: Text(
                         'Owner',
-                        style: GoogleFonts.alef(
-                            color: Colors.grey.shade800,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17),
+                        style: Theme.of(context).textTheme.bodyMedium
                       )),
                   DropdownMenuItem(
                       value: 'admin',
                       child: Text(
                         'Admin',
-                        style: GoogleFonts.alef(
-                            color: Colors.grey.shade800,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17),
+                        style: Theme.of(context).textTheme.bodyMedium
                       )),
                   DropdownMenuItem(
                       value: 'member',
                       child: Text(
                         'Member',
-                        style: GoogleFonts.alef(
-                            color: Colors.grey.shade800,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17),
+                        style: Theme.of(context).textTheme.bodyMedium
                       )),
                 ],
                 onChanged: (value) {
@@ -282,7 +275,7 @@ class BoardMemberDialog extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text('Cancel',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
+                  style: Theme.of(context).textTheme.titleSmall),
             ),
             BlocBuilder<BoardMemberCubit,  BoardMemberState>(
               builder: (context, state) {
@@ -295,7 +288,7 @@ class BoardMemberDialog extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: Colors.grey.shade500),
+                          backgroundColor: Theme.of(context).colorScheme.primary),
                       onPressed:
                           isLoading || selectedRole == member.userRole.toLowerCase()
                               ? null
@@ -313,9 +306,7 @@ class BoardMemberDialog extends StatelessWidget {
                           ? const CircularProgressIndicator()
                           : Text(
                               'Change',
-                              style: TextStyle(
-                                  color: Colors.grey.shade800,
-                                  fontWeight: FontWeight.bold),
+                              style: Theme.of(context).textTheme.bodySmall
                             ),
                     );
                   },

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/attachment/attachment_state.dart';
 import 'package:karwaan_flutter/domain/models/attachment/upload_attachment_credentails.dart';
 import 'package:karwaan_flutter/presentation/cubits/attachment/attachment_cubit.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 import 'package:lottie/lottie.dart';
 
 class AttachmentDialog extends StatelessWidget {
@@ -19,10 +20,10 @@ class AttachmentDialog extends StatelessWidget {
       value: attachmentCubit,
       child: AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Attachments',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: BlocListener<AttachmentCubit, AttachmentState>(
           listener: (context, state) {
@@ -60,11 +61,7 @@ class AttachmentDialog extends StatelessWidget {
                 if (attachments.isEmpty) {
                   return Center(
                     child: Text('No attachments yet!',
-                        style: GoogleFonts.alef(
-                            color: Colors.grey.shade600,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700),
-                        textAlign: TextAlign.center),
+                        style: Theme.of(context).textTheme.bodyMedium)
                   );
                 }
 
@@ -79,8 +76,8 @@ class AttachmentDialog extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         gradient: LinearGradient(colors: [
-                          Colors.blueGrey.shade300,
-                          Colors.grey.shade300
+                          Theme.of(context).colorScheme.secondary, 
+                          Theme.of(context).colorScheme.onSecondary
                         ]),
                       ),
                       child: Row(
@@ -90,8 +87,7 @@ class AttachmentDialog extends StatelessWidget {
                           Expanded(
                               child: Text(
                             attachment.fileName,
-                            style: GoogleFonts.alef(
-                                color: Colors.grey.shade600, fontSize: 15),
+                            style: Theme.of(context).textTheme.bodyMedium
                           )),
 
                           // delete icon button
@@ -111,7 +107,7 @@ class AttachmentDialog extends StatelessWidget {
                 ));
               }
               return Center(
-                child: Text('Something went wrong, please try again!'),
+                child: Text('Something went wrong, please try again!', style: Theme.of(context).textTheme.bodyMedium),
               );
             },
           ),
@@ -121,21 +117,20 @@ class AttachmentDialog extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Close',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey[350]),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 // show upload attachment dialog
                 _showUploadAttachmentDialog(context, attachmentCubit, cardId);
               },
               child: Text(
                 'Upload Attachment',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ))
         ],
       ),
@@ -150,18 +145,15 @@ class AttachmentDialog extends StatelessWidget {
       context: context,
       builder: (dialogCtx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Upload new Attachment',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: fileNameController,
-              decoration: InputDecoration(labelText: 'File Name'),
-            )
+            Textfield(text: 'File Name', obsecureText: false, controller: fileNameController)
           ],
         ),
         actions: [
@@ -169,13 +161,13 @@ class AttachmentDialog extends StatelessWidget {
               onPressed: () => Navigator.pop(dialogCtx),
               child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey[350]),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 final credentails = UploadAttachmentCredentails(
                     cardId: cardId, fileName: fileNameController.text.trim());
@@ -184,8 +176,7 @@ class AttachmentDialog extends StatelessWidget {
               },
               child: Text(
                 'Upload',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade600, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ))
         ],
       ),
@@ -200,27 +191,27 @@ class AttachmentDialog extends StatelessWidget {
         builder: (dialogCtx) => AlertDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
-              backgroundColor: Colors.grey.shade300,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               title: Text(
                 'Delete Attachment',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.bodyLarge
               ),
               content: Text(
                 'Are you sure want to delete this attachment?',
-                style: GoogleFonts.alef(fontSize: 17, color: Colors.black87),
+                style: Theme.of(context).textTheme.bodyMedium
               ),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(dialogCtx),
                     child: Text(
                       'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                      style: Theme.of(context).textTheme.titleSmall
                     )),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: Colors.grey[350]),
+                        backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: () {
                       Navigator.pop(dialogCtx);
                       cubit.deleteAttachment(attachmentId);

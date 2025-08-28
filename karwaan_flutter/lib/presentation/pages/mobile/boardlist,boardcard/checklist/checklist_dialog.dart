@@ -8,6 +8,7 @@ import 'package:karwaan_flutter/presentation/cubits/checklist/checklist_cubit.da
 import 'package:karwaan_flutter/presentation/cubits/checklistItem/checklist_item_cubit.dart';
 import 'package:karwaan_flutter/domain/repository/checklistItem/checklist_item_repo.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/boardlist,boardcard/checklistItem/checklist_item_dialog.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 import 'package:lottie/lottie.dart';
 
 enum _ChecklistAction { update, delete }
@@ -30,10 +31,10 @@ class ChecklistDialog extends StatelessWidget {
       value: checklistCubit,
       child: AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Checklists',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: BlocListener<ChecklistCubit, ChecklistState>(
           listener: (context, state) {
@@ -79,10 +80,7 @@ class ChecklistDialog extends StatelessWidget {
                   return Center(
                     child: Text(
                       'No checklist yet!',
-                      style: GoogleFonts.alef(
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                   );
@@ -105,8 +103,8 @@ class ChecklistDialog extends StatelessWidget {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               gradient: LinearGradient(colors: [
-                                Colors.blueGrey.shade300,
-                                Colors.grey.shade300
+                                Theme.of(context).colorScheme.secondary,
+                                Theme.of(context).colorScheme.onSecondary
                               ])),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -114,18 +112,15 @@ class ChecklistDialog extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   item.title,
-                                  style: GoogleFonts.alef(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.shade700,
-                                      fontSize: 18),
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               PopupMenuButton<_ChecklistAction>(
-                                color: Colors.grey.shade300,
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(10),
                                 icon: Icon(Icons.more_horiz,
-                                    size: 20, color: Colors.grey.shade700),
+                                    size: 20, color: Theme.of(context).iconTheme.color),
                                 onSelected: (action) {
                                   switch (action) {
                                     case _ChecklistAction.update:
@@ -143,17 +138,13 @@ class ChecklistDialog extends StatelessWidget {
                                       value: _ChecklistAction.update,
                                       child: Text(
                                         'Update',
-                                        style: GoogleFonts.alef(
-                                            color: Colors.grey.shade700,
-                                            fontWeight: FontWeight.w500),
+                                        style: Theme.of(context).textTheme.bodyMedium
                                       )),
                                   PopupMenuItem(
                                       value: _ChecklistAction.delete,
                                       child: Text(
                                         'Delete',
-                                        style: GoogleFonts.alef(
-                                            color: Colors.grey.shade700,
-                                            fontWeight: FontWeight.w500),
+                                        style: Theme.of(context).textTheme.bodyMedium
                                       )),
                                 ],
                               )
@@ -166,7 +157,7 @@ class ChecklistDialog extends StatelessWidget {
                 );
               }
               return Center(
-                child: Text('Something went wrong , please try again!'),
+                child: Text('Something went wrong , please try again!', style: Theme.of(context).textTheme.bodyMedium),
               );
             },
           ),
@@ -176,20 +167,19 @@ class ChecklistDialog extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Close',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey[350]),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 _showCreateChecklistDialog(context, cardId, checklistCubit);
               },
               child: Text(
                 'Create Checklist',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade700, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ))
         ],
       ),
@@ -204,18 +194,15 @@ class ChecklistDialog extends StatelessWidget {
       context: context,
       builder: (dialogCtx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Update Checklist',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.bodyLarge
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: newContentController,
-              decoration: InputDecoration(labelText: 'New Title'),
-            ),
+            Textfield(text: 'New Title', obsecureText: false, controller: newContentController)
           ],
         ),
         actions: [
@@ -223,13 +210,13 @@ class ChecklistDialog extends StatelessWidget {
               onPressed: () => Navigator.pop(dialogCtx),
               child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Colors.grey[350]),
+                  backgroundColor: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 final credentails = UpdateChecklistCredentails(
                     checklistId: checklistId,
@@ -239,8 +226,7 @@ class ChecklistDialog extends StatelessWidget {
               },
               child: Text(
                 'Update',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade700, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ))
         ],
       ),
@@ -253,24 +239,24 @@ class ChecklistDialog extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
-        title: Text('Delete checklist'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text('Delete checklist', style: Theme.of(context).textTheme.bodyLarge,),
         content: Text(
           'Are you sure want to delete this checklist? This cannot be undone!!',
-          style: GoogleFonts.alef(fontSize: 16, color: Colors.black87),
+          style: Theme.of(context).textTheme.bodyMedium
         ),
         actions: [
           TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleSmall
               )),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              backgroundColor: Colors.grey[350],
+              backgroundColor: Theme.of(context).colorScheme.primary
             ),
             onPressed: () {
               Navigator.of(dialogContext).pop();
@@ -295,17 +281,15 @@ class ChecklistDialog extends StatelessWidget {
       builder: (dialogContext) => BlocProvider.value(
         value: checklistCubit,
         child: AlertDialog(
-          backgroundColor: Colors.grey.shade300,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
             'Create Checklist',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyLarge
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                  controller: contentController,
-                  decoration: const InputDecoration(labelText: 'Title')),
+              Textfield(text: 'Title', obsecureText: false, controller: contentController)
             ],
           ),
           actionsPadding:
@@ -315,13 +299,13 @@ class ChecklistDialog extends StatelessWidget {
                 onPressed: () => Navigator.pop(dialogContext),
                 child: Text(
                   'Cancel',
-                  style: TextStyle(color: Colors.grey),
+                  style: Theme.of(context).textTheme.titleSmall
                 )),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                backgroundColor: Colors.grey.shade400,
+                backgroundColor: Theme.of(context).colorScheme.primary
               ),
               onPressed: () {
                 final credentails = CreateChecklistCredentails(
@@ -331,8 +315,7 @@ class ChecklistDialog extends StatelessWidget {
               },
               child: Text(
                 'Create',
-                style:
-                    GoogleFonts.alef(color: Colors.grey.shade700, fontSize: 16),
+                style: Theme.of(context).textTheme.bodySmall
               ),
             )
           ],

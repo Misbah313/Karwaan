@@ -243,6 +243,9 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i30.CommentWithAuthor>(e))
           .toList() as T;
     }
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
+    }
     if (t == List<_i31.User>) {
       return (data as List).map((e) => deserialize<_i31.User>(e)).toList() as T;
     }

@@ -147,4 +147,8 @@ class AuthCubit extends Cubit<AuthStateCheck> {
     }
     return 'Something went wrong. Please try again';
   }
+
+ void resetToUnAuthenticated() {
+  emit(AuthUnAuthenticated());
+}
 }

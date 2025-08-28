@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/theme/dark_mode.dart';
+import 'package:karwaan_flutter/core/theme/light_mode.dart';
+import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
 import 'package:karwaan_flutter/data/repositories/attachment/attachment_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/auth/auth_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/board/board_remote_repo.dart';
@@ -61,10 +64,12 @@ void main() async {
         Provider<ChecklistItemRepo>(create: (_) => checklistItemRepo),
         Provider<CommentRepo>(create: (_) => commentRepo),
         Provider<AttachmentRepo>(create: (_) => attachmentRepo),
+        Provider<ServerpodClientService>(create: (_) => serverpodClientService),
         BlocProvider<AuthCubit>(
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
         ),
+        ChangeNotifierProvider(create: (_) => ThemeNotifier())
       ],
       child: MyApp(
         authRepo: authRepo,
@@ -79,8 +84,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = context.watch<ThemeNotifier>();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: themeNotifier.themeMode,
       home: AuthGate(
         authRepo: authRepo,
       ),

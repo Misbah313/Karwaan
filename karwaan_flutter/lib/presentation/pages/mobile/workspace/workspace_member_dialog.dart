@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_change_role_member_model.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details.dart';
@@ -47,11 +46,9 @@ class WorkspaceMembersDialog extends StatelessWidget {
           return AlertDialog(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            backgroundColor: Colors.grey.shade300,
-            title: Text(
-              'Members',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            title:
+                Text('Members', style: Theme.of(context).textTheme.bodyLarge),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -66,33 +63,25 @@ class WorkspaceMembersDialog extends StatelessWidget {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           gradient: LinearGradient(colors: [
-                            Colors.grey.shade400,
-                            Colors.grey.shade200
+                            Theme.of(context).colorScheme.surface,
+                            Theme.of(context).colorScheme.onSurface
                           ])),
                       child: ListTile(
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 8),
-                        title: Text(
-                          member.userName,
-                          style: GoogleFonts.poppins(
-                              fontSize: 18, fontWeight: FontWeight.w400),
-                        ),
+                        title: Text(member.userName,
+                            style: Theme.of(context).textTheme.bodyMedium),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
-                              child: Text(
-                                member.role,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 12, fontWeight: FontWeight.w300),
-                              ),
+                              child: Text(member.role,
+                                  style: Theme.of(context).textTheme.bodySmall),
                             ),
                             Flexible(
                               child: Text(
-                                'Joined At: ${_formatDate(member.joinedAt)}',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 12, fontWeight: FontWeight.w300),
-                              ),
+                                  'Joined At: ${_formatDate(member.joinedAt)}',
+                                  style: Theme.of(context).textTheme.bodySmall),
                             ),
                           ],
                         ),
@@ -110,7 +99,7 @@ class WorkspaceMembersDialog extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Close',
-                  style: TextStyle(color: Colors.grey.shade600),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
             ],
@@ -125,8 +114,11 @@ class WorkspaceMembersDialog extends StatelessWidget {
   Widget _buildMemberActions(
       BuildContext context, WorkspaceMemberDetail member) {
     return PopupMenuButton<String>(
-      color: Colors.grey.shade300,
-      icon: const Icon(Icons.more_vert),
+      color: Theme.of(context).scaffoldBackgroundColor,
+      icon: Icon(
+        Icons.more_vert,
+        color: Theme.of(context).iconTheme.color,
+      ),
       onSelected: (value) {
         if (value == 'delete') {
           _confirmRemove(context, member);
@@ -141,11 +133,8 @@ class WorkspaceMembersDialog extends StatelessWidget {
             children: [
               Icon(Icons.delete_outline, color: Colors.red),
               SizedBox(width: 8),
-              Text(
-                'Remove Member',
-                style:
-                    GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
-              ),
+              Text('Remove Member',
+                  style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
         ),
@@ -155,11 +144,8 @@ class WorkspaceMembersDialog extends StatelessWidget {
             children: [
               Icon(Icons.change_circle_outlined, color: Colors.blue),
               SizedBox(width: 8),
-              Text(
-                'Change Role',
-                style:
-                    GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
-              ),
+              Text('Change Role',
+                  style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
         ),
@@ -175,21 +161,15 @@ class WorkspaceMembersDialog extends StatelessWidget {
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         backgroundColor: Colors.grey.shade300,
-        title: Text(
-          'Remove Member',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          'Remove ${member.userName} from workspace?',
-          style: GoogleFonts.alef(fontSize: 16, color: Colors.grey.shade800),
-        ),
+        title:
+            Text('Remove Member', style: Theme.of(context).textTheme.bodyLarge),
+        content: Text('Remove ${member.userName} from workspace?',
+            style: Theme.of(context).textTheme.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.grey),
-            ),
+            child:
+                Text('Cancel', style: Theme.of(context).textTheme.titleSmall),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -224,59 +204,41 @@ class WorkspaceMembersDialog extends StatelessWidget {
         child: AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: Colors.grey.shade300,
-          title: Text(
-            'Change ${member.userName}\'s Role',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text('Change ${member.userName}\'s Role',
+              style: Theme.of(context).textTheme.bodyLarge),
           content: ValueListenableBuilder<String>(
             valueListenable: roleController,
             builder: (context, currentRole, _) {
               return DropdownButtonFormField<String>(
                 dropdownColor: Colors.grey.shade300,
-                 decoration: InputDecoration(
-                  labelText: 'New Role',
-                  labelStyle: GoogleFonts.alef(color: Colors.grey.shade600),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.grey.shade600)
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.grey.shade800)
-                  )    
-                ),
+                decoration: InputDecoration(
+                    labelText: 'New Role',
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor))),
                 value: currentRole,
                 items: [
                   DropdownMenuItem(
                       value: 'owner',
-                      child: Text(
-                        'Owner',
-                        style: GoogleFonts.alef(
-                            color: Colors.grey.shade800,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17),
-                      )),
+                      child: Text('Owner',
+                          style: Theme.of(context).textTheme.bodyMedium)),
                   DropdownMenuItem(
                       value: 'admin',
-                      child: Text(
-                        'Admin',
-                        style: GoogleFonts.alef(
-                            color: Colors.grey.shade800,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17),
-                      )),
+                      child: Text('Admin',
+                          style: Theme.of(context).textTheme.bodyMedium)),
                   DropdownMenuItem(
                       value: 'member',
-                      child: Text(
-                        'Member',
-                        style: GoogleFonts.alef(
-                            color: Colors.grey.shade800,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17),
-                      )),
+                      child: Text('Member',
+                          style: Theme.of(context).textTheme.bodyMedium)),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -289,8 +251,8 @@ class WorkspaceMembersDialog extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
+              child:
+                  Text('Cancel', style: Theme.of(context).textTheme.titleSmall),
             ),
             BlocBuilder<WorkspaceMemberCubit, WorkspaceMemberState>(
               builder: (context, state) {
@@ -303,7 +265,7 @@ class WorkspaceMembersDialog extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: Colors.grey.shade500),
+                          backgroundColor: Theme.of(context).colorScheme.primary),
                       onPressed:
                           isLoading || selectedRole == member.role.toLowerCase()
                               ? null
@@ -319,12 +281,8 @@ class WorkspaceMembersDialog extends StatelessWidget {
                                 },
                       child: isLoading
                           ? const CircularProgressIndicator()
-                          : Text(
-                              'Change',
-                              style: TextStyle(
-                                  color: Colors.grey.shade800,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                          : Text('Change',
+                              style: Theme.of(context).textTheme.bodySmall),
                     );
                   },
                 );

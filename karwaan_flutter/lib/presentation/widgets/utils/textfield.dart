@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class Textfield extends StatefulWidget {
   final String text;
@@ -24,15 +23,16 @@ class _TextfieldState extends State<Textfield> {
       child: TextField(
         controller: widget.controller,
         obscureText: widget.obsecureText,
+        style: Theme.of(context).textTheme.titleMedium,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.grey.shade700,
+              color: Theme.of(context).dividerColor,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(15),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade700),
+            borderSide: BorderSide(color: Theme.of(context).dividerColor),
             borderRadius: BorderRadius.circular(12),
           ),
           errorBorder: OutlineInputBorder(
@@ -45,9 +45,9 @@ class _TextfieldState extends State<Textfield> {
             borderRadius: BorderRadius.circular(12),
           ),
           filled: true,
-          fillColor: Colors.grey.shade200,
+          fillColor: Theme.of(context).colorScheme.primary,
           hintText: widget.text,
-          hintStyle: GoogleFonts.poppins(fontSize: 15, color: Colors.grey.shade500)
+          hintStyle: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
     );
