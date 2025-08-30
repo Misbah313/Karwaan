@@ -18,6 +18,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required this.email,
     required this.password,
     this.profileImage,
+    this.isDarkMode,
   });
 
   factory User({
@@ -26,6 +27,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     required String email,
     required String password,
     String? profileImage,
+    bool? isDarkMode,
   }) = _UserImpl;
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,6 +37,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       email: jsonSerialization['email'] as String,
       password: jsonSerialization['password'] as String,
       profileImage: jsonSerialization['profileImage'] as String?,
+      isDarkMode: jsonSerialization['isDarkMode'] as bool?,
     );
   }
 
@@ -53,6 +56,8 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   String? profileImage;
 
+  bool? isDarkMode;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -65,6 +70,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     String? email,
     String? password,
     String? profileImage,
+    bool? isDarkMode,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,6 +80,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       'email': email,
       'password': password,
       if (profileImage != null) 'profileImage': profileImage,
+      if (isDarkMode != null) 'isDarkMode': isDarkMode,
     };
   }
 
@@ -85,6 +92,7 @@ abstract class User implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       'email': email,
       'password': password,
       if (profileImage != null) 'profileImage': profileImage,
+      if (isDarkMode != null) 'isDarkMode': isDarkMode,
     };
   }
 
@@ -127,12 +135,14 @@ class _UserImpl extends User {
     required String email,
     required String password,
     String? profileImage,
+    bool? isDarkMode,
   }) : super._(
           id: id,
           name: name,
           email: email,
           password: password,
           profileImage: profileImage,
+          isDarkMode: isDarkMode,
         );
 
   /// Returns a shallow copy of this [User]
@@ -145,6 +155,7 @@ class _UserImpl extends User {
     String? email,
     String? password,
     Object? profileImage = _Undefined,
+    Object? isDarkMode = _Undefined,
   }) {
     return User(
       id: id is int? ? id : this.id,
@@ -152,6 +163,7 @@ class _UserImpl extends User {
       email: email ?? this.email,
       password: password ?? this.password,
       profileImage: profileImage is String? ? profileImage : this.profileImage,
+      isDarkMode: isDarkMode is bool? ? isDarkMode : this.isDarkMode,
     );
   }
 }
@@ -174,6 +186,10 @@ class UserTable extends _i1.Table<int?> {
       'profileImage',
       this,
     );
+    isDarkMode = _i1.ColumnBool(
+      'isDarkMode',
+      this,
+    );
   }
 
   late final _i1.ColumnString name;
@@ -184,6 +200,8 @@ class UserTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString profileImage;
 
+  late final _i1.ColumnBool isDarkMode;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -191,6 +209,7 @@ class UserTable extends _i1.Table<int?> {
         email,
         password,
         profileImage,
+        isDarkMode,
       ];
 }
 

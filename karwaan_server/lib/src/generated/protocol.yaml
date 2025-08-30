@@ -66,6 +66,8 @@ user:
   - getAllUsers:
   - updateUser:
   - deleteUser:
+  - updateUserTheme:
+  - getUserTheme:
 workspace:
   - createWorkspace:
   - getUserWorkspace:

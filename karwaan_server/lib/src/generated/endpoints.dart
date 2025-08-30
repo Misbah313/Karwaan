@@ -1655,6 +1655,48 @@ class Endpoints extends _i1.EndpointDispatch {
             params['id'],
           ),
         ),
+        'updateUserTheme': _i1.MethodConnector(
+          name: 'updateUserTheme',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'isDarkMode': _i1.ParameterDescription(
+              name: 'isDarkMode',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['user'] as _i15.UserEndpoint).updateUserTheme(
+            session,
+            params['userId'],
+            params['isDarkMode'],
+          ),
+        ),
+        'getUserTheme': _i1.MethodConnector(
+          name: 'getUserTheme',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['user'] as _i15.UserEndpoint).getUserTheme(
+            session,
+            params['userId'],
+          ),
+        ),
       },
     );
     connectors['workspace'] = _i1.EndpointConnector(
