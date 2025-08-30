@@ -161,6 +161,23 @@ class ServerpodClientService {
     return 'http://10.136.73.89:8082/files/profile_pictures/$filename';
   }
 
+  // update user theme
+  Future<bool> saveUserTheme(bool isDarkMode, int userId) async {
+    try {
+      return await client.user.updateUserTheme(userId, isDarkMode);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get user theme
+  Future<bool?> loadUserTheme(int userId) async {
+    try {
+      return await client.user.getUserTheme(userId);
+    } catch (e) {
+      return null;
+    }
+  }
   // =============================================== WORKSPACE ====================================================== //
 
   // create workspace
