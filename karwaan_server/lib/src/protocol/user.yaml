@@ -6,3 +6,4 @@ fields:
   email: String 
   password: String
   profileImage: String?
+  isDarkMode: bool?
