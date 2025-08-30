@@ -12,11 +12,13 @@ class AuthUser {
   final String email;
   final String token;
   final String? profileImage;
+  final bool? isDarkMode;
 
   AuthUser(
       {required this.id,
       required this.name,
       required this.email, 
       required this.token,
-       this.profileImage});
+       this.profileImage,
+       this.isDarkMode});
 }
