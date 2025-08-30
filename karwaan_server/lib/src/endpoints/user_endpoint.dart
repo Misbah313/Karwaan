@@ -97,6 +97,30 @@ class UserEndpoint extends Endpoint {
       throw Exception(e);
     }
   }
+
+  // update user theme prefrence
+  Future<bool> updateUserTheme(
+      Session session, int userId, bool isDarkMode) async {
+    try {
+      final user = await User.db.findById(session, userId);
+      if (user == null) return false;
+
+      await User.db.updateRow(session, user.copyWith(isDarkMode: isDarkMode));
+      return true;
+    } catch (e) {
+      throw Exception('Failed to update theme: ${e}');
+    }
+  }
+
+  // get user theme
+  Future<bool?> getUserTheme(Session session, int userId) async {
+    try {
+      final user = await User.db.findById(session, userId);
+      return user?.isDarkMode;
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 /*

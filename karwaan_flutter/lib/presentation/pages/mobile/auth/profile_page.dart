@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:karwaan_flutter/core/services/image_picker_service.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
+import 'package:karwaan_flutter/core/theme/theme_service.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
 import 'package:provider/provider.dart';
@@ -298,7 +299,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         onChanged: (value) {
                           themeNotifier.setThemeMode(
                               value ? ThemeMode.dark : ThemeMode.light);
-                        },
+                              final user = (state).user;
+                              final themeService = ThemeService(context.read<ServerpodClientService>());
+                              themeService.saveUserTheme(user.id, value);
+                                                    },
                       ),
                       SwitchListTile(
                         title: Text(

@@ -850,6 +850,26 @@ class EndpointUser extends _i1.EndpointRef {
         'deleteUser',
         {'id': id},
       );
+
+  _i2.Future<bool> updateUserTheme(
+    int userId,
+    bool isDarkMode,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'user',
+        'updateUserTheme',
+        {
+          'userId': userId,
+          'isDarkMode': isDarkMode,
+        },
+      );
+
+  _i2.Future<bool?> getUserTheme(int userId) =>
+      caller.callServerEndpoint<bool?>(
+        'user',
+        'getUserTheme',
+        {'userId': userId},
+      );
 }
 
 /// {@category Endpoint}

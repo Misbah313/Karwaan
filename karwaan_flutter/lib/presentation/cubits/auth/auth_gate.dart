@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
+import 'package:karwaan_flutter/core/theme/theme_service.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
@@ -392,11 +395,27 @@ class _AuthGateState extends State<AuthGate> {
     );
   }
 
+  Future<void> _loadUserTheme(int userId) async {
+    try {
+      final themeService = ThemeService(context.read<ServerpodClientService>());
+      final savedTheme = await themeService.loadUserTheme(userId);
+
+      final themeNotifier = context.read<ThemeNotifier>();
+      themeNotifier.setThemeMode(savedTheme ? ThemeMode.dark : ThemeMode.light);
+    } catch (e) {
+      debugPrint('Failed to load user theme: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthStateCheck>(
       listener: (context, state) {
         _handleStateChange(state);
+
+        if (state is AuthAuthenticated) {
+          _loadUserTheme(state.user.id);
+        }
       },
       child: BlocBuilder<AuthCubit, AuthStateCheck>(
         builder: (context, state) {
