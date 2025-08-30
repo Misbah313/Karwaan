@@ -12,6 +12,6 @@ import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 extension AuthResponeMapper on AuthResponse {
   AuthUser toDomain() {
     return AuthUser(
-        id: user.id!, name: user.name, email: user.email, token: token, profileImage: user.profileImage);
+        id: user.id!, name: user.name, email: user.email, token: token, profileImage: user.profileImage, isDarkMode: user.isDarkMode);
   }
 }
