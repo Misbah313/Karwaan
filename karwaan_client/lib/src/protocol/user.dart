@@ -18,6 +18,7 @@ abstract class User implements _i1.SerializableModel {
     required this.email,
     required this.password,
     this.profileImage,
+    this.isDarkMode,
   });
 
   factory User({
@@ -26,6 +27,7 @@ abstract class User implements _i1.SerializableModel {
     required String email,
     required String password,
     String? profileImage,
+    bool? isDarkMode,
   }) = _UserImpl;
 
   factory User.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,6 +37,7 @@ abstract class User implements _i1.SerializableModel {
       email: jsonSerialization['email'] as String,
       password: jsonSerialization['password'] as String,
       profileImage: jsonSerialization['profileImage'] as String?,
+      isDarkMode: jsonSerialization['isDarkMode'] as bool?,
     );
   }
 
@@ -51,6 +54,8 @@ abstract class User implements _i1.SerializableModel {
 
   String? profileImage;
 
+  bool? isDarkMode;
+
   /// Returns a shallow copy of this [User]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -60,6 +65,7 @@ abstract class User implements _i1.SerializableModel {
     String? email,
     String? password,
     String? profileImage,
+    bool? isDarkMode,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -69,6 +75,7 @@ abstract class User implements _i1.SerializableModel {
       'email': email,
       'password': password,
       if (profileImage != null) 'profileImage': profileImage,
+      if (isDarkMode != null) 'isDarkMode': isDarkMode,
     };
   }
 
@@ -87,12 +94,14 @@ class _UserImpl extends User {
     required String email,
     required String password,
     String? profileImage,
+    bool? isDarkMode,
   }) : super._(
           id: id,
           name: name,
           email: email,
           password: password,
           profileImage: profileImage,
+          isDarkMode: isDarkMode,
         );
 
   /// Returns a shallow copy of this [User]
@@ -105,6 +114,7 @@ class _UserImpl extends User {
     String? email,
     String? password,
     Object? profileImage = _Undefined,
+    Object? isDarkMode = _Undefined,
   }) {
     return User(
       id: id is int? ? id : this.id,
@@ -112,6 +122,7 @@ class _UserImpl extends User {
       email: email ?? this.email,
       password: password ?? this.password,
       profileImage: profileImage is String? ? profileImage : this.profileImage,
+      isDarkMode: isDarkMode is bool? ? isDarkMode : this.isDarkMode,
     );
   }
 }
