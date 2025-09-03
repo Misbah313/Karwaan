@@ -84,20 +84,24 @@ flutter run
 
 ---
 
-# 📂Project Sturcture
+# 📂 Project Structure
 
-karwaan/
-├── .github/              # GitHub workflows, CI/CD
-├── karwaan_client/       # Auto-generated client from Serverpod
-├── karwaan_flutter/      # Flutter frontend app
-│   ├── lib/
-│   │   ├── core/         # Services, errors, themes
-│   │   ├── data/         # Mappers, repositories
-│   │   ├── domain/       # Models, repositories
-│   │   └── presentation/ # Cubits, pages, widgets
-│   └── main.dart         # App entry
-├── karwaan_server/       # Serverpod backend
-└── README.md             # Root README
+      karwaan/
+      ├── 📂 .github/              # GitHub workflows, CI/CD
+      ├── 📂 karwaan_client/       # Auto-generated client from Serverpod
+      ├── 📂 karwaan_flutter/      # Flutter frontend app
+      │   ├── 📂 lib/
+      │   │   ├── 📂 core/         # Services, errors, themes
+      │   │   ├── 📂 data/         # Mappers, repositories
+      │   │   ├── 📂 domain/       # Models, repositories
+      │   │   └── 📂 presentation/ # Cubits, pages, widgets
+      │   └── main.dart            # App entry
+      ├── 📂 karwaan_server/       # Serverpod backend
+      └── 📄 README.md             # Root README
+
+---
+
+
 
 
 
