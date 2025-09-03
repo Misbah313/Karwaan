@@ -119,25 +119,23 @@ Karwaan is designed to help users manage workspaces, boards, tasks, checklists, 
  We welcome contributions! Follow these steps:
 
   1. **Fork the repo**
-  2. **Branch:**
-   
+  2. **Create a Branch:**
      ```
      git checkout -b feat/your-feature
      ```
 
-  3. **Commit:**
-
+  3. **Commit your changes:**
      ```
      git commit -m "Add feature"
      ```
 
-  4. **Push:**
-
+  4. **Push your branch:**
      ```
      git push origin feat/your-feature
      ```
   
   5. **Open a PR and with a clear description**
+
   
 Guidelines:
    
