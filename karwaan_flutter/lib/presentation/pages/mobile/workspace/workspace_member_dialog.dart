@@ -160,7 +160,7 @@ class WorkspaceMembersDialog extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title:
             Text('Remove Member', style: Theme.of(context).textTheme.bodyLarge),
         content: Text('Remove ${member.userName} from workspace?',
