@@ -42,45 +42,45 @@ Karwaan is designed to help users manage workspaces, boards, tasks, checklists, 
 
 1. **Clone & navigate**
 
-```
-git clone https://github.com/Misbah313/Karwaan.git
-```
+    ```
+    git clone https://github.com/Misbah313/Karwaan.git
+    ```
 
-```
-cd Karwaan
-```
+    ```
+    cd Karwaan
+    ```
 
 2. **Server Setup**
 
-```
-cd karwaan_server
-```
+    ```
+    cd karwaan_server
+    ```
 
-```
-dart pub get
-```
+    ```
+    dart pub get
+    ```
 
-```
-serverpod generate
-```
+    ```
+    serverpod generate
+    ```
 
-```
-dart bin/main.dart
-```
+    ```
+    dart bin/main.dart
+    ```
 
 3. **Flutter App Setup**
 
-```
-cd karwaan_flutter
-```
+    ```
+    cd karwaan_flutter
+    ```
 
-```
-flutter pub get
-```
+    ```
+    flutter pub get
+    ```
 
-```
-flutter run
-```
+    ```
+    flutter run
+    ```
 
 ---
 
@@ -118,26 +118,26 @@ flutter run
 
  We welcome contributions! Follow these steps:
 
-    1. Fork the repo
-    2. Branch:
+  1. **Fork the repo**
+  2. **Branch:**
+   
+     ```
+     git checkout -b feat/your-feature
+     ```
+
+  3. **Commit:**
+
+     ```
+     git commit -m "Add feature"
+     ```
+
+  4. **Push:**
+
+     ```
+     git push origin feat/your-feature
+     ```
   
-    ```
-    git checkout -b feat/your-feature
-    ```
-
-    3. Commit:
-
-    ```
-    git commit -m "Add feature"
-    ```
-
-    4. Push:
-
-    ```
-    git push origin feat/your-feature
-    ```
-  
-    5. Open a PR and with a clear description
+  5. **Open a PR and with a clear description**
   
 Guidelines:
    
