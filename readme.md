@@ -87,19 +87,82 @@ flutter run
 # 📂 Project Structure
 
       karwaan/
-      ├── 📂 .github/              # GitHub workflows, CI/CD
-      ├── 📂 karwaan_client/       # Auto-generated client from Serverpod
-      ├── 📂 karwaan_flutter/      # Flutter frontend app
+      ├── 📂 .github/               # GitHub workflows, CI/CD
+      ├── 📂 karwaan_client/        # Auto-generated client from Serverpod
+      ├── 📂 karwaan_flutter/       # Flutter frontend app
       │   ├── 📂 lib/
-      │   │   ├── 📂 core/         # Services, errors, themes
-      │   │   ├── 📂 data/         # Mappers, repositories
-      │   │   ├── 📂 domain/       # Models, repositories
-      │   │   └── 📂 presentation/ # Cubits, pages, widgets
-      │   └── main.dart            # App entry
-      ├── 📂 karwaan_server/       # Serverpod backend
-      └── 📄 README.md             # Root README
+      │   │   ├── 📂 core/          # Services, errors, themes
+      │   │   ├── 📂 data/          # Mappers, repositories
+      │   │   ├── 📂 domain/        # Models, repositories
+      │   │   └── 📂 presentation/  # Cubits, pages, widgets
+      │   └── main.dart             # App entry
+      ├── 📂 karwaan_server/        # Serverpod backend
+      └── 📄 README.md              # Root README
 
 ---
+
+## 📸 UI/UX
+
+<div align="center">
+
+### **Authentication & Themes**
+
+### **Pages & Themes**
+
+</div>
+
+
+---
+
+# 🙌Contributions
+
+ We welcome contributions! Follow these steps:
+
+    1. Fork the repo
+    2. Branch:
+  
+    ```
+    git checkout -b feat/your-feature
+    ```
+
+    3. Commit:
+
+    ```
+    git commit -m "Add feature"
+    ```
+
+    4. Push:
+
+    ```
+    git push origin feat/your-feature
+    ```
+  
+    5. Open a PR and with a clear description
+  
+Guidelines:
+   
+   - Discuss major changes via Issues first.
+   - Follow Clean Code practices.
+
+   ---
+ 
+# 📜License
+
+  Distributed under MIT License.
+  See [MIT License](LICENSE) for Details.
+
+  ---
+
+ 🔗 Connect
+
+    👤 Misbah 
+    📧 [misbahgholami63@gmail.com](mailto:misbahgholami63@gmail.com)
+    
+  ---    
+
+            ✨ Happy Coding! ✨ 
+
+
 
 
 
