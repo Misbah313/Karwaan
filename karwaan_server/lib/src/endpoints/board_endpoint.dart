@@ -81,17 +81,17 @@ class BoardEndpoint extends Endpoint {
       throw Exception('No user or invalid token!');
     }
 
+    // fetch the board for that user
+    final board = await Board.db.findById(session, boardId);
+    if (board == null) {
+      throw Exception("Board not found!");
+    }
+
     // confirm membership
     final isMember = await BoardMember.db.findFirstRow(session,
         where: (b) => b.user.equals(currentUser.id) & b.board.equals(boardId));
     if (isMember == null) {
       throw Exception("You're not a member of this board");
-    }
-
-    // fetch the board for that user
-    final board = await Board.db.findById(session, boardId);
-    if (board == null) {
-      throw Exception("Board not found!");
     }
 
     try {
@@ -208,7 +208,7 @@ class BoardEndpoint extends Endpoint {
     }
 
     final workspace = await Workspace.db.findById(session, board.workspaceId);
-    if(workspace == null) {
+    if (workspace == null) {
       throw Exception('Parent board not founded!!');
     }
 
@@ -256,8 +256,7 @@ class BoardEndpoint extends Endpoint {
     // No-op guard: check if anything actually changed
     final nameChanged =
         newName != null && newName.trim() != originalName.trim();
-    final descChanged =
-        newDec != null && newDec.trim() != (originalDec.trim());
+    final descChanged = newDec != null && newDec.trim() != (originalDec.trim());
     if (!nameChanged && !descChanged) {
       return board; // No changes
     }
