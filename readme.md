@@ -50,6 +50,56 @@ git clone https://github.com/Misbah313/Karwaan.git
 cd Karwaan
 ```
 
+2. **Server Setup**
+
+```
+cd karwaan_server
+```
+
+```
+dart pub get
+```
+
+```
+serverpod generate
+```
+
+```
+dart bin/main.dart
+```
+
+3. **Flutter App Setup**
+
+```
+cd karwaan_flutter
+```
+
+```
+flutter pub get
+```
+
+```
+flutter run
+```
+
+---
+
+# 📂Project Sturcture
+
+karwaan/
+├── .github/              # GitHub workflows, CI/CD
+├── karwaan_client/       # Auto-generated client from Serverpod
+├── karwaan_flutter/      # Flutter frontend app
+│   ├── lib/
+│   │   ├── core/         # Services, errors, themes
+│   │   ├── data/         # Mappers, repositories
+│   │   ├── domain/       # Models, repositories
+│   │   └── presentation/ # Cubits, pages, widgets
+│   └── main.dart         # App entry
+├── karwaan_server/       # Serverpod backend
+└── README.md             # Root README
+
+
 
 
 
