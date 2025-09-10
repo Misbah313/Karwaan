@@ -17,8 +17,26 @@ class AuthUser {
   AuthUser(
       {required this.id,
       required this.name,
-      required this.email, 
+      required this.email,
       required this.token,
-       this.profileImage,
-       this.isDarkMode});
+      this.profileImage,
+      this.isDarkMode});
+
+  AuthUser copyWith({
+    int? id,
+    String? name,
+    String? email,
+    String? token,
+    String? profileImage,
+    bool? isDarkMode,
+  }) {
+    return AuthUser(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      token: token ?? this.token,
+      profileImage: profileImage ?? this.profileImage,
+      isDarkMode: isDarkMode ?? this.isDarkMode,
+    );
+  }
 }
