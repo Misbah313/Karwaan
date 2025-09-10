@@ -9,6 +9,7 @@ import 'package:karwaan_flutter/presentation/pages/mobile/auth/register_page.dar
 import 'package:karwaan_flutter/presentation/widgets/utils/button.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
+import 'package:lottie/lottie.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -41,7 +42,9 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('asset/images/background.png'),
+                Lottie.asset(
+                'asset/ani/development.json',
+              ),
 
                 middleSizedBox,
 
