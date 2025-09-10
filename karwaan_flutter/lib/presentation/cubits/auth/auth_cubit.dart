@@ -25,7 +25,7 @@ class AuthCubit extends Cubit<AuthStateCheck> {
       rethrow;
     } finally {
       _isProcessing = false;
-    } 
+    }
   }
 
   /// Registers a new user account
@@ -132,6 +132,14 @@ class AuthCubit extends Cubit<AuthStateCheck> {
     }
   }
 
+  // update profile image
+  void updateProfileImage(String newFileName) {
+    if (state is AuthAuthenticated) {
+      final user = (state as AuthAuthenticated).user;
+      emit(AuthAuthenticated(user.copyWith(profileImage: newFileName)));
+    }
+  }
+
   /// Converts technical errors to user-friendly messages
   String _authErrorHelper(dynamic e) {
     final error = e.toString();
@@ -148,7 +156,7 @@ class AuthCubit extends Cubit<AuthStateCheck> {
     return 'Something went wrong. Please try again';
   }
 
- void resetToUnAuthenticated() {
-  emit(AuthUnAuthenticated());
-}
+  void resetToUnAuthenticated() {
+    emit(AuthUnAuthenticated());
+  }
 }
