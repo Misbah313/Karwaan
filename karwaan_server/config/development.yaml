@@ -23,15 +23,15 @@ insightsServer:
 # Configuration for the web server.
 webServer:
   port: 8082
-  publicHost: localhost
+  publicHost: 10.169.70.89
   publicPort: 8082
   publicScheme: http
-  corsOriginRegex: 'http://localhost:[\d]*|http://10.226.253.89:[\d]*|http://192.168.\d+.\d+:[\d]*'
+  corsOriginRegex: 'http://localhost:[\d]*|http://10.169.70.89:[\d]*|http://10.226.253.89:[\d]*|http://192.168.\d+.\d+:[\d]*'
 
 # This is the database setup for your server.
 database:
   host: localhost
-  port: 8090  # Changed from 8090 to 5432 (standard PostgreSQL port)
+  port: 8090 # Standard PostgreSQL port
   name: karwaan
   user: postgres
   password: postgres123
@@ -44,11 +44,11 @@ redis:
   host: localhost
   port: 8091
 
-# Web server static files configuration - FIX THIS SECTION  
+# Web server static files configuration
 web:
   staticFiles:
     - path: /files/profile_pictures
-      directoryPath: uploads/profile_pictures
+      directoryPath: C:/Users/dell/Documents/projects/karwaan/karwaan_Server/uploads/profile_pictures
 
 maxRequestSize: 5242880 # Increased to 5MB for image uploads
 
