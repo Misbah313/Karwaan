@@ -9,6 +9,7 @@ import 'package:karwaan_flutter/presentation/pages/mobile/auth/login_page.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/button.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
+import 'package:lottie/lottie.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -100,9 +101,8 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.25,
-                  child: Image.asset(
-                    'asset/images/background.png',
-                    fit: BoxFit.contain,
+                  child: Lottie.asset(
+                    'asset/ani/development.json',
                   ),
                 ),
                 middleSizedBox,
@@ -120,10 +120,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Sign up with Google',
-                            style: Theme.of(context).textTheme.bodyMedium
-                          ),
+                          Text('Sign up with Google',
+                              style: Theme.of(context).textTheme.bodyMedium),
                           Image.asset(
                             'asset/images/google.png',
                             height: 25,
@@ -141,16 +139,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       Expanded(
                         child: Divider(
-                          thickness: 1,
-                          color: Theme.of(context).dividerColor
-                        ),
+                            thickness: 1,
+                            color: Theme.of(context).dividerColor),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Text(
-                          'OR',
-                          style: Theme.of(context).textTheme.bodySmall
-                        ),
+                        child: Text('OR',
+                            style: Theme.of(context).textTheme.bodySmall),
                       ),
                       Expanded(
                         child: Divider(
@@ -162,10 +157,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 lowSizedBox,
-                Text(
-                  'With your email and password',
-                  style: Theme.of(context).textTheme.bodyMedium
-                ),
+                Text('With your email and password',
+                    style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 15),
                 Textfield(
                   text: 'Full Name',
@@ -203,10 +196,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Already have an account? ",
-                      style: Theme.of(context).textTheme.bodySmall
-                    ),
+                    Text("Already have an account? ",
+                        style: Theme.of(context).textTheme.bodySmall),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushReplacement(
@@ -241,10 +232,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         );
                       },
-                      child: Text(
-                        "Log In",
-                        style:Theme.of(context).textTheme.titleMedium
-                      ),
+                      child: Text("Log In",
+                          style: Theme.of(context).textTheme.titleMedium),
                     ),
                   ],
                 ),
