@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:karwaan_client/karwaan_client.dart';
@@ -16,7 +17,7 @@ class ServerpodClientService {
   // initialize serverpod client service (Long-term: Switch to .env before deploying (even to test servers).1: add flutter_dotenv package, 2:Create .env(SERVERPOD_URL=http://10.226.253.89:8080/) 3: Load it in main.dart(void main() aysnc { await dotev.load(fileName: '.env'); final serverpodUrl = dotenv.get('Serverpo Url')}), 4: update serverpod clinet(Client(serverpodUrl)));
   Future<void> initialize() async {
     client = Client(
-      'http://10.136.73.89:8080/',
+      'http://10.169.70.89:8080/',
     )..connectivityMonitor = FlutterConnectivityMonitor();
 
     final storedToken = await _authTokenStorage.getToken();
@@ -155,10 +156,20 @@ class ServerpodClientService {
   }
 
   // get profile picture
-  String getProfilePictureUrl(String? filename) {
+  Future<String> getProfilePictureUrl(String? filename) async {
     if (filename == null || filename.isEmpty) return '';
 
-    return 'http://10.136.73.89:8082/files/profile_pictures/$filename';
+    try {
+      // Call the endpoint to get the image data
+      final imageData = await client.file.serveProfilePicture(filename);
+
+      // Convert the bytes to a base64 data URL
+      final base64Image = base64Encode(imageData);
+      return 'data:image/jpeg;base64,$base64Image';
+    } catch (e) {
+      debugPrint('Error getting profile picture: $e');
+      return '';
+    }
   }
 
   // update user theme

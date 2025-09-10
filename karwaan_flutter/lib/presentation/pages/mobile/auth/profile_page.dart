@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert'; 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,6 +7,7 @@ import 'package:karwaan_flutter/core/services/image_picker_service.dart';
 import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
 import 'package:karwaan_flutter/core/theme/theme_service.dart';
+import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
 import 'package:provider/provider.dart';
@@ -20,10 +22,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool isDarkMode = false;
   bool notify = false;
-  bool _isImageLoadingError = false;
-  final int _retryCount = 0;
-  /*final int _maxRetries = 3; */
   final ImagePickerService _imagePickerService = ImagePickerService();
+  // ignore: unused_field
   File? _selectedImage;
 
   // logout confirmation dialog
@@ -33,21 +33,14 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (dialogCtx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(
-          'Logout',
-          style: Theme.of(context).textTheme.bodyLarge
-        ),
-        content: Text(
-          'Are you sure want to logout?',
-          style: Theme.of(context).textTheme.bodyMedium
-        ),
+        title: Text('Logout', style: Theme.of(context).textTheme.bodyLarge),
+        content: Text('Are you sure want to logout?',
+            style: Theme.of(context).textTheme.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: Text(
-              'Cancel',
-              style: Theme.of(context).textTheme.titleSmall
-            ),
+            child:
+                Text('Cancel', style: Theme.of(context).textTheme.titleSmall),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -77,21 +70,16 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (dialogCtx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(
-          'Delete Account',
-          style: Theme.of(context).textTheme.bodyLarge
-        ),
+        title: Text('Delete Account',
+            style: Theme.of(context).textTheme.bodyLarge),
         content: Text(
-          'Are you sure want to delete your account? This cannot be undone!!',
-          style: Theme.of(context).textTheme.bodySmall
-        ),
+            'Are you sure want to delete your account? This cannot be undone!!',
+            style: Theme.of(context).textTheme.bodySmall),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: Text(
-              'Cancel',
-              style: Theme.of(context).textTheme.titleSmall
-            ),
+            child:
+                Text('Cancel', style: Theme.of(context).textTheme.titleSmall),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -125,14 +113,14 @@ class _ProfilePageState extends State<ProfilePage> {
       if (imageFile != null) {
         setState(() {
           _selectedImage = imageFile;
-          _isImageLoadingError = false; // Reset error state
         });
 
         final serverpodService = context.read<ServerpodClientService>();
-        await serverpodService.uploadProfilePicture(imageFile, userId);
 
         // Refresh user data to get updated profile image
-        context.read<AuthCubit>().checkAuth();
+        final newFileName =
+            await serverpodService.uploadProfilePicture(imageFile, userId);
+        context.read<AuthCubit>().updateProfileImage(newFileName);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Profile picture updated successfully!')),
@@ -145,39 +133,64 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // Get profile image with error handling
-  ImageProvider? _getProfileImage(String? profileImage) {
-    if (_selectedImage != null) {
-      return FileImage(_selectedImage!);
-    } else if (profileImage != null && !_isImageLoadingError) {
-      final serverpodService = context.read<ServerpodClientService>();
-      final imageUrl = serverpodService.getProfilePictureUrl(profileImage);
-
-      // Add cache busting to avoid cached errors
-      final cacheBuster = _retryCount > 0 ? '?retry=$_retryCount' : '';
-      return NetworkImage('$imageUrl$cacheBuster');
-    }
-    return null;
+  // get profile image
+  Future<String> _getProfileImageUrl(String? filename) async {
+    final serverpodService = context.read<ServerpodClientService>();
+    return await serverpodService.getProfilePictureUrl(filename);
   }
 
-  /*
-  // Add a method to retry loading the image
-  void _retryImageLoading() {
-    if (_retryCount < _maxRetries) {
-      setState(() {
-        _retryCount++;
-        _isImageLoadingError = false;
-      });
-    }
+  // profile image avatars
+  Widget _buildProfileAvatar(AuthUser user) {
+    return FutureBuilder<String>(
+      future: _getProfileImageUrl(user.profileImage),
+      builder: (context, snapshot) {
+        // Show loading indicator while waiting for data
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircleAvatar(
+            radius: 50,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: CircularProgressIndicator(
+              color: Theme.of(context).iconTheme.color,
+            ),
+          );
+        }
+
+        // Handle errors
+        if (snapshot.hasError ||
+            snapshot.data == null ||
+            snapshot.data!.isEmpty) {
+          return CircleAvatar(
+            radius: 50,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: Icon(
+              Icons.person,
+              size: 40,
+              color: Theme.of(context).iconTheme.color,
+            ),
+          );
+        }
+
+        // Success - display the image
+        final imageData = snapshot.data!;
+        return CircleAvatar(
+          radius: 50,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundImage: MemoryImage(base64Decode(
+              imageData.replaceFirst('data:image/jpeg;base64,', ''))),
+        );
+      },
+    );
   }
-  */
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(backgroundColor: Theme.of(context).appBarTheme.backgroundColor, iconTheme: Theme.of(context).iconTheme,),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        iconTheme: Theme.of(context).iconTheme,
+      ),
       body: BlocConsumer<AuthCubit, AuthStateCheck>(
         listener: (context, state) {
           if (state is AuthUnAuthenticated || state is DeleteSuccessfully) {
@@ -198,36 +211,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     children: [
                       GestureDetector(
-                        onTap: () => _pickAndUploadImage(user.id),
-                        child: _getProfileImage(user.profileImage) != null
-                            ? CircleAvatar(
-                                radius: 50,
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                backgroundImage:
-                                    _getProfileImage(user.profileImage),
-                                onBackgroundImageError:
-                                    (exception, stackTrace) {
-                                  // This will be called when the image fails to load
-                                  setState(() {
-                                    _isImageLoadingError = true;
-                                  });
-                                },
-                              )
-                            : CircleAvatar(
-                                radius: 50,
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                child: Icon(Icons.person,
-                                    size: 40, color: Theme.of(context).iconTheme.color),
-                              ),
-                      ),
+                          onTap: () => _pickAndUploadImage(user.id),
+                          child: _buildProfileAvatar(user)),
                     ],
                   ),
                 ),
                 SizedBox(height: 10),
-                Text(
-                  'Tap to change profile picture',
-                  style: Theme.of(context).textTheme.bodySmall
-                ),
+                Text('Tap to change profile picture',
+                    style: Theme.of(context).textTheme.bodySmall),
                 SizedBox(height: 20),
 
                 // Personal info
@@ -237,42 +228,34 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Row(
                         children: [
-                          Text(
-                            'Personal info',
-                            style: Theme.of(context).textTheme.bodyLarge
-                          ),
+                          Text('Personal info',
+                              style: Theme.of(context).textTheme.bodyLarge),
                         ],
                       ),
                       const SizedBox(height: 15),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'User Name',
-                            style: Theme.of(context).textTheme.bodyMedium
-                          ),
-                          Text(
-                            user.name,
-                            style:Theme.of(context).textTheme.bodySmall
-                          ),
+                          Text('User Name',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          Text(user.name,
+                              style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'User Email',
-                            style: Theme.of(context).textTheme.bodyMedium
-                          ),
-                          Text(
-                            user.email,
-                            style: Theme.of(context).textTheme.bodySmall
-                          ),
+                          Text('User Email',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          Text(user.email,
+                              style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      Divider(color: Theme.of(context).dividerColor,),
+                      Divider(
+                        color: Theme.of(context).dividerColor,
+                      ),
                     ],
                   ),
                 ),
@@ -284,31 +267,26 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Row(
                         children: [
-                          Text(
-                            'Application apperiance',
-                            style: Theme.of(context).textTheme.bodyLarge
-                          )
+                          Text('Application apperiance',
+                              style: Theme.of(context).textTheme.bodyLarge)
                         ],
                       ),
                       SwitchListTile(
-                        title: Text(
-                          'Dark Mode',
-                          style: Theme.of(context).textTheme.bodyMedium
-                        ),
+                        title: Text('Dark Mode',
+                            style: Theme.of(context).textTheme.bodyMedium),
                         value: themeNotifier.themeMode == ThemeMode.dark,
                         onChanged: (value) {
                           themeNotifier.setThemeMode(
                               value ? ThemeMode.dark : ThemeMode.light);
-                              final user = (state).user;
-                              final themeService = ThemeService(context.read<ServerpodClientService>());
-                              themeService.saveUserTheme(user.id, value);
-                                                    },
+                          final user = (state).user;
+                          final themeService = ThemeService(
+                              context.read<ServerpodClientService>());
+                          themeService.saveUserTheme(user.id, value);
+                        },
                       ),
                       SwitchListTile(
-                        title: Text(
-                          'Notifications',
-                          style: Theme.of(context).textTheme.bodyMedium
-                        ),
+                        title: Text('Notifications',
+                            style: Theme.of(context).textTheme.bodyMedium),
                         value: notify,
                         onChanged: (value) {
                           setState(() {
@@ -316,7 +294,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           });
                         },
                       ),
-                      Divider(color: Theme.of(context).dividerColor,)
+                      Divider(
+                        color: Theme.of(context).dividerColor,
+                      )
                     ],
                   ),
                 ),
@@ -328,19 +308,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Row(
                         children: [
-                          Text(
-                            'Account',
-                            style: Theme.of(context).textTheme.bodyLarge
-                          )
+                          Text('Account',
+                              style: Theme.of(context).textTheme.bodyLarge)
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Logout',
-                            style: Theme.of(context).textTheme.bodyMedium
-                          ),
+                          Text('Logout',
+                              style: Theme.of(context).textTheme.bodyMedium),
                           IconButton(
                             onPressed: () {
                               _logoutConfirmation(context);
@@ -355,10 +331,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Delete Account',
-                            style: Theme.of(context).textTheme.bodyMedium
-                          ),
+                          Text('Delete Account',
+                              style: Theme.of(context).textTheme.bodyMedium),
                           IconButton(
                             onPressed: () {
                               _deleteAccount(context, user.id);

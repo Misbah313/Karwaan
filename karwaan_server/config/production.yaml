@@ -50,8 +50,9 @@ files:
 # Web server static files configuration - FIX THIS SECTION
 web:
   staticFiles:
-    - path: /uploads
-      directoryPath: uploads
+    - path: /files/profile_pictures
+      directoryPath: uploads/profile_pictures
+
 
 maxRequestSize: 5242880 # Increased to 5MB for image uploads
 

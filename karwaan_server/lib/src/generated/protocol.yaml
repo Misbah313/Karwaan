@@ -52,6 +52,7 @@ comment:
   - deleteComment:
 file:
   - uploadProfilePicture:
+  - serveProfilePicture:
   - deleteProfilePicture:
 label:
   - createLabel:

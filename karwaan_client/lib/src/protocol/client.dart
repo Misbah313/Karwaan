@@ -720,6 +720,13 @@ class EndpointFile extends _i1.EndpointRef {
         },
       );
 
+  _i2.Future<List<int>> serveProfilePicture(String filename) =>
+      caller.callServerEndpoint<List<int>>(
+        'file',
+        'serveProfilePicture',
+        {'filename': filename},
+      );
+
   _i2.Future<bool> deleteProfilePicture(int userId) =>
       caller.callServerEndpoint<bool>(
         'file',

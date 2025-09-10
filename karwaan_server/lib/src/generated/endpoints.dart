@@ -1400,6 +1400,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['fileBytes'],
           ),
         ),
+        'serveProfilePicture': _i1.MethodConnector(
+          name: 'serveProfilePicture',
+          params: {
+            'filename': _i1.ParameterDescription(
+              name: 'filename',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['file'] as _i12.FileEndpoint).serveProfilePicture(
+            session,
+            params['filename'],
+          ),
+        ),
         'deleteProfilePicture': _i1.MethodConnector(
           name: 'deleteProfilePicture',
           params: {

@@ -1818,6 +1818,35 @@ class _FileEndpoint {
     });
   }
 
+  _i3.Future<List<int>> serveProfilePicture(
+    _i1.TestSessionBuilder sessionBuilder,
+    String filename,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'file',
+        method: 'serveProfilePicture',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'file',
+          methodName: 'serveProfilePicture',
+          parameters: _i1.testObjectToJson({'filename': filename}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<int>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<bool> deleteProfilePicture(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
