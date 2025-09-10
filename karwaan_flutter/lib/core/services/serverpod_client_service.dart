@@ -156,21 +156,19 @@ class ServerpodClientService {
   }
 
   // get profile picture
-  // Replace the getProfilePictureUrl method with this:
   Future<String> getProfilePictureUrl(String? filename) async {
     if (filename == null || filename.isEmpty) return '';
 
     try {
-      // Call the NEW endpoint to get the image data
+      // Call the endpoint to get the image data
       final imageData = await client.file.serveProfilePicture(filename);
 
       // Convert the bytes to a base64 data URL
-      // This bypasses the need for static file serving completely
       final base64Image = base64Encode(imageData);
       return 'data:image/jpeg;base64,$base64Image';
     } catch (e) {
       debugPrint('Error getting profile picture: $e');
-      return ''; // Return empty string on error
+      return '';
     }
   }
 
