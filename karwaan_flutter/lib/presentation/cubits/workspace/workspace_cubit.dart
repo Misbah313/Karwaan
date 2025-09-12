@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_state.dart';
@@ -10,7 +11,8 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
   WorkspaceCubit(this.workspaceRepo) : super(WorkspaceInitial());
 
   // create workspace
-  Future<void> createWorkspace(CreateWorkspaceCredentials workspaceCredential) async {
+  Future<void> createWorkspace(
+      CreateWorkspaceCredentials workspaceCredential) async {
     emit(WorkspaceLoading());
     try {
       final workspace =
@@ -18,7 +20,7 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
       emit(SuccessAction(
           workspace.workspaceName, workspace.workspaceDescription));
     } catch (e) {
-      emit(WorkspaceError('Creating workspace error: ${e.toString()}'));
+      emit(WorkspaceError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -29,8 +31,7 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
       final workspace = await workspaceRepo.getUserWorkspace();
       emit(WorkspaceListLoaded(workspace));
     } catch (e) {
-      emit(WorkspaceError(
-          'Failed to get the list of workspace: ${e.toString()}'));
+      emit(WorkspaceError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -42,7 +43,7 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
       final workspaces = await workspaceRepo.getUserWorkspace();
       emit(WorkspaceListLoaded(workspaces));
     } catch (e) {
-      emit(WorkspaceError('Failed to update workspace: ${e.toString()}'));
+      emit(WorkspaceError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -54,9 +55,7 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
       final workspaces = await workspaceRepo.getUserWorkspace();
       emit(WorkspaceListLoaded(workspaces));
     } catch (e) {
-      emit(WorkspaceError('Failed to delete workspace: ${e.toString()}'));
+      emit(WorkspaceError(ExceptionMapper.toMessage(e)));
     }
   }
-
- 
 }

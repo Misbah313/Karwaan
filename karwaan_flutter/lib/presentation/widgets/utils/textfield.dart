@@ -24,6 +24,7 @@ class _TextfieldState extends State<Textfield> {
         controller: widget.controller,
         obscureText: widget.obsecureText,
         style: Theme.of(context).textTheme.titleMedium,
+        cursorColor: Theme.of(context).dividerColor,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(

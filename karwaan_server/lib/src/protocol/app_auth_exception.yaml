@@ -1,0 +1,3 @@
+exception: AppAuthException
+fields:
+  message: String

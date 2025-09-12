@@ -9,24 +9,24 @@ class CommentEndpoint extends Endpoint {
     // validate token(Get the current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // check if the card id (the comment want be add to) exists
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('No card found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // get the board which the card belong to
     final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
-      throw Exception('No parent board found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     final board = await Board.db.findById(session, boardList.board);
     if (board == null) {
-      throw Exception('Board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check board access for the current user
@@ -35,14 +35,15 @@ class CommentEndpoint extends Endpoint {
       where: (b) => b.board.equals(board.id) & b.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
       // validate comment content
       final trimmedContent = content.trim();
       if (trimmedContent.isEmpty) {
-        throw Exception('Comment message cannot be empty!');
+        throw RandomAppException(message: 'Comment message cannot be empty!');
       }
 
       final comment = Comment(
@@ -53,11 +54,18 @@ class CommentEndpoint extends Endpoint {
 
       final inserted = await Comment.db.insertRow(session, comment);
       if (inserted.id == null) {
-        throw Exception('Comment id is null after creation!');
+        throw RandomAppException(message: 'Comment id is null after creation!');
       }
       return inserted;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to create comment. Please try again.');
     }
   }
 
@@ -67,24 +75,24 @@ class CommentEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // card the parent card existence
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('Card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // get parent board info(boardlist and board)
     final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
-      throw Exception('BoardList not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     final board = await Board.db.findById(session, boardList.board);
     if (board == null) {
-      throw Exception('Parent board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check current user membership
@@ -93,7 +101,8 @@ class CommentEndpoint extends Endpoint {
       where: (b) => b.board.equals(board.id) & b.user.equals(currentUser.id!),
     );
     if (memberShip == null) {
-      throw Exception('You are not a member in the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member in the parent board!');
     }
 
     try {
@@ -116,8 +125,9 @@ class CommentEndpoint extends Endpoint {
       // map comments to commentWithAuthor
       return comments.map((c) {
         final auhtor = authorMap[c.author];
-        if(c.id == null) {
-          throw Exception('Comment id is null after creation');
+        if (c.id == null) {
+          throw RandomAppException(
+              message: 'Comment id is null after creation');
         }
         return CommentWithAuthor(
             id: c.id!,
@@ -128,7 +138,13 @@ class CommentEndpoint extends Endpoint {
             createdAt: c.createdAt);
       }).toList();
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to get comments. Please try again');
     }
   }
 
@@ -138,25 +154,26 @@ class CommentEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // find the comment
     final comment = await Comment.db.findById(session, commentId);
     if (comment == null) {
-      throw Exception('No comment found!');
+      throw AppNotFoundException(resourceType: 'Comment');
     }
 
     // check the current user is owner/admin or the comment creator
     if (comment.author != currentUser.id) {
-      throw Exception('Only the comment creator can update a comment!');
+      throw AppPermissionException(
+          message: 'Only the comment creator can update a comment!');
     }
 
     try {
       // validate new content
       final trimmedContent = newContent.trim();
       if (trimmedContent.isEmpty) {
-        throw Exception('Comment message cannot be empty');
+        throw RandomAppException(message: 'Comment message cannot be empty');
       }
 
       // update the comment
@@ -165,7 +182,14 @@ class CommentEndpoint extends Endpoint {
       await Comment.db.updateRow(session, comment);
       return comment;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to update comment. Please try again!');
     }
   }
 
@@ -175,23 +199,23 @@ class CommentEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch the comment
     final comment = await Comment.db.findById(session, commentId);
     if (comment == null) {
-      throw Exception('Comment not found!');
+      throw AppNotFoundException(resourceType: 'Comment');
     }
 
     // user role check
     final card = await BoardCard.db.findById(session, comment.card);
     if (card == null) {
-      throw Exception('Card not found');
+      throw AppNotFoundException(resourceType: 'Card');
     }
     final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
-      throw Exception('BoardList not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     final membership = await BoardMember.db.findFirstRow(
@@ -200,7 +224,8 @@ class CommentEndpoint extends Endpoint {
           m.board.equals(boardList.board) & m.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not member of the parent board!');
     }
 
     try {
@@ -210,15 +235,23 @@ class CommentEndpoint extends Endpoint {
       final isCommentAuthor = comment.author == currentUser.id!;
 
       if (!isOwnerOrAdmin && !isCommentAuthor) {
-        throw Exception(
-            'Only owners, admins, or the comment creator can delete this comment.');
+        throw AppPermissionException(
+            message:
+                'Only owners, admins, or the comment creator can delete this comment.');
       }
 
       // delete comment
       await Comment.db.deleteRow(session, comment);
       return true;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to delete comment. Please try again!');
     }
   }
 }

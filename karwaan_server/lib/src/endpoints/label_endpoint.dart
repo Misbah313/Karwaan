@@ -10,13 +10,13 @@ class LabelEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // make sure the board exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('No board found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check member is a user of that board
@@ -25,18 +25,22 @@ class LabelEndpoint extends Endpoint {
       where: (m) => m.board.equals(boardId) & m.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of this board!');
+      throw AppPermissionException(
+          message: 'You are not a member of this board!');
     }
 
     try {
       // Trim & validate name / color
       final trimmedTitle = title.trim();
       final trimmedColor = color.trim();
-      if (trimmedTitle.isEmpty) throw Exception('Label name cannot be empty!');
+      if (trimmedTitle.isEmpty) {
+        throw RandomAppException(message: 'Label name cannot be empty!');
+      }
       // Very simple hex‑color check (#RRGGBB)
       final hexRegex = RegExp(r'^#[0-9A-Fa-f]{6}$');
       if (!hexRegex.hasMatch(trimmedColor)) {
-        throw Exception('Color must be a hex value like #FF0000');
+        throw RandomAppException(
+            message: 'Color must be a hex value like #FF0000');
       }
 
       // check duplicate label name on the same board
@@ -45,7 +49,8 @@ class LabelEndpoint extends Endpoint {
         where: (l) => l.board.equals(boardId) & l.title.equals(trimmedTitle),
       );
       if (duplicate != null) {
-        throw Exception('A label with that title already exists!');
+        throw RandomAppException(
+            message: 'A label with that title already exists!');
       }
 
       // create and insert label
@@ -57,11 +62,17 @@ class LabelEndpoint extends Endpoint {
 
       final created = await Label.db.insertRow(session, label);
       if (created.id == null) {
-        throw Exception('Label ID is null after creation!');
+        throw RandomAppException(message: 'Label ID is null after creation!');
       }
       return created;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to create label. Please try again!');
     }
   }
 
@@ -71,13 +82,13 @@ class LabelEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // make sure the board exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('No board found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // member ship check
@@ -86,7 +97,8 @@ class LabelEndpoint extends Endpoint {
       where: (m) => m.board.equals(boardId) & m.user.equals(currentUser.id!),
     );
     if (memberShip == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -99,7 +111,13 @@ class LabelEndpoint extends Endpoint {
 
       return labels;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to fetch labels. Please try again.');
     }
   }
 
@@ -109,13 +127,13 @@ class LabelEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch the label by labelID
     final label = await Label.db.findById(session, labelId);
     if (label == null) {
-      throw Exception('No label found!');
+      throw AppNotFoundException(resourceType: 'Label');
     }
 
     // confirm the user is a member of label's board
@@ -125,7 +143,8 @@ class LabelEndpoint extends Endpoint {
           l.board.equals(label.board) & l.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of parent board!');
     }
 
     try {
@@ -133,7 +152,7 @@ class LabelEndpoint extends Endpoint {
       if (newTitle != null) {
         final name = newTitle.trim();
         if (name.isEmpty) {
-          throw Exception("Label titles can't be empty");
+          throw RandomAppException(message: "Label titles can't be empty");
         }
 
         final duplicate = await Label.db.findFirstRow(
@@ -144,7 +163,8 @@ class LabelEndpoint extends Endpoint {
               l.id.notEquals(labelId),
         );
         if (duplicate != null) {
-          throw Exception('A label with that title already exists!');
+          throw RandomAppException(
+              message: 'A label with that title already exists!');
         }
 
         label.title = name;
@@ -153,14 +173,22 @@ class LabelEndpoint extends Endpoint {
       if (newColor != null) {
         final color = newColor.trim();
         final hex = RegExp(r'^#[0-9A-Fa-f]{6}$');
-        if (!hex.hasMatch(color)) throw Exception('Color must be #RRGGBB');
+        if (!hex.hasMatch(color)) {
+          throw RandomAppException(message: 'Color must be #RRGGBB');
+        }
         label.color = color;
       }
 
       await Label.db.updateRow(session, label);
       return label;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to update label. Please try again.');
     }
   }
 
@@ -169,13 +197,13 @@ class LabelEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch label by id
     final label = await Label.db.findById(session, labelId);
     if (label == null) {
-      throw Exception('No label found!');
+      throw AppNotFoundException(resourceType: 'Label');
     }
 
     // check membership in the parent board
@@ -185,7 +213,8 @@ class LabelEndpoint extends Endpoint {
           b.board.equals(label.board) & b.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -195,8 +224,9 @@ class LabelEndpoint extends Endpoint {
       final isCreator = label.createdBy == currentUser.id!;
 
       if (!isOwnerOrAdmin && !isCreator) {
-        throw Exception(
-            'Only owners, admins, or the label creator can delete it!');
+        throw AppPermissionException(
+            message:
+                'Only owners, admins, or the label creator can delete it!');
       }
 
       // check if the label is in use
@@ -205,13 +235,20 @@ class LabelEndpoint extends Endpoint {
         where: (l) => l.label.equals(labelId),
       );
       if (inUse != null) {
-        throw Exception('Label is still assigned to one or more cards!');
+        throw RandomAppException(
+            message: 'Label is still assigned to one or more cards!');
       }
 
       await Label.db.deleteRow(session, label);
       return true;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to delete label. Please try again.');
     }
   }
 }

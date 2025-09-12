@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/checklist/checklist_state.dart';
 import 'package:karwaan_flutter/domain/models/checklist/create_checklist_credentails.dart';
 import 'package:karwaan_flutter/domain/models/checklist/update_checklist_credentails.dart';
@@ -16,7 +17,7 @@ class ChecklistCubit extends Cubit<ChecklistState> {
       final checklist = await checklistRepo.createChecklist(credentails);
       emit(ChecklistCreated(checklist));
     } catch (e) {
-      emit(ChecklistError('Creation failed from cubit: ${e.toString()}'));
+      emit(ChecklistError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -27,7 +28,7 @@ class ChecklistCubit extends Cubit<ChecklistState> {
       final list = await checklistRepo.listCheckList(cardId);
       emit(ChecklistListLoaded(list));
     } catch (e) {
-      emit(ChecklistError('Listing failed from cubit: ${e.toString()}'));
+      emit(ChecklistError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -38,7 +39,7 @@ class ChecklistCubit extends Cubit<ChecklistState> {
       final updated = await checklistRepo.updateChecklist(credentails);
       emit(ChecklistUpdated(updated));
     } catch (e) {
-      emit(ChecklistError('Updating failed from cubit: ${e.toString()}'));
+      emit(ChecklistError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -49,7 +50,7 @@ class ChecklistCubit extends Cubit<ChecklistState> {
       await checklistRepo.deleteChecklist(checklistId);
       emit(ChecklistDeleted(checklistId));
     } catch (e) {
-      emit(ChecklistError('Deleting failed from cubit: ${e.toString()}'));
+      emit(ChecklistError(ExceptionMapper.toMessage(e)));
     }
   }
 }

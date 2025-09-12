@@ -10,7 +10,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // confirm current user workspace membership
@@ -20,16 +20,18 @@ class WorkspaceMemberEndpoint extends Endpoint {
           u.workspace.equals(workspaceId) & u.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of this workspace!');
+      throw AppPermissionException(
+          message: 'You are not a member of this workspace!');
     }
     if (member.role != Roles.owner && member.role != Roles.admin) {
-      throw Exception('Only owner and admin can add members!!');
+      throw AppPermissionException(
+          message: 'Only owner and admin can add members!!');
     }
 
     // check the user need to be add actually exists
     final newUser = await User.db.findById(session, userToAddId);
     if (newUser == null) {
-      throw Exception("This user doesn't exists!");
+      throw AppNotFoundException(resourceType: 'User');
     }
 
     // check the user need to be add is not already a member of the workspace
@@ -39,7 +41,8 @@ class WorkspaceMemberEndpoint extends Endpoint {
           n.workspace.equals(workspaceId) & n.user.equals(newUser.id!),
     );
     if (checkNewUser != null) {
-      throw Exception('User is already a member of this workspace!');
+      throw RandomAppException(
+          message: 'User is already a member of this workspace!');
     }
 
     // create and insert workspace member row for the new user
@@ -60,7 +63,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // confirm current user membership
@@ -70,10 +73,11 @@ class WorkspaceMemberEndpoint extends Endpoint {
           m.workspace.equals(workspaceId) & m.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of this workspace!');
+      throw AppPermissionException(
+          message: 'You are not a member of this workspace!');
     }
     if (membership.role != Roles.owner) {
-      throw Exception('Only owners can remove members!');
+      throw AppPermissionException(message: 'Only owners can remove members!');
     }
 
     // check the user to remove is actually member of this workspace
@@ -83,12 +87,13 @@ class WorkspaceMemberEndpoint extends Endpoint {
           e.workspace.equals(workspaceId) & e.user.equals(userToRemoveId),
     );
     if (targetMember == null) {
-      throw Exception("That user is not a member of this workspace");
+      throw AppNotFoundException(resourceType: 'User');
     }
 
     if (userToRemoveId == currentUser.id) {
-      throw Exception(
-          "You cannot remove yourself. Use 'leave workspace' instead.");
+      throw RandomAppException(
+          message:
+              "You cannot remove yourself. Use 'leave workspace' instead.");
     }
 
     // check if the target member is not an owner
@@ -100,7 +105,8 @@ class WorkspaceMemberEndpoint extends Endpoint {
             c.workspace.equals(workspaceId) & c.role.equals(Roles.owner),
       );
       if (countOwner <= 1) {
-        throw Exception('Cannot remove the last owner from the workspace!');
+        throw RandomAppException(
+            message: 'Cannot remove the last owner from the workspace!');
       }
     }
 
@@ -114,7 +120,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // confirm the requester is a member of the workspace
@@ -124,7 +130,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
           r.workspace.equals(workspaceId) & r.user.equals(currentUser.id!),
     );
     if (requestor == null) {
-      throw Exception('You are not a member!');
+      throw AppPermissionException(message: 'You are not a member!');
     }
 
     // fetch all the members for the workspace
@@ -163,7 +169,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // cofirm current user is a member of workspace
@@ -173,13 +179,14 @@ class WorkspaceMemberEndpoint extends Endpoint {
           c.workspace.equals(workspaceId) & c.user.equals(currentUser.id!),
     );
     if (currentMemberCheck == null) {
-      throw Exception('You are not a member!');
+      throw AppPermissionException(message: 'You are not a member!');
     }
 
     // check current user role
     if (currentMemberCheck.role != Roles.owner &&
         currentMemberCheck.role != Roles.admin) {
-      throw Exception('Only owner and admin can change the member roles!!');
+      throw AppPermissionException(
+          message: 'Only owner and admin can change the member roles!!');
     }
 
     // find the target member in the workspace by id
@@ -189,7 +196,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
           p0.workspace.equals(workspaceId) & p0.user.equals(targetUserId),
     );
     if (targetMember == null) {
-      throw Exception('This user is not a member of workspace!');
+      throw AppNotFoundException(resourceType: 'User');
     }
 
     // prevent role change that would remove the last owner
@@ -202,7 +209,8 @@ class WorkspaceMemberEndpoint extends Endpoint {
             c.workspace.equals(workspaceId) & c.role.equals(Roles.owner),
       );
       if (countOwner <= 1) {
-        throw Exception('Cannot remove the last owner from the workspace!');
+        throw RandomAppException(
+            message: 'Cannot remove the last owner from the workspace!');
       }
     }
 
@@ -211,7 +219,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // valid new role
     final validRoles = [Roles.owner, Roles.admin, Roles.member];
     if (!validRoles.contains(newRole)) {
-      throw Exception('Invalid role provided!');
+      throw RandomAppException(message: 'Invalid role provided!');
     }
 
     // assgin the new role to the target user
@@ -229,13 +237,13 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // check if the workspace exists
     final workspace = await Workspace.db.findById(session, workspaceId);
     if (workspace == null) {
-      throw Exception('No workspace found!');
+      throw AppNotFoundException(resourceType: 'Workspace');
     }
 
     // check if the requestor is a member of workspace
@@ -245,7 +253,8 @@ class WorkspaceMemberEndpoint extends Endpoint {
           w.workspace.equals(workspaceId) & w.user.equals(currentUser.id!),
     );
     if (requestor == null) {
-      throw Exception('You are not a member of this workspace!');
+      throw AppPermissionException(
+          message: 'You are not a member of this workspace!');
     }
 
     // last owner protection
@@ -256,8 +265,9 @@ class WorkspaceMemberEndpoint extends Endpoint {
             c.workspace.equals(workspaceId) & c.role.equals(Roles.owner),
       );
       if (count <= 1) {
-        throw Exception(
-            'You are the last owner! Assing a new owner before leaving the workspace!');
+        throw RandomAppException(
+            message:
+                'You are the last owner! Assing a new owner before leaving the workspace!');
       }
     }
 
@@ -276,7 +286,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     // Step 1: Validate token + permissions (existing logic)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // Step 2: Confirm current user is admin/owner (existing logic)
@@ -287,7 +297,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     );
     if (member == null ||
         (member.role != Roles.owner && member.role != Roles.admin)) {
-      throw Exception('Permission denied!');
+      throw AppPermissionException(message: 'Permission denied!');
     }
 
     // Step 3: Find user by email (NEW)
@@ -296,7 +306,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
       where: (u) => u.email.equals(email),
     );
     if (newUser == null) {
-      throw Exception("User with email '$email' not found!");
+      throw AppNotFoundException(resourceType: "User");
     }
 
     // Step 4: Check if user is already a member (existing logic)
@@ -306,7 +316,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
           m.workspace.equals(workspaceId) & m.user.equals(newUser.id!),
     );
     if (existingMember != null) {
-      throw Exception('User already in workspace!');
+      throw RandomAppException(message: 'User already in workspace!');
     }
 
     // Step 5: Add member (existing logic)
@@ -325,7 +335,9 @@ class WorkspaceMemberEndpoint extends Endpoint {
     );
 
     if (insertedMember == null) {
-      throw Exception('Failed to retrieve inserted member!');
+      throw RandomAppException(
+          message:
+              'Failed to retrieve the new member. The operation may not have completed successfully.');
     }
 
     return insertedMember;

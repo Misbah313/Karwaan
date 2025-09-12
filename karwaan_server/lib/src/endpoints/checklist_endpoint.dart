@@ -10,19 +10,19 @@ class ChecklistEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token');
+      throw AppAuthException(message: 'No user or invalid token');
     }
 
     // check card exists
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('Card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // get board
     final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
-      throw Exception('BoardList not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // check membership
@@ -32,14 +32,15 @@ class ChecklistEndpoint extends Endpoint {
           b.board.equals(boardList.board) & b.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
       // validate tile
       final trimmedTitle = title.trim();
       if (trimmedTitle.isEmpty) {
-        throw Exception('CheckList title cannot be emtpy!');
+        throw RandomAppException(message: 'CheckList title cannot be emtpy!');
       }
 
       // create and insert checklist
@@ -54,17 +55,25 @@ class ChecklistEndpoint extends Endpoint {
         where: (c) => c.card.equals(cardId) & c.title.equals(trimmedTitle),
       );
       if (duplicated != null) {
-        throw Exception(
-            'Another checklist with the same title already exists!');
+        throw RandomAppException(
+            message: 'Another checklist with the same title already exists!');
       }
 
       final inserted = await CheckList.db.insertRow(session, checklist);
       if (inserted.id == null) {
-        throw Exception('Checklist id is null after creations!');
+        throw RandomAppException(
+            message: 'Checklist id is null after creations!');
       }
       return inserted;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to create checklist. Please try again!');
     }
   }
 
@@ -74,19 +83,19 @@ class ChecklistEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // find the card
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('Card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // get the parent board
     final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
-      throw Exception('BoardList not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // check membership
@@ -96,7 +105,8 @@ class ChecklistEndpoint extends Endpoint {
           w.board.equals(boardList.board) & w.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -109,7 +119,14 @@ class ChecklistEndpoint extends Endpoint {
 
       return checklist;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to fetch checklist. Please try again.');
     }
   }
 
@@ -119,29 +136,29 @@ class ChecklistEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch the checklist by id
     final checklist = await CheckList.db.findById(session, checklistId);
     if (checklist == null) {
-      throw Exception('Checklist not found!');
+      throw AppNotFoundException(resourceType: 'Checklist');
     }
 
     // fetch the parent card
     final card = await BoardCard.db.findById(session, checklist.card);
     if (card == null) {
-      throw Exception('Parent card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // fetch parent board
     final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
-      throw Exception('Parent boardlist not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
     final board = await Board.db.findById(session, boardList.board);
     if (board == null) {
-      throw Exception('Parent board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // membership check
@@ -150,22 +167,24 @@ class ChecklistEndpoint extends Endpoint {
       where: (b) => b.board.equals(board.id) & b.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     // permission check
     if (membership.role != Roles.owner &&
         membership.role != Roles.admin &&
         checklist.createdBy != currentUser.id!) {
-      throw Exception(
-          'Only owner, admins and creator of the checklist can update them!');
+      throw AppPermissionException(
+          message:
+              'Only owner, admins and creator of the checklist can update them!');
     }
 
     try {
       // validate new title
       final trimmedTitle = newTitle.trim();
       if (trimmedTitle.isEmpty) {
-        throw Exception('Checklist title cannot be empty!');
+        throw RandomAppException(message: 'Checklist title cannot be empty!');
       }
 
       // check for duplicates
@@ -177,8 +196,8 @@ class ChecklistEndpoint extends Endpoint {
             w.id.notEquals(checklistId),
       );
       if (duplicate != null) {
-        throw Exception(
-            'Another checklist with the same title already exists!');
+        throw RandomAppException(
+            message: 'Another checklist with the same title already exists!');
       }
 
       // updated the title
@@ -186,7 +205,14 @@ class ChecklistEndpoint extends Endpoint {
       await CheckList.db.updateRow(session, checklist);
       return checklist;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to update the checklist. Please try again.');
     }
   }
 
@@ -196,29 +222,29 @@ class ChecklistEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch checklist by checklist id
     final checklist = await CheckList.db.findById(session, checklistId);
     if (checklist == null) {
-      throw Exception('Checklist not found!');
+      throw AppNotFoundException(resourceType: 'Checklist');
     }
 
     // fetch parent card
     final card = await BoardCard.db.findById(session, checklist.card);
     if (card == null) {
-      throw Exception('Parent card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // fetch parent boardlist + board
     final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
-      throw Exception('Parent boardlist not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
     final board = await Board.db.findById(session, boardlist.board);
     if (board == null) {
-      throw Exception('Parent board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check membership
@@ -228,7 +254,8 @@ class ChecklistEndpoint extends Endpoint {
           p0.board.equals(board.id) & p0.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -236,14 +263,22 @@ class ChecklistEndpoint extends Endpoint {
           membership.role == Roles.owner || membership.role == Roles.admin;
       final isCreator = checklist.createdBy == currentUser.id!;
       if (!isElevator && !isCreator) {
-        throw Exception(
-            'Only owners, admins and checklist creator can delete them!');
+        throw RandomAppException(
+            message:
+                'Only owners, admins and checklist creator can delete them!');
       }
 
       // delete
       await CheckList.db.deleteRow(session, checklist);
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to delete checklist. Please try again.');
     }
   }
 }

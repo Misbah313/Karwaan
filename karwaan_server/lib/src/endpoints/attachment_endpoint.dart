@@ -9,23 +9,23 @@ class AttachmentEndpoint extends Endpoint {
       Session session, int cardId, String fileName, String token) async {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch the parent card
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('Card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // fetch the parent boardlist + board
     final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
-      throw Exception('Parent boardlist not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
     final board = await Board.db.findById(session, boardlist.board);
     if (board == null) {
-      throw Exception('Parent board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check current user membership
@@ -35,13 +35,14 @@ class AttachmentEndpoint extends Endpoint {
           p0.board.equals(board.id) & p0.user.equals(currentUser.id!),
     );
     if (usermembership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     // validate file input
     final trimmedFileName = fileName.trim();
     if (trimmedFileName.isEmpty) {
-      throw Exception('File name cannot be empty!');
+      throw RandomAppException(message: 'File name cannot be empty!');
     }
 
     // check for duplications
@@ -51,7 +52,8 @@ class AttachmentEndpoint extends Endpoint {
           p0.card.equals(card.id) & p0.fileName.equals(trimmedFileName),
     );
     if (duplication != null) {
-      throw Exception('Another file with that name already exists!');
+      throw RandomAppException(
+          message: 'Another file with that name already exists!');
     }
 
     // ( normalize or restrict the filename format to avoid special characters or security risks **later..)
@@ -66,12 +68,20 @@ class AttachmentEndpoint extends Endpoint {
       // insert into db
       final inserted = await Attachment.db.insertRow(session, attachment);
       if (inserted.id == null) {
-        throw Exception('Attachment id is null after uploading!');
+        throw RandomAppException(
+            message: 'Attachment id is null after uploading!');
       }
 
       return inserted;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to upload attachment. Please try again.');
     }
   }
 
@@ -80,23 +90,23 @@ class AttachmentEndpoint extends Endpoint {
       Session session, int cardId, String token) async {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch the parent card
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('Parent card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // fetch the parent boardlist + board
     final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
-      throw Exception('Parent boardlist not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
     final board = await Board.db.findById(session, boardlist.board);
     if (board == null) {
-      throw Exception('Parent board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check membership
@@ -106,7 +116,8 @@ class AttachmentEndpoint extends Endpoint {
           p0.board.equals(board.id) & p0.user.equals(currentUser.id!),
     );
     if (usermembership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -118,7 +129,14 @@ class AttachmentEndpoint extends Endpoint {
       );
       return attachments;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to list attachment. Please try again.');
     }
   }
 
@@ -127,29 +145,29 @@ class AttachmentEndpoint extends Endpoint {
       Session session, int attachmentId, String token) async {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // find the attachment by id
     final attachment = await Attachment.db.findById(session, attachmentId);
     if (attachment == null) {
-      throw Exception('Attachment not found!');
+      throw AppNotFoundException(resourceType: 'Attachment');
     }
 
     // fetch the parent card
     final card = await BoardCard.db.findById(session, attachment.card);
     if (card == null) {
-      throw Exception('Parent card not found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // fetch the parent boardlist + board
     final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
-      throw Exception('Parent boardlist not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
     final board = await Board.db.findById(session, boardlist.board);
     if (board == null) {
-      throw Exception('Parent board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check memberhsip
@@ -159,7 +177,8 @@ class AttachmentEndpoint extends Endpoint {
           p0.board.equals(board.id) & p0.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member on the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member on the parent board!');
     }
 
     // permission check
@@ -167,8 +186,9 @@ class AttachmentEndpoint extends Endpoint {
         membership.role == Roles.owner || membership.role == Roles.admin;
     final isCreator = attachment.uploadedBy == currentUser.id;
     if (!isElevated && !isCreator) {
-      throw Exception(
-          'Only owner, admins and creator of the attachments can delete them!');
+      throw AppPermissionException(
+          message:
+              'Only owner, admins and creator of the attachments can delete them!');
     }
 
     try {
@@ -176,7 +196,14 @@ class AttachmentEndpoint extends Endpoint {
       await Attachment.db.deleteRow(session, attachment);
       return true;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to delete attachment. Please try again.');
     }
   }
 }

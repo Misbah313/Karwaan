@@ -20,7 +20,8 @@ class IntroPage extends StatelessWidget {
               middleSizedBox,
               // App Logo/Illustration
               Lottie.asset(
-                'asset/ani/development.json',
+                'asset/ani/work.json',
+                height: MediaQuery.of(context).size.height * 0.3
               ),
 
               heighSizedBox,
