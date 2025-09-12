@@ -1,0 +1,3 @@
+exception: RandomAppException
+fields:
+  message: String
