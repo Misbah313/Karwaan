@@ -105,9 +105,17 @@ It helps teams and individuals organize work with workspaces, boards, tasks, che
 
 <div align="center">
 
-### **Authentication & Themes**
+### **Authentication**
+<img src="karwaan_flutter/screenshots/auth.png" width="80%">
 
-### **Pages & Themes**
+### **Dashboard**
+<img src="karwaan_flutter/screenshots/dash.png" width="80%">
+
+### **Columns & cards**
+<img src="karwaan_flutter/screenshots/columns.png" width="80%">
+
+### **Dark Theme**
+<img src="karwaan_flutter/screenshots/darks.png" width="80%">
 
 </div>
 
