@@ -160,7 +160,7 @@ See [LICENSE](LICENSE) for details.
 
   ---
 
-## 🔗 Connect
+## 🔗 Connects
 
 [![Instagram](https://img.shields.io/badge/Instagram-Profile-blueviolet?logo=instagram&logoColor=white)](https://www.instagram.com/mi.sbah8540/)  
 [![Email](https://img.shields.io/badge/Email-Contact-orange?logo=gmail&logoColor=white)](mailto:misbahgholami63@gmail.com)
