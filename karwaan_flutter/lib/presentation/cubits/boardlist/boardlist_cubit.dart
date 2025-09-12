@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/boardlist_credentails.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/boardlist_state.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/create_board_list_credentails.dart';
@@ -12,10 +13,10 @@ class BoardlistCubit extends Cubit<BoardlistState> {
   Future<void> createBoardList(CreateBoardListCredentails credentails) async {
     emit(BoardlistLoading());
     try {
-    final created = await boardlistRepo.createBoardList(credentails);
-    emit(BoardListCreated(created.boardlistTitle));
+      final created = await boardlistRepo.createBoardList(credentails);
+      emit(BoardListCreated(created.boardlistTitle));
     } catch (e) {
-      emit(BoardlistError('Failed from cubit: ${e.toString()}'));
+      emit(BoardlistError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -25,7 +26,7 @@ class BoardlistCubit extends Cubit<BoardlistState> {
       final list = await boardlistRepo.listBoardLists(boardId);
       emit(BoardlistLoaded(list));
     } catch (e) {
-      emit(BoardlistError('Failed from cubit: ${e.toString()}'));
+      emit(BoardlistError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -35,7 +36,7 @@ class BoardlistCubit extends Cubit<BoardlistState> {
       await boardlistRepo.updateBoardList(credentails);
       emit(BoardlistUpdated());
     } catch (e) {
-      emit(BoardlistError('Failed from cubit: ${e.toString()}'));
+      emit(BoardlistError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -45,7 +46,7 @@ class BoardlistCubit extends Cubit<BoardlistState> {
       await boardlistRepo.deleteBoardList(boardlistId);
       emit(BoardlistDeleted(boardlistId));
     } catch (e) {
-      emit(BoardlistError('Failed from cubit: ${e.toString()}'));
+      emit(BoardlistError(ExceptionMapper.toMessage(e)));
     }
   }
 }

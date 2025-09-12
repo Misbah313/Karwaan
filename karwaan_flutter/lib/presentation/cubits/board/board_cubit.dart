@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/board/board_credentials.dart';
 import 'package:karwaan_flutter/domain/models/board/board_state.dart';
 import 'package:karwaan_flutter/domain/models/board/create_board_credentials.dart';
@@ -16,7 +16,7 @@ class BoardCubit extends Cubit<BoardState> {
       final board = await boardRepo.createBoard(credentials);
       emit(CreatedSuccessfully(board.boardName, board.boardDescription));
     } catch (e) {
-      emit(BoardError('Failed from cubit: ${e.toString()}'));
+      emit(BoardError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -26,7 +26,7 @@ class BoardCubit extends Cubit<BoardState> {
       final boards = await boardRepo.getUserBoards();
       emit(BoardlistLoaded(boards));
     } catch (e) {
-      emit(BoardError('Failed from cubit: ${e.toString()}'));
+      emit(BoardError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -38,7 +38,7 @@ class BoardCubit extends Cubit<BoardState> {
       final boards = await boardRepo.getUserBoards();
       emit(BoardlistLoaded(boards));
     } catch (e) {
-      emit(BoardError('Failed from cubit: ${e.toString()}'));
+      emit(BoardError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -48,19 +48,17 @@ class BoardCubit extends Cubit<BoardState> {
       await boardRepo.deleteBoard(boardId);
       emit(DeletedSuccessfully(boardId));
     } catch (e) {
-      emit(BoardError('Failed from cubit : ${e.toString()}'));
+      emit(BoardError(ExceptionMapper.toMessage(e)));
     }
   }
 
   Future<void> getBoardsByWorkspace(int workspaceId) async {
     emit(BoardLoading());
-    debugPrint('Starting getting boards from the cubit/1');
     try {
       final boards = await boardRepo.getBoardsByWorkspace(workspaceId);
-      debugPrint('Board fetced from cubit.2');
       emit(BoardsFromWorkspaceLoaded(boards));
     } catch (e) {
-      emit(BoardError('Failed from cubit : ${e.toString()}'));
+      emit(BoardError(ExceptionMapper.toMessage(e)));
     }
   }
 }

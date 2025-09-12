@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/label/create_label_credentails.dart';
 import 'package:karwaan_flutter/domain/models/label/label_state.dart';
 import 'package:karwaan_flutter/domain/models/label/update_label_credentails.dart';
@@ -19,7 +20,7 @@ class LabelCubit extends Cubit<LabelState> {
       debugPrint('Lable created from cubit: ${label.id}');
       emit(LabelCreated(label));
     } catch (e) {
-      emit(LabelError('Creation failed from cubit: ${e.toString()}'));
+      emit(LabelError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -30,7 +31,7 @@ class LabelCubit extends Cubit<LabelState> {
       final label = await labelRepo.getLabelsForBoard(boardId);
       emit(LabelListLoaded(label));
     } catch (e) {
-      emit(LabelError('Fetching label failed from cubit: ${e.toString()}'));
+      emit(LabelError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -38,12 +39,10 @@ class LabelCubit extends Cubit<LabelState> {
   Future<void> updateLabel(UpdateLabelCredentails credentails) async {
     emit(LabelLoading());
     try {
-      debugPrint('Staring updating label from cubit.');
       final updated = await labelRepo.updateLabel(credentails);
-      debugPrint('Label has been updated to : ${updated.title}, ${updated.color}');
       emit(LabelUpdated(updated));
     } catch (e) {
-      emit(LabelError('Updating failed from cubit: ${e.toString()}'));
+      emit(LabelError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -54,7 +53,7 @@ class LabelCubit extends Cubit<LabelState> {
       await labelRepo.deleteLabel(labelId);
       emit(LabelDeleted(labelId));
     } catch (e) {
-      emit(LabelError('Deletion failed from cubit: ${e.toString()}'));
+      emit(LabelError(ExceptionMapper.toMessage(e)));
     }
   }
 }

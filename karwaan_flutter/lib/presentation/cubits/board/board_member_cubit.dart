@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_change_role_model.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_credentails.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_state.dart';
@@ -16,8 +17,7 @@ class BoardMemberCubit extends Cubit<BoardMemberState> {
       final member = await boardRepo.addMemberToBoard(credentails);
       emit(BoardAddMemberSuccess(member));
     } catch (e) {
-      emit(BoardMemberError(
-          'Failed to add board member from cubit: ${e.toString()}'));
+      emit(BoardMemberError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -28,8 +28,7 @@ class BoardMemberCubit extends Cubit<BoardMemberState> {
       await boardRepo.removeMemberFromBoard(credentails);
       emit(BoardDeleteMemberSuccess(credentails.userId));
     } catch (e) {
-      emit(BoardMemberError(
-          'Failed to remove member from board from cubit: ${e.toString()}'));
+      emit(BoardMemberError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -40,8 +39,7 @@ class BoardMemberCubit extends Cubit<BoardMemberState> {
       final members = await boardRepo.getBoardMembers(boardId);
       emit(BoardMemberLoaded(members));
     } catch (e) {
-      emit(BoardMemberError(
-          'Failed to load board members form cubit: ${e.toString()}'));
+      emit(BoardMemberError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -52,7 +50,7 @@ class BoardMemberCubit extends Cubit<BoardMemberState> {
       await boardRepo.changeBoardMemberRole(change);
       emit(BoardMemberRoleChanged(change.targetUserId, change.newRole));
     } catch (e) {
-      emit(BoardMemberRoleChangingError(e.toString(), change.targetUserId));
+      emit(BoardMemberError(ExceptionMapper.toMessage(e)));
     }
   }
 
@@ -63,8 +61,7 @@ class BoardMemberCubit extends Cubit<BoardMemberState> {
       await boardRepo.leaveBoard(boardId);
       emit(BoardMemberLeavedSuccessfully(boardId));
     } catch(e) {
-      final isLastOwner = e.toString().contains('last owner');
-      emit(BoardLastOwner("Board owners can't leave boards", isLastOwner));
+      emit(BoardMemberError(ExceptionMapper.toMessage(e)));
     }
   }
 }
