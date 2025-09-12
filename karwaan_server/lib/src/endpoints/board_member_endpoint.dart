@@ -10,13 +10,13 @@ class BoardMemberEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // check if the board has exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('Board not found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // confirm current user is member of board
@@ -25,10 +25,12 @@ class BoardMemberEndpoint extends Endpoint {
       where: (b) => b.board.equals(boardId) & b.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of this board!');
+      throw AppPermissionException(
+          message: 'You are not a member of this board!');
     }
     if (membership.role != Roles.owner && membership.role != Roles.admin) {
-      throw Exception('Only owner and admins can add members!');
+      throw AppPermissionException(
+          message: 'Only owner and admins can add members!');
     }
 
     // check if the user need to be acutally exists
@@ -37,7 +39,7 @@ class BoardMemberEndpoint extends Endpoint {
       where: (p0) => p0.email.equals(userToAddEmail),
     );
     if (targetUser == null) {
-      throw Exception('No user has been found!');
+      throw AppNotFoundException(resourceType: 'User');
     }
 
     // board.workspaceId came from your Board model
@@ -47,7 +49,8 @@ class BoardMemberEndpoint extends Endpoint {
           w.workspace.equals(board.workspaceId) & w.user.equals(targetUser.id!),
     );
     if (targetUserMembership == null) {
-      throw Exception('User is not a member of parent workspace!');
+      throw AppPermissionException(
+          message: 'User is not a member of parent workspace!');
     }
 
     // check if the target user need to be add is not already a member of the board
@@ -56,7 +59,7 @@ class BoardMemberEndpoint extends Endpoint {
       where: (b) => b.board.equals(boardId) & b.user.equals(targetUser.id!),
     );
     if (boardMember != null) {
-      throw Exception('That user is already a member!');
+      throw RandomAppException(message: 'That user is already a member!');
     }
 
     try {
@@ -67,11 +70,19 @@ class BoardMemberEndpoint extends Endpoint {
           joinedAt: DateTime.now(),
           role: Roles.member);
 
-     final insertedMember = await BoardMember.db.insertRow(session, newBoardMember);
+      final insertedMember =
+          await BoardMember.db.insertRow(session, newBoardMember);
 
       return insertedMember;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to add member to board. Please try again.');
     }
   }
 
@@ -81,13 +92,13 @@ class BoardMemberEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // verify board exists
     final boardExists = await Board.db.findById(session, boardId);
     if (boardExists == null) {
-      throw Exception('No board has been found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // confirm current user is a member of that board
@@ -96,17 +107,19 @@ class BoardMemberEndpoint extends Endpoint {
       where: (m) => m.board.equals(boardId) & m.user.equals(currentUser.id!),
     );
     if (boardMemberShip == null) {
-      throw Exception('You are not a member of this board!');
+      throw AppPermissionException(
+          message: 'You are not a member of this board!');
     }
     if (boardMemberShip.role != Roles.owner) {
-      throw Exception('Only owners can remove board members!');
+      throw AppPermissionException(
+          message: 'Only owners can remove board members!');
     }
 
     // check user existings
     final checkRemoveUserExistings =
         await User.db.findById(session, userToRemoveId);
     if (checkRemoveUserExistings == null) {
-      throw Exception('No user found!');
+      throw AppNotFoundException(resourceType: 'User');
     }
 
     // find the target member row
@@ -115,7 +128,8 @@ class BoardMemberEndpoint extends Endpoint {
       where: (b) => b.board.equals(boardId) & b.user.equals(userToRemoveId),
     );
     if (targetMember == null) {
-      throw Exception('This user is not a member of this board');
+      throw AppPermissionException(
+          message: 'This user is not a member of this board');
     }
 
     // protect owner
@@ -126,7 +140,8 @@ class BoardMemberEndpoint extends Endpoint {
         where: (o) => o.board.equals(boardId) & o.role.equals(Roles.owner),
       );
       if (count <= 1) {
-        throw Exception('Cannot remove the last board owner!');
+        throw RandomAppException(
+            message: 'Cannot remove the last board owner!');
       }
     }
 
@@ -134,7 +149,14 @@ class BoardMemberEndpoint extends Endpoint {
       // delete membership row
       await BoardMember.db.deleteRow(session, targetMember);
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to remove member from board. Please try again.');
     }
   }
 
@@ -144,13 +166,13 @@ class BoardMemberEndpoint extends Endpoint {
     // validate token(get the current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // confirm the board exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('No board found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check the requester is a member of that board
@@ -159,7 +181,8 @@ class BoardMemberEndpoint extends Endpoint {
       where: (r) => r.board.equals(boardId) & r.user.equals(currentUser.id!),
     );
     if (requestor == null) {
-      throw Exception('You are not a member of this board!');
+      throw AppPermissionException(
+          message: 'You are not a member of this board!');
     }
 
     try {
@@ -192,7 +215,14 @@ class BoardMemberEndpoint extends Endpoint {
 
       return detailedMembers;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to get board members. Please try again.');
     }
   }
 
@@ -202,13 +232,13 @@ class BoardMemberEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // cofirm board exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('No board found!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check requestor memberShip and role
@@ -217,10 +247,12 @@ class BoardMemberEndpoint extends Endpoint {
       where: (m) => m.board.equals(boardId) & m.user.equals(currentUser.id!),
     );
     if (requestor == null) {
-      throw Exception('You are not a member of this board!');
+      throw AppPermissionException(
+          message: 'You are not a member of this board!');
     }
     if (requestor.role != Roles.owner && requestor.role != Roles.admin) {
-      throw Exception('Only owner and admins can change members role!');
+      throw AppPermissionException(
+          message: 'Only owner and admins can change members role!');
     }
 
     // confirm target user membership
@@ -229,7 +261,8 @@ class BoardMemberEndpoint extends Endpoint {
       where: (b) => b.board.equals(boardId) & b.user.equals(userToChangeRole),
     );
     if (targetMember == null) {
-      throw Exception('That user is not a member of this board!');
+      throw AppPermissionException(
+          message: 'That user is not a member of this board!');
     }
 
     // protect owners
@@ -240,7 +273,8 @@ class BoardMemberEndpoint extends Endpoint {
         where: (o) => o.board.equals(boardId) & o.role.equals(Roles.owner),
       );
       if (count <= 1) {
-        throw Exception('Cannot demote the last board owner!');
+        throw RandomAppException(
+            message: 'Cannot demote the last board owner!');
       }
     }
 
@@ -248,7 +282,7 @@ class BoardMemberEndpoint extends Endpoint {
       // Validate newRole is one of the allowed strings ('Owner', 'Admin', 'Member')
       const allowedRoles = {Roles.owner, Roles.admin, Roles.member};
       if (!allowedRoles.contains(newRole)) {
-        throw Exception('Invalid role.');
+        throw RandomAppException(message: 'Invalid role.');
       }
 
       // assign the new role
@@ -261,7 +295,14 @@ class BoardMemberEndpoint extends Endpoint {
 
       return targetMember;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to update member role. Please try again.');
     }
   }
 
@@ -270,20 +311,21 @@ class BoardMemberEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // confirm board exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('No board exists!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // confirm user is a member of board
     final memberShip = await BoardMember.db.findFirstRow(session,
         where: (u) => u.board.equals(boardId) & u.user.equals(currentUser.id!));
     if (memberShip == null) {
-      throw Exception('You are not a member of this board!');
+      throw AppPermissionException(
+          message: 'You are not a member of this board!');
     }
 
     // prevent the last owner from leaving
@@ -293,8 +335,9 @@ class BoardMemberEndpoint extends Endpoint {
         where: (b) => b.board.equals(boardId) & b.role.equals(Roles.owner),
       );
       if (count <= 1) {
-        throw Exception(
-            'You are the last owner! Assign a new owner before leaving!');
+        throw AppPermissionException(
+            message:
+                'You are the last owner! Assign a new owner before leaving!');
       }
     }
 
@@ -302,7 +345,13 @@ class BoardMemberEndpoint extends Endpoint {
       // delete membership(leave board)
       await BoardMember.db.deleteRow(session, memberShip);
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to delete member. Please try again.');
     }
   }
 }

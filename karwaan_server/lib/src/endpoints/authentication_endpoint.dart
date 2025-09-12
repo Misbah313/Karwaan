@@ -13,7 +13,7 @@ class AuthenticationEndpoint extends Endpoint {
     );
 
     if (existingUser != null) {
-      throw Exception('Email exists!');
+      throw RandomAppException(message: 'Email exists!');
     }
 
     try {
@@ -23,12 +23,16 @@ class AuthenticationEndpoint extends Endpoint {
 
       final insertedUser = await User.db.insertRow(session, newUser);
 
-      session.log('Created User id: ${insertedUser.id}');
-
       return insertedUser;
-    } catch (e, stack) {
-     session.log('Registeration failed', exception: e, stackTrace: stack);
-     throw Exception('Registeration error. Please try different credentials.');
+    } catch (e) {
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Registeration error. Please try different credentials.');
     }
   }
 
@@ -45,13 +49,13 @@ class AuthenticationEndpoint extends Endpoint {
     );
 
     if (existingUser == null) {
-      throw Exception('Invalid email or password.');
+      throw AppException(message: 'Invalid email or password.');
     }
 
     try {
       // generate a secure token for user login
-      final _uuid = Uuid();
-      final token = _uuid.v4();
+      final uuid = Uuid();
+      final token = uuid.v4();
 
       // delete old token for this user
       await UserToken.db.deleteWhere(session,
@@ -75,7 +79,13 @@ class AuthenticationEndpoint extends Endpoint {
       // return authResponse with the user and token
       return AuthResponse(user: existingUser, token: token);
     } catch (e) {
-      throw Exception('Failed to login: $e');
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to login. Please try again.');
     }
   }
 

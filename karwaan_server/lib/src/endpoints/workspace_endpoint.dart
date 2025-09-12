@@ -11,7 +11,7 @@ class WorkspaceEndpoint extends Endpoint {
     final user = await TokenEndpoint().validateToken(session, token);
 
     if (user == null) {
-      throw Exception('Invalid or expired token!');
+      throw AppAuthException(message: 'Invalid or expired token!');
     }
 
     try {
@@ -35,7 +35,8 @@ class WorkspaceEndpoint extends Endpoint {
       ));
 
       if (insertedWorkspace == null) {
-        throw Exception('Failed to retrieve inserted worksapce.');
+        throw RandomAppException(
+            message: 'Failed to retrieve inserted worksapce.');
       }
 
       final ownerMember = WorkspaceMember(
@@ -47,7 +48,14 @@ class WorkspaceEndpoint extends Endpoint {
       await WorkspaceMember.db.insertRow(session, ownerMember);
       return insertedWorkspace;
     } catch (e) {
-      throw Exception('Failed to create Workspace: $e');
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to create workspace. Please try again.');
     }
   }
 
@@ -58,7 +66,7 @@ class WorkspaceEndpoint extends Endpoint {
     final user = await TokenEndpoint().validateToken(session, token);
 
     if (user == null) {
-      throw Exception('User not found/ inValid token!');
+      throw AppAuthException(message: 'Invalid user or expired token!');
     }
 
     // 2. Find all WorkspaceMember rows where user == current user ID
@@ -85,7 +93,7 @@ class WorkspaceEndpoint extends Endpoint {
     // check the current user(validate the token)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null) {
-      throw Exception('Invalid or expired token!');
+      throw AppAuthException(message: 'Invalid or expired token!');
     }
 
     // confirm the current user is a member of workspace
@@ -95,25 +103,27 @@ class WorkspaceEndpoint extends Endpoint {
           c.user.equals(currentUser.id) & c.workspace.equals(workspaceId),
     );
     if (membership == null) {
-      throw Exception('You are not a member of this workspace!');
+      throw AppPermissionException(
+          message: 'You are not a member of this workspace!');
     }
 
     // check the current user role in the workspace
     if (membership.role != Roles.owner && membership.role != Roles.admin) {
-      throw Exception('Only Owner/Admin can update workspace.');
+      throw AppPermissionException(
+          message: 'Only Owner/Admin can update workspace.');
     }
 
     // fetch the existing workspace
     final workspace = await Workspace.db.findById(session, workspaceId);
 
     if (workspace == null) {
-      throw Exception('Workspace not found!');
+      throw AppNotFoundException(resourceType: 'Workspace');
     }
 
     // check if the new Name and description are valid and trimed
     if (newName != null) {
       if (newName.trim().isEmpty) {
-        throw Exception('Workspace name cannot be empty!');
+        throw RandomAppException(message: 'Workspace name cannot be empty!');
       }
       workspace.name = newName.trim();
     }
@@ -127,7 +137,14 @@ class WorkspaceEndpoint extends Endpoint {
       await Workspace.db.updateRow(session, workspace);
       return workspace;
     } catch (e) {
-      throw Exception('Failed to update workspace: $e');
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to update workspace. Please try again.');
     }
   }
 
@@ -137,13 +154,13 @@ class WorkspaceEndpoint extends Endpoint {
     // get the current user(validate token)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null) {
-      throw Exception('Invalid or expired token!');
+      throw AppAuthException(message: 'Invalid or expired token!');
     }
 
     // find the workspace
     final workspace = await Workspace.db.findById(session, workspaceId);
     if (workspace == null) {
-      throw Exception('No workspace found');
+      throw AppNotFoundException(resourceType: 'Workspace');
     }
 
     final member = await WorkspaceMember.db.findFirstRow(
@@ -152,12 +169,13 @@ class WorkspaceEndpoint extends Endpoint {
           w.user.equals(currentUser.id) & w.workspace.equals(workspace.id),
     );
     if (member == null) {
-      throw Exception('You are not a member of this workspace!');
+      throw AppNotFoundException(resourceType: 'Workspace');
     }
 
     // is the user owner of this workspace
     if (member.role != Roles.owner) {
-      throw Exception('Only owners can delete workspace!');
+      throw AppPermissionException(
+          message: 'Only owners can delete workspace!');
     }
     try {
       // delete maually workspace memebers before deleting workspace
@@ -168,7 +186,14 @@ class WorkspaceEndpoint extends Endpoint {
       await Workspace.db.deleteRow(session, workspace);
       return true;
     } catch (e) {
-      throw Exception('Failed to delete workspace: $e');
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to delete workspace. Please try again.');
     }
   }
 }

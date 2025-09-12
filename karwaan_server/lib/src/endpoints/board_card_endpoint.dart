@@ -11,20 +11,20 @@ class BoardCardEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // check if the boadlist you want to the card to actually exists
     final boardList = await BoardList.db.findById(session, boardListId);
     if (boardList == null) {
-      throw Exception('No BoardList exists!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     try {
       // validate card data
       final trimmedTitle = title.trim();
       if (trimmedTitle.isEmpty) {
-        throw Exception('Card title cannot be empty!');
+        throw RandomAppException(message: 'Card title cannot be empty!');
       }
 
       // set the required fields and create the card obj
@@ -41,7 +41,13 @@ class BoardCardEndpoint extends Endpoint {
       final insertedCard = await BoardCard.db.insertRow(session, card);
       return insertedCard;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to create card. Please try again.');
     }
   }
 
@@ -51,13 +57,13 @@ class BoardCardEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // validate the board list exist
     final boardList = await BoardList.db.findById(session, boardListId);
     if (boardList == null) {
-      throw Exception('No BoardList exists!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // check user permission
@@ -68,7 +74,8 @@ class BoardCardEndpoint extends Endpoint {
           b.board.equals(boardList.board) & b.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -82,7 +89,14 @@ class BoardCardEndpoint extends Endpoint {
 
       return fetch;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to get list by card. Please try again.');
     }
   }
 
@@ -92,13 +106,13 @@ class BoardCardEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or expired token!');
+      throw AppAuthException(message: 'No user or expired token!');
     }
 
     // fetch card by card id
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('No card found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // check user permission
@@ -108,7 +122,7 @@ class BoardCardEndpoint extends Endpoint {
       card.list,
     );
     if (boardList == null) {
-      throw Exception('No BoardList!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // Confirm the user is a member of the parent board
@@ -118,7 +132,8 @@ class BoardCardEndpoint extends Endpoint {
           b.board.equals(boardList.board) & b.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     // validate the updated data
@@ -127,7 +142,7 @@ class BoardCardEndpoint extends Endpoint {
       // make sure title is not empty
       final trimmedTitle = newTitle.trim();
       if (trimmedTitle.isEmpty) {
-        throw Exception('Card title cannot be empty!');
+        throw RandomAppException(message: 'Card title cannot be empty!');
       }
 
       card.title = trimmedTitle;
@@ -144,29 +159,36 @@ class BoardCardEndpoint extends Endpoint {
       await BoardCard.db.updateRow(session, card);
       return card;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to update card. Please try again.');
     }
   }
 
   // delete cards
-  Future<bool> deleteBoardCard(Session session, int cardId, String token) async {
+  Future<bool> deleteBoardCard(
+      Session session, int cardId, String token) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch card by card id
     final card = await BoardCard.db.findById(session, cardId);
     if (card == null) {
-      throw Exception('No card found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // check user permission
     // Fetch the board list the card belongs to
     final boardList = await BoardList.db.findById(session, card.list);
     if (boardList == null) {
-      throw Exception('No board list found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // Check if the user is a member of the parent board
@@ -176,7 +198,8 @@ class BoardCardEndpoint extends Endpoint {
           m.board.equals(boardList.board) & m.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -189,10 +212,17 @@ class BoardCardEndpoint extends Endpoint {
         await BoardCard.db.deleteRow(session, card);
         return true;
       } else {
-        throw Exception("You don't have the permission to delete this card!");
+        throw RandomAppException(
+            message: "You don't have the permission to delete this card!");
       }
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to delete card. Please try again.');
     }
   }
 }

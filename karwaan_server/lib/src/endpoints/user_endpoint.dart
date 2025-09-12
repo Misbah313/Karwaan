@@ -4,37 +4,13 @@ import 'package:karwaan_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 class UserEndpoint extends Endpoint {
-  /* Create user
-  Future<User> createUser(Session session, User user) async {
-    User? existingUser = await User.db.findFirstRow(
-      session,
-      where: (u) => u.email.equals(user.email),
-    );
-    if (existingUser != null) {
-      throw Exception('User with this email already exists');
-    }
-    try {
-      final newUser = User(
-          name: user.name,
-          email: user.email,
-          password: encryptPassword(user.password),
-          id: user.id);
-
-      await User.db.insertRow(session, newUser);
-      return newUser;
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-  */
-
   // Get user by Id
   Future<User?> getUserById(Session session, int userId) async {
     try {
       User? user = await User.db.findById(session, userId);
       return user;
     } catch (e) {
-      throw Exception(e);
+      throw AppAuthException(message: 'User not found!');
     }
   }
 
@@ -47,7 +23,7 @@ class UserEndpoint extends Endpoint {
       }
       return users;
     } catch (e) {
-      throw Exception(e);
+      throw AppAuthException(message: 'No user founded!');
     }
   }
 
@@ -57,7 +33,7 @@ class UserEndpoint extends Endpoint {
       // load the old user from the db by using id
       User? oldUser = await User.db.findById(session, updatedUser.id!);
       if (oldUser == null) {
-        throw Exception('User not found');
+        throw AppNotFoundException(resourceType: 'User');
       }
       // if the update user and old user passwords don't match hash the updated password
       if (updatedUser.password != oldUser.password) {
@@ -69,14 +45,19 @@ class UserEndpoint extends Endpoint {
 
       return updatedUser;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to update user. Please try again!');
     }
   }
 
   // Delete user
   Future<bool> deleteUser(Session session, int id) async {
     try {
-      session.log('Attemping to delete user with id: $id');
       User? user = await User.db.findById(session, id);
       try {
         if (user == null) {
@@ -87,14 +68,20 @@ class UserEndpoint extends Endpoint {
             where: (p0) => p0.userId.equals(id),
           );
           await User.db.deleteRow(session, user);
-          session.log('User deleted successfully');
           return true;
         }
       } catch (e) {
-        throw Exception(e.toString());
+        throw RandomAppException(
+            message: 'Failed to delete user. Please try again.');
       }
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to delete user. Please try again.');
     }
   }
 
@@ -108,7 +95,7 @@ class UserEndpoint extends Endpoint {
       await User.db.updateRow(session, user.copyWith(isDarkMode: isDarkMode));
       return true;
     } catch (e) {
-      throw Exception('Failed to update theme: ${e}');
+      throw AppException(message: 'Failed to update theme');
     }
   }
 

@@ -10,13 +10,13 @@ class BoardListEndpoint extends Endpoint {
     // validate user(get the current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('Invalid user or expired token!!');
+      throw AppAuthException(message: 'Invalid user or expired token!!');
     }
 
     // make sure the board exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('No board exists!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // confirm the user is a member of that board
@@ -25,14 +25,14 @@ class BoardListEndpoint extends Endpoint {
       where: (m) => m.board.equals(boardId) & m.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not member!!');
+      throw AppPermissionException(message: 'You are not member!!');
     }
 
     try {
       // trim and make sure the title is not empty
       final trimmedTitle = title.trim();
       if (trimmedTitle.isEmpty) {
-        throw Exception("List title can't be empty!!");
+        throw RandomAppException(message: "List title can't be empty!!");
       }
 
       // make sure there is no duplicated title name
@@ -41,7 +41,8 @@ class BoardListEndpoint extends Endpoint {
         where: (d) => d.board.equals(boardId) & d.title.equals(trimmedTitle),
       );
       if (duplicated != null) {
-        throw Exception('A ListBoard with that title already exists!!');
+        throw RandomAppException(
+            message: 'A ListBoard with that title already exists!!');
       }
 
       // insert the new board list
@@ -54,7 +55,6 @@ class BoardListEndpoint extends Endpoint {
       final inserted = await BoardList.db.insertRow(session, newList);
       await Future.delayed(Duration(milliseconds: 100));
 
-      
       return BoardList(
           id: inserted.id,
           board: inserted.board,
@@ -62,7 +62,14 @@ class BoardListEndpoint extends Endpoint {
           createdAt: inserted.createdAt,
           createdBy: inserted.createdBy);
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to create boardlist. Please try again.');
     }
   }
 
@@ -72,13 +79,13 @@ class BoardListEndpoint extends Endpoint {
     // validate the token(get the current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('Invalid user or expired token');
+      throw AppAuthException(message: 'Invalid user or expired token');
     }
 
     // make sure the board exists
     final board = await Board.db.findById(session, boardId);
     if (board == null) {
-      throw Exception('Board not found!!');
+      throw AppNotFoundException(resourceType: 'Board');
     }
 
     // check if the user is a member of the board
@@ -87,7 +94,8 @@ class BoardListEndpoint extends Endpoint {
       where: (m) => m.board.equals(boardId) & m.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of the board!!');
+      throw AppPermissionException(
+          message: 'You are not a member of the board!!');
     }
 
     try {
@@ -100,7 +108,14 @@ class BoardListEndpoint extends Endpoint {
 
       return lists;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to list boardlist. Please try again.');
     }
   }
 
@@ -110,13 +125,13 @@ class BoardListEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('Invalid user or expired token!!');
+      throw AppAuthException(message: 'Invalid user or expired token!!');
     }
 
     // find boardLIst by id
     final boardList = await BoardList.db.findById(session, listId);
     if (boardList == null) {
-      throw Exception('No board list has been found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // check the current user membership
@@ -126,14 +141,15 @@ class BoardListEndpoint extends Endpoint {
           m.board.equals(boardList.board) & m.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of this board!');
+      throw AppPermissionException(
+          message: 'You are not a member of this board!');
     }
 
     try {
       // validate the new title
       final trimmedNewTitle = newTitle.trim();
       if (trimmedNewTitle.isEmpty) {
-        throw Exception('Title cannot be empty!');
+        throw RandomAppException(message: 'Title cannot be empty!');
       }
 
       // check for duplicated title within the same board
@@ -145,8 +161,9 @@ class BoardListEndpoint extends Endpoint {
             b.id.notEquals(listId),
       );
       if (duplicated != null) {
-        throw Exception(
-            'Another list with that title already exists in the board!');
+        throw RandomAppException(
+            message:
+                'Another list with that title already exists in the board!');
       }
 
       // ✅ Only update if it's different
@@ -159,7 +176,14 @@ class BoardListEndpoint extends Endpoint {
 
       return boardList;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to update boardlist. Please try again.');
     }
   }
 
@@ -169,13 +193,13 @@ class BoardListEndpoint extends Endpoint {
     // validate token(get user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('Invalid user or expired token!');
+      throw AppAuthException(message: 'Invalid user or expired token!');
     }
 
     // find boardList by listId
     final boardList = await BoardList.db.findById(session, listId);
     if (boardList == null) {
-      throw Exception('No board found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // check user membership to that board
@@ -185,10 +209,12 @@ class BoardListEndpoint extends Endpoint {
           m.board.equals(boardList.board) & m.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member to that board!');
+      throw AppPermissionException(
+          message: 'You are not a member to that board!');
     }
     if (member.role != Roles.owner && member.role != Roles.admin) {
-      throw Exception('Only owner and admin can delete the board list!');
+      throw AppPermissionException(
+          message: 'Only owner and admin can delete the board list!');
     }
 
     try {
@@ -196,7 +222,14 @@ class BoardListEndpoint extends Endpoint {
 
       return true;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to delete boardlist. Please try again.');
     }
   }
 }

@@ -9,20 +9,20 @@ class CardLabelEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // validate card and label exist
     final validateCard = await BoardCard.db.findById(session, cardId);
     final validateLabel = await Label.db.findById(session, labelId);
     if (validateCard == null || validateLabel == null) {
-      throw Exception('No cards and label found!');
+      throw AppNotFoundException(resourceType: 'Card and label');
     }
 
     // check user permmision on parrent board
     final list = await BoardList.db.findById(session, validateCard.list);
     if (list == null) {
-      throw Exception('Parent list not found');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     final membership = await BoardMember.db.findFirstRow(
@@ -30,7 +30,8 @@ class CardLabelEndpoint extends Endpoint {
       where: (l) => l.board.equals(list.board) & l.user.equals(currentUser.id!),
     );
     if (membership == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -45,7 +46,14 @@ class CardLabelEndpoint extends Endpoint {
       return await CardLabel.db
           .insertRow(session, CardLabel(card: cardId, label: labelId));
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to assign label to card. Please try again.');
     }
   }
 
@@ -55,7 +63,7 @@ class CardLabelEndpoint extends Endpoint {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch card label link by (card id , label id)
@@ -64,19 +72,19 @@ class CardLabelEndpoint extends Endpoint {
       where: (c) => c.card.equals(cardId) & c.label.equals(labelId),
     );
     if (fetched == null) {
-      throw Exception('Label not assigned');
+      throw RandomAppException(message: 'Label not assigned');
     }
 
     // fetch the card
     final card = await BoardCard.db.findById(session, fetched.card);
     if (card == null) {
-      throw Exception('No card found!');
+      throw AppNotFoundException(resourceType: 'Card');
     }
 
     // fetch the list to get the board id
     final boardlist = await BoardList.db.findById(session, card.list);
     if (boardlist == null) {
-      throw Exception('BoardList not found!');
+      throw AppNotFoundException(resourceType: 'Boardlist');
     }
 
     // membership check
@@ -86,14 +94,21 @@ class CardLabelEndpoint extends Endpoint {
           b.board.equals(boardlist.board) & b.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
       // delete
       await CardLabel.db.deleteRow(session, fetched);
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to remove label. Please try again.');
     }
   }
 
@@ -102,16 +117,18 @@ class CardLabelEndpoint extends Endpoint {
       Session session, int cardId, String token) async {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch the card
     final card = await BoardCard.db.findById(session, cardId);
-    if (card == null) throw Exception('Card not found!');
+    if (card == null) throw AppNotFoundException(resourceType: 'Card');
 
     // fetch board list to get the board
     final boardList = await BoardList.db.findById(session, card.list);
-    if (boardList == null) throw Exception('BoardList not found!');
+    if (boardList == null) {
+      throw AppNotFoundException(resourceType: 'Boardlist');
+    }
 
     // check membership
     final member = await BoardMember.db.findFirstRow(
@@ -120,7 +137,8 @@ class CardLabelEndpoint extends Endpoint {
           m.board.equals(boardList.board) & m.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -140,7 +158,13 @@ class CardLabelEndpoint extends Endpoint {
       );
       return labels;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to fetch labels. Please try again.');
     }
   }
 
@@ -149,13 +173,13 @@ class CardLabelEndpoint extends Endpoint {
       Session session, int labelId, String token) async {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
-      throw Exception('No user or invalid token!');
+      throw AppAuthException(message: 'No user or invalid token!');
     }
 
     // fetch label
     final label = await Label.db.findById(session, labelId);
     if (label == null) {
-      throw Exception('Lable not found!');
+      throw AppNotFoundException(resourceType: 'Label');
     }
 
     // check user is a member of the parent baord
@@ -165,7 +189,8 @@ class CardLabelEndpoint extends Endpoint {
           m.board.equals(label.board) & m.user.equals(currentUser.id!),
     );
     if (member == null) {
-      throw Exception('You are not a member of the parent board!');
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
     }
 
     try {
@@ -185,7 +210,13 @@ class CardLabelEndpoint extends Endpoint {
       );
       return cards;
     } catch (e) {
-      throw Exception(e);
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to get labels. Please try again.');
     }
   }
 }
