@@ -108,7 +108,7 @@ It helps teams and individuals organize work with workspaces, boards, tasks, che
 ### **Authentication**
 <img src="karwaan_flutter/screenshots/auth.png" width="80%">
 
-### **Dashboard**
+### **Dashboards & Profile**
 <img src="karwaan_flutter/screenshots/dash.png" width="80%">
 
 ### **Columns & cards**
@@ -152,17 +152,20 @@ Guidelines:
 
    ---
  
-# 📜License
+# 📜 License
 
-  Distributed under MIT License.
-  See [MIT License](LICENSE) for Details.
+Distributed under the MIT License.  
+See [LICENSE](LICENSE) for details.
+
 
   ---
 
- 🔗 Connect
+## 🔗 Connect
 
-    👤 Misbah 
-    📧 [misbahgholami63@gmail.com](mailto:misbahgholami63@gmail.com)
+[![Instagram](https://img.shields.io/badge/Instagram-Profile-blueviolet?logo=instagram&logoColor=white)](https://www.instagram.com/mi.sbah8540/)  
+[![Email](https://img.shields.io/badge/Email-Contact-orange?logo=gmail&logoColor=white)](mailto:misbahgholami63@gmail.com)
+
+
     
   ---    
 
