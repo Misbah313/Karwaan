@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_credentials.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
-import 'package:karwaan_flutter/presentation/cubits/auth/auth_error_handler.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_gate.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/auth/register_page.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/button.dart';
@@ -42,9 +42,8 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Lottie.asset(
-                'asset/ani/development.json',
-              ),
+                Lottie.asset('asset/ani/auth.json',
+                    height: MediaQuery.of(context).size.height * 0.3),
 
                 middleSizedBox,
 
@@ -123,22 +122,29 @@ class _LoginPageState extends State<LoginPage> {
                         ? null
                         : () async {
                             FocusScope.of(context).unfocus();
+
+                            // ✅ Keep only the basic validation (empty fields)
                             if (emailController.text.isEmpty ||
                                 pwController.text.isEmpty) {
-                              AuthErrorHandler.showErrorSnackBar(
-                                  context, 'Please fill in all fields');
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('Please fill in all fields'),
+                                backgroundColor: Colors.red,
+                              ));
                               return;
                             }
+
                             setState(() => isProcessing = true);
                             try {
                               final authCubit = context.read<AuthCubit>();
-                              final authRepo =
-                                  context.read<AuthRepo>(); 
+                              final authRepo = context.read<AuthRepo>();
 
                               final credentials = AuthCredential(
                                 email: emailController.text.trim(),
                                 password: pwController.text.trim(),
                               );
+
+                              // ✅ Let the cubit handle ALL server errors
                               await authCubit.login(credentials);
 
                               await Future.delayed(
@@ -149,25 +155,21 @@ class _LoginPageState extends State<LoginPage> {
                                   MaterialPageRoute(
                                     builder: (_) => BlocProvider.value(
                                       value: authCubit,
-                                      child: AuthGate(
-                                          authRepo:
-                                              authRepo), 
+                                      child: AuthGate(authRepo: authRepo),
                                     ),
                                   ),
                                   (route) => false,
                                 );
                               }
                             } catch (e) {
-                              if (mounted) {
-                                if (e
-                                    .toString()
-                                    .contains('invalid credentials')) {
-                                  AuthErrorHandler.showErrorDialog(context, e);
-                                } else {
-                                  AuthErrorHandler.showErrorSnackBar(
-                                      context, e);
-                                }
-                              }
+                              // ✅ Use your ExceptionMapper to get user-friendly message
+                              final userFriendlyMessage =
+                                  ExceptionMapper.toMessage(e);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(userFriendlyMessage),
+                                backgroundColor: Colors.red,
+                              ));
                             } finally {
                               if (mounted) {
                                 setState(() => isProcessing = false);

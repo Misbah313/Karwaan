@@ -102,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.25,
                   child: Lottie.asset(
-                    'asset/ani/development.json',
+                    'asset/ani/auth.json',
                   ),
                 ),
                 middleSizedBox,
