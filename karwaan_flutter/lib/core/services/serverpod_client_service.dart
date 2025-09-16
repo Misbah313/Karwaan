@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:karwaan_client/karwaan_client.dart';
 import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
-import 'package:karwaan_flutter/core/utils/exceptions/token_expired_exceptions.dart';
+import 'package:karwaan_flutter/core/utils/exceptions/token_expired_exception.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
 late final Client client;
@@ -16,16 +16,26 @@ class ServerpodClientService {
 
   // initialize serverpod client service (Long-term: Switch to .env before deploying (even to test servers).1: add flutter_dotenv package, 2:Create .env(SERVERPOD_URL=http://10.226.253.89:8080/) 3: Load it in main.dart(void main() aysnc { await dotev.load(fileName: '.env'); final serverpodUrl = dotenv.get('Serverpo Url')}), 4: update serverpod clinet(Client(serverpodUrl)));
   Future<void> initialize() async {
+    // read the serverpod url from --dart-define; fallback to your previous default.
+    const serverpodUrl = String.fromEnvironment('SERVERPOD_URL',
+        defaultValue: 'http://10.169.70.89:8080/');
     client = Client(
-      'http://10.169.70.89:8080/',
+      serverpodUrl
     )..connectivityMonitor = FlutterConnectivityMonitor();
 
     final storedToken = await _authTokenStorage.getToken();
 
+    if(kIsWeb) {
+      debugPrint('Running on Web.');
+    } else {
+      debugPrint('Running on Mobile/desktop');
+    }
+
     if (storedToken != null) {
+      final preview = storedToken.length > 6 ? '${storedToken.substring(0, 6)}...' : storedToken;
       // Only log partial token in debug mode
       assert(() {
-        debugPrint('Token loaded: ${storedToken.substring(0, 6)}...');
+        debugPrint('Token loaded: $preview');
         return true;
       }());
     }

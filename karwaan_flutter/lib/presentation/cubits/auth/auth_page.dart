@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/core/utils/layout/auth_wrapper.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
-import 'package:karwaan_flutter/presentation/pages/mobile/auth/intro_page.dart';
 
 class AuthPage extends StatelessWidget {
   final AuthRepo authRepo;
@@ -12,7 +12,7 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: context.read<AuthCubit>(),
-      child: IntroPage(),
+      child: AuthWrapper(),
     );
   }
 }
