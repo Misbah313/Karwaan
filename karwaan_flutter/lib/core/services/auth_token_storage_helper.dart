@@ -17,11 +17,14 @@ class AuthTokenStorageHelper {
   // save token
   Future<void> saveToken(String token) async {
     await _storage.write(key: _key, value: token);
+    debugPrint('Token saved: ${token.substring(0,6)}...');
   }
 
   // read token
   Future<String?> getToken() async {
-    return await _storage.read(key: _key);
+    final token = await _storage.read(key: _key);
+    debugPrint('Token read: ${token?.substring(0,6) ?? "null"}');
+    return token;
   }
 
   // delete token
