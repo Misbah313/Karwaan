@@ -4,6 +4,7 @@ class WorkspaceMemberDetail {
   final String? email;
   final String role;
   final DateTime joinedAt;
+  final String? avatarUrl;
 
   WorkspaceMemberDetail({
     required this.userId,
@@ -11,6 +12,7 @@ class WorkspaceMemberDetail {
     this.email,
     required this.role,
     required this.joinedAt,
+    this.avatarUrl
   });
 }
 
