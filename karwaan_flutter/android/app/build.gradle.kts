@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -20,10 +19,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.karwaan_flutter"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 21
         targetSdk = 35
         versionCode = flutter.versionCode
@@ -32,13 +28,39 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    // ADD THIS CONFIGURATION BLOCK
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.credentials:credentials:1.2.0")
+            force("androidx.credentials:credentials-play-services-auth:1.2.0")
+            force("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+            force("com.google.android.gms:play-services-auth:20.7.0")
+            force("androidx.media3:media3-exoplayer:1.2.1")
+            force("androidx.media3:media3-exoplayer-hls:1.2.1")
+            force("androidx.media3:media3-exoplayer-dash:1.2.1")
+            force("androidx.media3:media3-exoplayer-rtsp:1.2.1")
+            force("androidx.media3:media3-exoplayer-smoothstreaming:1.2.1")
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+// ADD THESE DEPENDENCIES
+dependencies {
+    implementation("androidx.credentials:credentials:1.2.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.2.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
+    implementation("androidx.media3:media3-exoplayer-rtsp:1.2.1")
+    implementation("androidx.media3:media3-exoplayer-smoothstreaming:1.2.1")
 }
