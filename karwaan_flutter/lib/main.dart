@@ -6,6 +6,8 @@ import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
 import 'package:karwaan_flutter/core/theme/dark_mode.dart';
 import 'package:karwaan_flutter/core/theme/light_mode.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
+import 'package:karwaan_flutter/core/utils/banner/banner_manager.dart';
+import 'package:karwaan_flutter/core/utils/banner/global_banner.dart';
 import 'package:karwaan_flutter/data/repositories/attachment/attachment_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/auth/auth_remote_repo.dart';
 import 'package:karwaan_flutter/data/repositories/board/board_remote_repo.dart';
@@ -69,7 +71,8 @@ void main() async {
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
         ),
-        ChangeNotifierProvider(create: (_) => ThemeNotifier())
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => BannerManager())
       ],
       child: MyApp(
         authRepo: authRepo,
@@ -90,8 +93,12 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeNotifier.themeMode,
-      home: AuthGate(
-        authRepo: authRepo,
+      home: Stack(
+        children: [ AuthGate(
+          authRepo: authRepo,
+        ),
+        const GlobalBanner()
+        ]
       ),
     );
   }
