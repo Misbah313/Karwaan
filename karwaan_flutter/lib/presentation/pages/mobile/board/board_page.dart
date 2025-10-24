@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/domain/models/board/board_details.dart';
 import 'package:karwaan_flutter/domain/models/board/board_state.dart';
 import 'package:karwaan_flutter/domain/models/board/create_board_credentials.dart';
+import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/recent_board_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/auth/profile_page.dart';
 import 'package:karwaan_flutter/presentation/pages/mobile/board/board_details_card.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
@@ -66,7 +68,11 @@ class _BoardPageState extends State<BoardPage> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: BoardDetailsCard(board: boards[index]),
+                child: BlocProvider<RecentBoardCubit>(
+                  create: (context) =>
+                      RecentBoardCubit(context.read<BoardRepo>()),
+                  child: BoardDetailsCard(board: boards[index]),
+                ),
               );
             },
           ),
@@ -211,7 +217,6 @@ class _BoardPageState extends State<BoardPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-
                               // drawer
                               Row(
                                 children: [
@@ -227,7 +232,7 @@ class _BoardPageState extends State<BoardPage> {
                                 ],
                               ),
 
-                               // profile page
+                              // profile page
                               GestureDetector(
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
@@ -393,7 +398,10 @@ class _BoardPageState extends State<BoardPage> {
                         onPressed: () => context
                             .read<BoardCubit>()
                             .getBoardsByWorkspace(widget.workspaceId),
-                        child:  Text('Retry', style: Theme.of(context).textTheme.bodySmall,))
+                        child: Text(
+                          'Retry',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ))
                   ],
                 ));
               }
