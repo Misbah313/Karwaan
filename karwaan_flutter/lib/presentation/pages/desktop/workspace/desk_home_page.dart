@@ -15,7 +15,6 @@ import 'package:karwaan_flutter/presentation/cubits/board/recent_board_cubit.dar
 import 'package:karwaan_flutter/presentation/pages/desktop/auth/account_control_page.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/board/desk_recent_board_section.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/workspace/desk_home_header.dart';
-import 'package:karwaan_flutter/presentation/pages/desktop/workspace/desk_home_left_sidebar.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/workspace/workspace_section.dart';
 import 'package:karwaan_flutter/presentation/widgets/focus_time_calendar.dart';
 import 'package:karwaan_flutter/presentation/widgets/overall_progress_section.dart';
