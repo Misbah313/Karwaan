@@ -44,6 +44,23 @@ class AuthCubit extends Cubit<AuthStateCheck> {
     }
   }
 
+  // google auth
+  Future<void> googleAuth() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    emit(AuthLoading());
+
+    try {
+      final user = await authRepo.googleAuth();
+      emit(AuthAuthenticated(user));
+    } catch (e) {
+      emit(AuthError(ExceptionMapper.toMessage(e)));
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
   /// Logs out the current user and clears all authentication data
   Future<void> logout() async {
     if (_isProcessing) return;
