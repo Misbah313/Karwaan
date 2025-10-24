@@ -6,7 +6,8 @@ import 'package:serverpod/serverpod.dart';
 class WorkspaceEndpoint extends Endpoint {
   // Create workspce
   Future<Workspace> createWorkspace(
-      Session session, String name, String? description, String token) async {
+      Session session, String name, String? description, String token,
+      {String backgroundColor = '#6B7280', bool isPrivate = false}) async {
     // check the current user login(validate the token)
     final user = await TokenEndpoint().validateToken(session, token);
 
@@ -22,6 +23,8 @@ class WorkspaceEndpoint extends Endpoint {
         description: description,
         createdAt: now,
         ownerId: user.id!,
+        backgroundColor: backgroundColor,
+        isPrivate: isPrivate
       );
 
       await Workspace.db.insertRow(session, createdWorkspace);
