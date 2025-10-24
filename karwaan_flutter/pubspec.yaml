@@ -46,6 +46,7 @@ dependencies:
   fl_chart: ^0.71.0
   table_calendar: ^3.2.0
   intl: ^0.20.2
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_lints: ">=3.0.0 <7.0.0"
@@ -80,6 +81,7 @@ flutter:
     - asset/ani/auth.json
     - asset/ani/work.json
     - asset/video/background.mp4
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
