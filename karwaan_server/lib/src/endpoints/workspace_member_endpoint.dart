@@ -166,7 +166,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     for (final member in members) {
       final user = users.firstWhere((element) => element.id == member.user);
 
-      // NEW: Get profile image as base64 instead of filename
+      // Get profile image as base64 instead of filename
       String? avatarBase64;
       if (user.profileImage != null && user.profileImage!.isNotEmpty) {
         try {
