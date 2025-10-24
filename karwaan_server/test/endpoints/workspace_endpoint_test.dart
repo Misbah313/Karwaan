@@ -61,6 +61,8 @@ void main() {
         'NewWorkspace',
         'A new test workspace',
         ownerToken,
+        backgroundColor: '#6B7280',
+        isPrivate: false,
       );
 
       // Verify
@@ -81,7 +83,8 @@ void main() {
     test('getUserWorkspace', () async {
       // create a workspace for the user first
       final createdWorkspace = await endpoints.workspace.createWorkspace(
-          sessionBuilder, 'WorkspaceForOwner', 'Description', ownerToken);
+          sessionBuilder, 'WorkspaceForOwner', 'Description', ownerToken, backgroundColor: '#6B7280',
+        isPrivate: false,);
 
       // call get user workspace
       final result = await endpoints.workspace
@@ -101,7 +104,8 @@ void main() {
       final session = sessionBuilder.build();
       // create workspace for the user
       final createdWorkspace = await endpoints.workspace.createWorkspace(
-          sessionBuilder, 'CreatedWorkspaceForOwner', 'Dec', ownerToken);
+          sessionBuilder, 'CreatedWorkspaceForOwner', 'Dec', ownerToken, backgroundColor: '#6B7280',
+        isPrivate: false,);
 
       // update the workspace
       final updated = await endpoints.workspace.updateWorkspace(
@@ -125,7 +129,8 @@ void main() {
 
       // create workspace for the user first
       final created = await endpoints.workspace
-          .createWorkspace(sessionBuilder, 'NewWorkspace', 'Dec', ownerToken);
+          .createWorkspace(sessionBuilder, 'NewWorkspace', 'Dec', ownerToken, backgroundColor: '#6B7280',
+        isPrivate: false,);
 
       // call the delete workspace
       final deleted = await endpoints.workspace
@@ -150,7 +155,8 @@ void main() {
 
       // create workspace for the member
       final created = await endpoints.workspace.createWorkspace(
-          sessionBuilder, 'WorkspaceForMember', 'dec', ownerToken);
+          sessionBuilder, 'WorkspaceForMember', 'dec', ownerToken, backgroundColor: '#6B7280',
+        isPrivate: false,);
 
       // add the member to workspace
       await endpoints.workspaceMember.addMemberToWorkspace(
