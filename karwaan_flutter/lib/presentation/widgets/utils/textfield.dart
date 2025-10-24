@@ -4,11 +4,13 @@ class Textfield extends StatefulWidget {
   final String text;
   final bool obsecureText;
   final TextEditingController controller;
+  final int maxline;
   const Textfield({
     super.key,
     required this.text,
     required this.obsecureText,
     required this.controller,
+    this.maxline = 1,
   });
 
   @override
@@ -25,6 +27,7 @@ class _TextfieldState extends State<Textfield> {
         obscureText: widget.obsecureText,
         style: Theme.of(context).textTheme.titleMedium,
         cursorColor: Theme.of(context).dividerColor,
+        maxLines: widget.maxline,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
