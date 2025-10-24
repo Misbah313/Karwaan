@@ -1,0 +1,6 @@
+class: UserRecentBoards
+table: user_recent_boards
+fields:
+   userId: int, relation(parent=user)
+   boardId: int, relation(parent=board)
+   lastAccess: DateTime 
