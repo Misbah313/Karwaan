@@ -1,3 +1,7 @@
+analytics:
+  - getBoardAnalytics:
+  - getAnalyticsForMultiBoards:
+  - getOverAllAnalytics:
 attachment:
   - uploadAttachment:
   - listAttachments:
@@ -54,11 +58,18 @@ file:
   - uploadProfilePicture:
   - serveProfilePicture:
   - deleteProfilePicture:
+googleIntegration:
+  - integrateGoogleUser:
+  - findOrCreateUserFromGoogle:
+  - generateSecureToken:
 label:
   - createLabel:
   - getLabelsForBoard:
   - updateLabel:
   - deleteLabel:
+recenBoard:
+  - trackBoardAccess:
+  - getRecentBoards:
 token:
   - validateToken:
   - logout:
