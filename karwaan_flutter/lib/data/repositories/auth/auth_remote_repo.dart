@@ -56,6 +56,21 @@ class AuthRemoteRepo implements AuthRepo {
     }
   }
 
+  // google auth
+  @override
+  Future<AuthUser> googleAuth() async {
+    try {
+      final response = await _clientService.googleAuth();
+
+      debugPrint("Goolge sign in success: ${response.user.email}from remote");
+
+      return response.toDomain();
+    } catch (e) {
+      debugPrint("Google sign in failed from remote: $e");
+      rethrow;
+    }
+  }
+
   // Logout
   @override
   Future<bool> logoutUser(String token) async {
