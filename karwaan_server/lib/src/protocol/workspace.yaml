@@ -6,3 +6,5 @@ fields:
   description: String?
   createdAt: DateTime
   ownerId: int, relation(parent=user)
+  backgroundColor: String?
+  isPrivate: bool?
