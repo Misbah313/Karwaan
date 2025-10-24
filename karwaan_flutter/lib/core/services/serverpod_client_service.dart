@@ -2,10 +2,12 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karwaan_client/karwaan_client.dart';
 import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/core/utils/exceptions/token_expired_exception.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
 late final Client client;
 
@@ -16,29 +18,47 @@ class ServerpodClientService {
 
   // initialize serverpod client service (Long-term: Switch to .env before deploying (even to test servers).1: add flutter_dotenv package, 2:Create .env(SERVERPOD_URL=http://10.226.253.89:8080/) 3: Load it in main.dart(void main() aysnc { await dotev.load(fileName: '.env'); final serverpodUrl = dotenv.get('Serverpo Url')}), 4: update serverpod clinet(Client(serverpodUrl)));
   Future<void> initialize() async {
-    // read the serverpod url from --dart-define; fallback to your previous default.
-    const serverpodUrl = String.fromEnvironment('SERVERPOD_URL',
-        defaultValue: 'http://10.169.70.89:8080/');
+    // await dotenv.load(fileName: '.env');
+    String serverpodUrl;
+
+       // Use a different URL for web vs mobile
+    if (kIsWeb) {
+      // For WEB: Connect to the Web Server port (8082)
+       serverpodUrl = 'http://localhost:8080/';
+    } else {
+      // For MOBILE/DESKTOP: Connect to the API Server port (8080)
+       serverpodUrl = 'http://localhost:8080/';
+    }
+
     client = Client(
-      serverpodUrl
+      serverpodUrl,
+      authenticationKeyManager: FlutterAuthenticationKeyManager(),
     )..connectivityMonitor = FlutterConnectivityMonitor();
 
     final storedToken = await _authTokenStorage.getToken();
 
-    if(kIsWeb) {
-      debugPrint('Running on Web.');
+    if (kIsWeb) {
+      debugPrint('Running on Web. Connecting to: $serverpodUrl');
     } else {
-      debugPrint('Running on Mobile/desktop');
+      debugPrint('Running on Mobile/desktop. Connecting to: $serverpodUrl');
     }
 
     if (storedToken != null) {
-      final preview = storedToken.length > 6 ? '${storedToken.substring(0, 6)}...' : storedToken;
+      final preview = storedToken.length > 6
+          ? '${storedToken.substring(0, 6)}...'
+          : storedToken;
       // Only log partial token in debug mode
       assert(() {
         debugPrint('Token loaded: $preview');
         return true;
       }());
+      // restore into clients key managet
+      await client.authenticationKeyManager?.put(storedToken);
     }
+
+    // ignore: unused_local_variable
+    SessionManager sessionManager = SessionManager(caller: client.modules.auth);
+    sessionManager = SessionManager(caller: client.modules.auth);
   }
 
   // ============================================= AUTHENTICATION =================================================== //
@@ -80,23 +100,56 @@ class ServerpodClientService {
     }
   }
 
+  // google auth
+  Future<AuthResponse> googleAuth() async {
+    try {
+      debugPrint("Starting google auth.... from client");
+
+      final serverpodUserInfo = await signInWithGoogle(
+        client.modules.auth,
+        clientId: null,
+        serverClientId: dotenv.get('GOOGLE_CLIENT_ID'),
+        redirectUri: Uri.parse('http://localhost:8080/googlesignin'),
+        additionalScopes: [
+          'https://www.googleapis.com/auth/userinfo.email',
+          'https://www.googleapis.com/auth/userinfo.profile',
+        ],
+      );
+
+      if (serverpodUserInfo == null) {
+        throw Exception(
+            "Google auth failed - no user info received, client...");
+      }
+
+      debugPrint("google auth success: ${serverpodUserInfo.userName}");
+
+      final customAuthResponse =
+          await client.googleIntegration.integrateGoogleUser(serverpodUserInfo);
+
+      debugPrint("Google integration success: ${customAuthResponse.user.name}");
+
+      await _authTokenStorage.saveToken(customAuthResponse.token);
+      debugPrint("Token saved to secure storage...");
+      return customAuthResponse;
+    } catch (e) {
+      debugPrint("Google sign in failed: $e");
+      rethrow;
+    }
+  }
+
   // logout
   Future<void> logoutUser(String token) async {
     try {
-      debugPrint('A. Starting server logout');
       await client.authentication.logoutUser(token);
-      debugPrint('B. Deleting local token');
       await _authTokenStorage.deleteToken();
       await Future.delayed(Duration(milliseconds: 100));
 
       final verifyDeletion = await _authTokenStorage.getToken();
-      debugPrint('C. Token after deletion: ${verifyDeletion ?? "Null"}');
 
       if (verifyDeletion != null) {
         throw Exception('Token was not deleted properly!');
       }
     } catch (e) {
-      debugPrint('D. Force deleting token due to error: $e');
       await _authTokenStorage.deleteToken();
       rethrow;
     }
@@ -203,14 +256,14 @@ class ServerpodClientService {
 
   // create workspace
   Future<Workspace> createWorkspace(
-      String workspaceName, String workspaceDec) async {
+      String workspaceName, String workspaceDec, {String backgroundColor = '#6B7280', bool isPrivate = false}) async {
     try {
       final token = await _authTokenStorage.getToken();
       if (token == null) {
         throw Exception('Please login before preforming this action.');
       }
       final workspace = await client.workspace
-          .createWorkspace(workspaceName, workspaceDec, token);
+          .createWorkspace(workspaceName, workspaceDec, token, backgroundColor: backgroundColor, isPrivate: isPrivate);
 
       return workspace;
     } catch (e) {
@@ -524,6 +577,83 @@ class ServerpodClientService {
       }
 
       await client.boardMember.leaveBoard(boardId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // track user recent boards
+  Future<void> trackUserBoard(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      await client.recenBoard.trackBoardAccess(boardId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get user recent baords
+  Future<List<Board>> getUserRecentBoards() async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final baords = await client.recenBoard.getRecentBoards(token, limit: 2);
+      return baords;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get board analytics
+  Future<BoardAnalytics> getBoardAnalytics(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final analytics =
+          await client.analytics.getBoardAnalytics(boardId, token);
+      return analytics;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get analytics for multiple board
+  Future<List<BoardAnalytics>> getAnalyticsForMultiBoards(
+      List<int> boardIds) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final ana =
+          await client.analytics.getAnalyticsForMultiBoards(boardIds, token);
+      return ana;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // over all analytics
+  Future<OverAllAnalytics> getOverAllAnalytics() async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final overall = await client.analytics.getOverAllAnalytics(token);
+      return overall;
     } catch (e) {
       rethrow;
     }
