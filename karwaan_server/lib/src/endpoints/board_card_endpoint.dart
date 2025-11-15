@@ -100,6 +100,62 @@ class BoardCardEndpoint extends Endpoint {
     }
   }
 
+  Future<List<BoardCard>> getAllUserCards(Session session, String token) async {
+    final user = await TokenEndpoint().validateToken(session, token);
+    if (user == null || user.id == null) {
+      throw AppAuthException(message: 'No user or expired token!');
+    }
+
+    try {
+      // Get all workspaces user member of
+      final workspaces = await WorkspaceMember.db.find(
+        session,
+        where: (p0) => p0.user.equals(user.id!),
+      );
+      if (workspaces.isEmpty) {
+        return [];
+      }
+
+      final workspaceId = workspaces.map((i) => i.workspace).toSet();
+
+      // get all boards in user workspaces
+      final boards = await Board.db.find(
+        session,
+        where: (p0) => p0.workspaceId.inSet(workspaceId),
+      );
+      if (boards.isEmpty) {
+        return [];
+      }
+
+      final boardIds = boards.map((b) => b.id!).toSet();
+
+      // get all lists in these boards
+      final boardlist = await BoardList.db.find(
+        session,
+        where: (p0) => p0.board.inSet(boardIds),
+      );
+      if (boardlist.isEmpty) {
+        return [];
+      }
+
+      final boardlistIds = boardlist.map((l) => l.id!).toSet();
+
+      // get all cards in these lists
+      final cards = await BoardCard.db.find(session,
+          where: (p0) => p0.list.inSet(boardlistIds),
+          orderBy: (p0) => p0.createdAt);
+      return cards;
+    } catch (e) {
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to get all card. Please try again.');
+    }
+  }
+
   // upadate cards
   Future<BoardCard> updateBoardCard(Session session, int cardId, String token,
       String newTitle, String? newDec, bool? completed) async {
