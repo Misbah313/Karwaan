@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/comment/comment.dart';
 import 'package:karwaan_flutter/domain/models/comment/comment_with_author.dart';
 import 'package:karwaan_flutter/domain/models/comment/create_comment_credentails.dart';
