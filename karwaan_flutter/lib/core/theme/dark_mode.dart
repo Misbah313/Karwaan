@@ -41,7 +41,7 @@ ThemeData darkTheme = ThemeData(
             color: Colors.grey.shade400)),
 
     // icon theme
-    iconTheme: IconThemeData(color: Colors.grey.shade500),
+    iconTheme: IconThemeData(color: Colors.grey.shade400),
 
     // divder theme
     dividerColor: Colors.grey.shade500,

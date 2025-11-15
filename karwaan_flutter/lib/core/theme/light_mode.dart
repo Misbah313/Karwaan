@@ -42,7 +42,7 @@ ThemeData lightTheme = ThemeData(
             color: Colors.grey.shade700)),
 
     // icon themes
-    iconTheme: IconThemeData(color: Colors.grey.shade500),
+    iconTheme: IconThemeData(color: Colors.grey.shade700),
 
     // divider theme
     dividerColor: Colors.grey.shade500,
