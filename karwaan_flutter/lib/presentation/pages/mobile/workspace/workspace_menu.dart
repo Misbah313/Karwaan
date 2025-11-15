@@ -315,7 +315,9 @@ class WorkspaceMenu extends StatelessWidget {
                                       workspaceName:
                                           newNameController.text.trim(),
                                       workspaceDescription:
-                                          newDecController.text.trim());
+                                          newDecController.text.trim(),
+                                          /////// no background color for mobile version
+                                          backgroundColor: '');
                                   context
                                       .read<WorkspaceCubit>()
                                       .updateWorkspace(credentials);
