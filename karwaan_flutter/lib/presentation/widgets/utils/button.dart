@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 // In your button.dart file
 class Button extends StatelessWidget {
   final String text;
+  final TextStyle? textStyle;
   final VoidCallback? onTap;
   final Widget? child;
   final bool isLoading;
+  final Gradient? gradient;
 
   const Button({
     super.key,
     required this.text,
     this.onTap,
     this.child,
+    this.textStyle,
+    this.gradient,
     this.isLoading = false,
   });
 
@@ -22,7 +26,7 @@ class Button extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
         decoration: BoxDecoration(
-          gradient:  LinearGradient(
+          gradient: gradient ?? LinearGradient(
             colors: [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.onSurface],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
@@ -49,7 +53,7 @@ class Button extends StatelessWidget {
               : child ??
                   Text(
                     text,
-                    style: Theme.of(context).textTheme.bodyMedium
+                    style: textStyle ?? Theme.of(context).textTheme.bodyMedium
                   ),
         ),
       ),
