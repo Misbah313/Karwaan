@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
@@ -22,16 +20,17 @@ class _FocusTimeCalendarState extends State<FocusTimeCalendar> {
     final totalFocusTime = _calculateTotalFocusTime(todaySessions);
 
     return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: Colors.transparent,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.onSurface
-            ]),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Theme.of(context).dividerColor)),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.02),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.4))),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -66,20 +65,11 @@ class _FocusTimeCalendarState extends State<FocusTimeCalendar> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              DateFormat('EEEE, MMM d').format(_selectedDate),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-            ),
+            Text(DateFormat('EEEE, MMM d').format(_selectedDate),
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 4),
-              Text(
-                'Focus Time Tracker',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-              ),
+            Text('Focus Time Tracker',
+                style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
         _buildTimerButton(),
@@ -239,9 +229,6 @@ class _FocusTimeCalendarState extends State<FocusTimeCalendar> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.schedule,
-            size: 40, color: Theme.of(context).iconTheme.color),
-        const SizedBox(height: 10),
         Text('No focus sessions scheduled\nTap "Schedule Session" to add one',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall),
@@ -386,7 +373,10 @@ class _FocusTimeCalendarState extends State<FocusTimeCalendar> {
       builder: (context) => AlertDialog(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        title: const Text('Schedule Focus Time'),
+        title: Text(
+          'Schedule Focus Time',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         content: FocusSessionForm(
           onSave: (session) {
             final key = _dateKey(_selectedDate);
@@ -414,34 +404,9 @@ class _FocusTimeCalendarState extends State<FocusTimeCalendar> {
   }
 
   String _dateKey(DateTime date) => DateFormat('yyyy-MM-dd').format(date);
-  // bool _isSameDay(DateTime a, DateTime b) =>
-  //     a.year == b.year && a.month == b.month && a.day == b.day;
-
-  // Color _getDayColor(bool isSelected, bool isToday, bool hasSessions) {
-  //   if (isSelected) return Colors.blue.withOpacity(0.2);
-  //   if (isToday) return Colors.blue.withOpacity(0.1);
-  //   if (hasSessions) return Colors.green.withOpacity(0.1);
-  //   return Colors.transparent;
-  // }
-
-  // Color _getDayTextColor(bool isCurrentMonth, bool isSelected) {
-  //   if (!isCurrentMonth) return Colors.grey[400]!;
-  //   if (isSelected) return Colors.blue;
-  //   return Colors.grey[800]!;
-  // }
 
   String _formatTime(TimeOfDay time) =>
       '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-
-  // void _previousMonth() => setState(() {
-  //       _selectedDate =
-  //           DateTime(_selectedDate.year, _selectedDate.month - 1, 1);
-  //     });
-
-  // void _nextMonth() => setState(() {
-  //       _selectedDate =
-  //           DateTime(_selectedDate.year, _selectedDate.month + 1, 1);
-  //     });
 }
 
 // Add the missing classes
@@ -477,6 +442,32 @@ class _FocusSessionFormState extends State<FocusSessionForm> {
   TimeOfDay _endTime =
       TimeOfDay(hour: TimeOfDay.now().hour + 1, minute: TimeOfDay.now().minute);
 
+  void _showCustomTimePicker(BuildContext context, bool isStartTime) async {
+    final TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: isStartTime ? _startTime : _endTime,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.primary,
+              onPrimary: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedTime != null) {
+      if (isStartTime) {
+        setState(() => _startTime = selectedTime);
+      } else {
+        setState(() => _endTime = selectedTime);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -492,30 +483,27 @@ class _FocusSessionFormState extends State<FocusSessionForm> {
             children: [
               Expanded(
                 child: ListTile(
-                  title: const Text('Start Time'),
-                  subtitle: Text(_startTime.format(context)),
-                  onTap: () async {
-                    final time = await showTimePicker(
-                      barrierColor: Theme.of(context).scaffoldBackgroundColor,
-                      context: context,
-                      initialTime: _startTime,
-                    );
-                    if (time != null) setState(() => _startTime = time);
-                  },
-                ),
+                    title: Text(
+                      'Start Time',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    subtitle: Text(
+                      _startTime.format(context),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    onTap: () => _showCustomTimePicker(context, true)),
               ),
               Expanded(
                 child: ListTile(
-                  title: const Text('End Time'),
-                  subtitle: Text(_endTime.format(context)),
-                  onTap: () async {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: _endTime,
-                    );
-                    if (time != null) setState(() => _endTime = time);
-                  },
-                ),
+                    title: Text(
+                      'End Time',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    subtitle: Text(
+                      _endTime.format(context),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    onTap: () => _showCustomTimePicker(context, false)),
               ),
             ],
           ),
@@ -525,12 +513,13 @@ class _FocusSessionFormState extends State<FocusSessionForm> {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.transparent),
+                      side: BorderSide(color: Theme.of(context).dividerColor),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10))),
                   onPressed: () => Navigator.pop(context),
                   child: Text(
                     'Cancel',
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
               ),
