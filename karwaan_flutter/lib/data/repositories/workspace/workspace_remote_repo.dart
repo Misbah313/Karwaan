@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_change_role_member_model.dart';
@@ -70,6 +70,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
       final updatedWorkspace = await _clientService.updateWorkspace(
           workspaceCredential.workspaceName,
           workspaceCredential.workspaceDescription,
+          workspaceCredential.backgroundColor,
           workspaceCredential.id);
 
       return Workspace(
