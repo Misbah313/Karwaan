@@ -5,6 +5,7 @@ import 'package:karwaan_flutter/domain/models/boardcard/create_board_card_creden
 abstract class BoardcardRepo {
   Future<BoardCard> createBoardCard(CreateBoardCardCredentails credentails);
   Future<List<BoardCard>> getListByBoardCard(int boardlistId);
+  Future<List<BoardCard>> getAllUserCards();
   Future<BoardCard> updateBoardCard(BoardCardCredentails credentails);
   Future<bool> deleteBoardCard(int cardId);
 }
