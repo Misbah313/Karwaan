@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/auth_token_storage_helper.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/core/theme/dark_mode.dart';
 import 'package:karwaan_flutter/core/theme/light_mode.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
