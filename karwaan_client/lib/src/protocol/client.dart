@@ -205,6 +205,13 @@ class EndpointBoardCard extends _i1.EndpointRef {
         },
       );
 
+  _i2.Future<List<_i8.BoardCard>> getAllUserCards(String token) =>
+      caller.callServerEndpoint<List<_i8.BoardCard>>(
+        'boardCard',
+        'getAllUserCards',
+        {'token': token},
+      );
+
   _i2.Future<_i8.BoardCard> updateBoardCard(
     int cardId,
     String token,
@@ -1012,6 +1019,19 @@ class EndpointWorkspace extends _i1.EndpointRef {
         },
       );
 
+  _i2.Future<_i21.Workspace> getWorkspaceById(
+    String token,
+    int workspaceId,
+  ) =>
+      caller.callServerEndpoint<_i21.Workspace>(
+        'workspace',
+        'getWorkspaceById',
+        {
+          'token': token,
+          'workspaceId': workspaceId,
+        },
+      );
+
   _i2.Future<List<_i21.Workspace>> getUserWorkspace(String token) =>
       caller.callServerEndpoint<List<_i21.Workspace>>(
         'workspace',
@@ -1024,6 +1044,7 @@ class EndpointWorkspace extends _i1.EndpointRef {
     String token, {
     String? newName,
     String? newDes,
+    String? newColor,
   }) =>
       caller.callServerEndpoint<_i21.Workspace>(
         'workspace',
@@ -1033,6 +1054,7 @@ class EndpointWorkspace extends _i1.EndpointRef {
           'token': token,
           'newName': newName,
           'newDes': newDes,
+          'newColor': newColor,
         },
       );
 
