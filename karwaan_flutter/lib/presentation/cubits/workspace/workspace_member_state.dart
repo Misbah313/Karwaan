@@ -1,7 +1,9 @@
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_member_model.dart';
 
-abstract class WorkspaceMemberState {}
+abstract class WorkspaceMemberState {
+  const WorkspaceMemberState();
+}
 
 class MemberIntialState extends WorkspaceMemberState {}
 
@@ -9,52 +11,76 @@ class MemberLoadingState extends WorkspaceMemberState {}
 
 class MemberLoadedState extends WorkspaceMemberState {
   final List<WorkspaceMemberDetail> members;
-  MemberLoadedState(this.members);
+  const MemberLoadedState(this.members);
 }
-
-class AddMemberSuccess extends WorkspaceMemberState {
-  final WorkspaceMemberModel member;
-  AddMemberSuccess(this.member);
-}
-
-class MemberDeletionSuccess extends WorkspaceMemberState {
-  final int userId;
-  MemberDeletionSuccess(this.userId);
-}
-
-class MemberNotLoaded extends WorkspaceMemberState {}
 
 class MemberErrorState extends WorkspaceMemberState {
   final String error;
-  MemberErrorState(this.error);
+  const MemberErrorState(this.error);
 }
 
-class MemberLeavedSuccessfully extends WorkspaceMemberState {
-  final int workspaceId;
-  MemberLeavedSuccessfully(this.workspaceId);
+// Mobile-specific states 
+class MemberRoleChanging extends WorkspaceMemberState {
+  final int targetUserId;
+  const MemberRoleChanging(this.targetUserId);
 }
 
 class LastOwnerError extends WorkspaceMemberState {
   final String error;
-  final bool isLastOwner;
-  LastOwnerError(this.error, this.isLastOwner);
+  const LastOwnerError(this.error);
 }
 
-class MemberRoleChanging extends WorkspaceMemberState {
+// Optimized update states
+class MemberAddingState extends WorkspaceMemberState {
+  final List<WorkspaceMemberDetail> currentMembers;
+  const MemberAddingState(this.currentMembers);
+}
+
+class MemberRemovingState extends WorkspaceMemberState {
+  final List<WorkspaceMemberDetail> currentMembers;
+  final int userId;
+  const MemberRemovingState(this.currentMembers, this.userId);
+}
+
+class MemberRoleChangingState extends WorkspaceMemberState {
+  final List<WorkspaceMemberDetail> currentMembers;
   final int targetUserId;
-   MemberRoleChanging(this.targetUserId);
+  const MemberRoleChangingState(this.currentMembers, this.targetUserId);
+}
+
+// Success states for optimized updates
+class MemberAddedSuccess extends WorkspaceMemberState {
+  final List<WorkspaceMemberDetail> updatedMembers;
+  const MemberAddedSuccess(this.updatedMembers);
+}
+
+class MemberRemovedSuccess extends WorkspaceMemberState {
+  final List<WorkspaceMemberDetail> updatedMembers;
+  const MemberRemovedSuccess(this.updatedMembers);
+}
+
+class MemberRoleChangedSuccess extends WorkspaceMemberState {
+  final List<WorkspaceMemberDetail> updatedMembers;
+  const MemberRoleChangedSuccess(this.updatedMembers);
+}
+
+class AddMemberSuccess extends WorkspaceMemberState {
+  final WorkspaceMemberModel member;
+  const AddMemberSuccess(this.member);
+}
+
+class MemberDeletionSuccess extends WorkspaceMemberState {
+  final int userId;
+  const MemberDeletionSuccess(this.userId);
+}
+
+class MemberLeavedSuccessfully extends WorkspaceMemberState {
+  final int workspaceId;
+  const MemberLeavedSuccessfully(this.workspaceId);
 }
 
 class MemberRoleChanged extends WorkspaceMemberState {
   final int targetUserId;
   final String newRole;
-   MemberRoleChanged({
-    required this.targetUserId,
-    required this.newRole,
-  });
-}
-
-class MemberRoleChangeError extends MemberErrorState {
-  final int targetUserId;
-   MemberRoleChangeError(super.error, this.targetUserId);
+  const MemberRoleChanged({required this.targetUserId, required this.newRole});
 }
