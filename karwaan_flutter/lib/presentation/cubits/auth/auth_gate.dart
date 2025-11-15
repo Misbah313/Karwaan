@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/core/managers/connectivity_manager.dart';
 import 'package:karwaan_flutter/core/managers/dialog_state_manager.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
 import 'package:karwaan_flutter/core/theme/theme_service.dart';
 import 'package:karwaan_flutter/core/utils/banner/banner_manager.dart';

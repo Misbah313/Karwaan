@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
+import 'package:karwaan_flutter/core/services/client/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_credentials.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
