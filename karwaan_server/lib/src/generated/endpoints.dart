@@ -466,6 +466,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['token'],
           ),
         ),
+        'getAllUserCards': _i1.MethodConnector(
+          name: 'getAllUserCards',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i5.BoardCardEndpoint).getAllUserCards(
+            session,
+            params['token'],
+          ),
+        ),
         'updateBoardCard': _i1.MethodConnector(
           name: 'updateBoardCard',
           params: {
@@ -1983,6 +2001,31 @@ class Endpoints extends _i1.EndpointDispatch {
             isPrivate: params['isPrivate'],
           ),
         ),
+        'getWorkspaceById': _i1.MethodConnector(
+          name: 'getWorkspaceById',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'workspaceId': _i1.ParameterDescription(
+              name: 'workspaceId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['workspace'] as _i19.WorkspaceEndpoint)
+                  .getWorkspaceById(
+            session,
+            params['token'],
+            params['workspaceId'],
+          ),
+        ),
         'getUserWorkspace': _i1.MethodConnector(
           name: 'getUserWorkspace',
           params: {
@@ -2025,6 +2068,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String?>(),
               nullable: true,
             ),
+            'newColor': _i1.ParameterDescription(
+              name: 'newColor',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
           },
           call: (
             _i1.Session session,
@@ -2037,6 +2085,7 @@ class Endpoints extends _i1.EndpointDispatch {
             params['token'],
             newName: params['newName'],
             newDes: params['newDes'],
+            newColor: params['newColor'],
           ),
         ),
         'deleteWorkspace': _i1.MethodConnector(

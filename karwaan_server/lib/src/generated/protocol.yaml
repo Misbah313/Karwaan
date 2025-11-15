@@ -13,6 +13,7 @@ authentication:
 boardCard:
   - createBoardCard:
   - getListByBoardCard:
+  - getAllUserCards:
   - updateBoardCard:
   - deleteBoardCard:
 board:
@@ -82,6 +83,7 @@ user:
   - getUserTheme:
 workspace:
   - createWorkspace:
+  - getWorkspaceById:
   - getUserWorkspace:
   - updateWorkspace:
   - deleteWorkspace:
