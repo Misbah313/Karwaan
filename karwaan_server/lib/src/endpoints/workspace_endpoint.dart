@@ -19,13 +19,12 @@ class WorkspaceEndpoint extends Endpoint {
       final now = DateTime.now();
 
       final createdWorkspace = Workspace(
-        name: name,
-        description: description,
-        createdAt: now,
-        ownerId: user.id!,
-        backgroundColor: backgroundColor,
-        isPrivate: isPrivate
-      );
+          name: name,
+          description: description,
+          createdAt: now,
+          ownerId: user.id!,
+          backgroundColor: backgroundColor,
+          isPrivate: isPrivate);
 
       await Workspace.db.insertRow(session, createdWorkspace);
 
@@ -62,6 +61,30 @@ class WorkspaceEndpoint extends Endpoint {
     }
   }
 
+  // Get workspace by id
+  Future<Workspace> getWorkspaceById(
+      Session session, String token, int workspaceId) async {
+    final user = await TokenEndpoint().validateToken(session, token);
+    if (user == null || user.id == null) {
+      throw AppAuthException(message: "Invalid user or expired token!");
+    }
+
+    final workspace = await Workspace.db.findById(session, workspaceId);
+
+    if (workspace == null) {
+      throw AppNotFoundException(resourceType: 'Workspace');
+    }
+
+    final membership = await WorkspaceMember.db.findFirstRow(session,
+        where: (m) => m.workspace.equals(workspaceId) & m.user.equals(user.id));
+    if (membership == null) {
+      throw AppPermissionException(
+          message: 'You are not a member of this workspace!');
+    }
+
+    return workspace;
+  }
+
   // Get user workspaces
   Future<List<Workspace>> getUserWorkspace(
       Session session, String token) async {
@@ -92,7 +115,7 @@ class WorkspaceEndpoint extends Endpoint {
   // Update workspace
   Future<Workspace> updateWorkspace(
       Session session, int workspaceId, String token,
-      {String? newName, String? newDes}) async {
+      {String? newName, String? newDes, String? newColor}) async {
     // check the current user(validate the token)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null) {
@@ -133,6 +156,10 @@ class WorkspaceEndpoint extends Endpoint {
 
     if (newDes != null) {
       workspace.description = newDes.trim();
+    }
+
+    if (newColor != null) {
+      workspace.backgroundColor = newColor;
     }
 
     // update the workspace with new name and dec
