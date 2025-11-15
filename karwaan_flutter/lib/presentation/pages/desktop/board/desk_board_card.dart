@@ -5,6 +5,7 @@ import 'package:karwaan_flutter/domain/models/board/board_analytics.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_analytics_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_gate.dart';
 
@@ -153,17 +154,16 @@ class DeskBoardPage extends StatelessWidget {
     );
   }
 
+  void _refreshThisBoard(BuildContext context) {
+    context.read<BoardAnalyticsCubit>().getAnalyticsForMultiBoards([board.id]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         // Use service directly instead of cubit for tracking
-        try {
-          await context.read<BoardRepo>().trackRecentBoard(board.id);
-          debugPrint('navigating/tracking from desk board details!');
-        } catch (e) {
-          debugPrint('Failed to track board: $e');
-        }
+        await context.read<BoardRepo>().trackRecentBoard(board.id);
 
         // navigate to the board list page
         Navigator.push(
@@ -180,7 +180,9 @@ class DeskBoardPage extends StatelessWidget {
               ),
             ),
           ),
-        );
+        ).then((_) {
+          _refreshThisBoard(context);
+        });
       },
       child: Container(
         constraints: BoxConstraints(minHeight: 150),
