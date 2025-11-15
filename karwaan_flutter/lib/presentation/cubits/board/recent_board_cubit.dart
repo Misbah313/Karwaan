@@ -11,20 +11,23 @@ class RecentBoardCubit extends Cubit<RecentBoardStates> {
   Future<void> trackRecentBoard(int boardId) async {
     try {
       await boardRepo.trackRecentBoard(boardId);
-      // No state change needed - silent operation
     } catch (e) {
-      // Silent fail - don't emit error state for tracking
-      print('Failed to track board: $e');
+      emit(RecentBoardError(ExceptionMapper.toMessage(e)));
     }
   }
 
-  Future<void> getUserRecentBoards() async {
-    emit(RecentBoardLoading());
+  Future<void> getUserRecentBoards({bool silent = false}) async {
+    if (!silent) {
+      emit(RecentBoardLoading());
+    }
+
     try {
       final boards = await boardRepo.getUserRecentBoards();
       emit(RecentBoardlistLoaded(boards));
     } catch (e) {
-      emit(RecentBoardError(ExceptionMapper.toMessage(e)));
+      if (!silent) {
+        emit(RecentBoardError(ExceptionMapper.toMessage(e)));
+      }
     }
   }
 }
