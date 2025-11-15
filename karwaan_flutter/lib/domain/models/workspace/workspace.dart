@@ -59,10 +59,4 @@ class Workspace {
       isPrivate,
     );
   }
-
-  // Optional: toString for debugging
-  @override
-  String toString() {
-    return 'Workspace(id: $id, name: $workspaceName, description: $workspaceDescription, color: $backgroundColor, private: $isPrivate)';
-  }
 }
