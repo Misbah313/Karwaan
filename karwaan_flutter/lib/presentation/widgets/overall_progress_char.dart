@@ -18,20 +18,14 @@ class _OverallProgressChartState extends State<OverallProgressChart> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.transparent,
+      elevation: 0,
       child: Container(
         decoration: BoxDecoration(
-          // MINIMAL CHANGE: Just add gradient
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withValues(alpha: 0.07),
-              Colors.white.withValues(alpha: 0.03),
-            ],
-          ),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white.withValues(alpha: 0.05)
+          : Colors.black.withValues(alpha: 0.02),
+          border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.4)),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
