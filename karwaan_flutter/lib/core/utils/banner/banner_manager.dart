@@ -6,12 +6,21 @@ class BannerManager extends ChangeNotifier {
   bool _show = false;
   Timer? _timer;
 
+  Color _backgroundColor = Colors.red;
+  Color get backgroundColor => _backgroundColor;
+
   bool get isShowing => _show;
   String? get message => _message;
 
-  void show(String message, {Duration duration = const Duration(seconds: 4)}) {
+  void show(
+    String message, {
+    Color backgroundColor = Colors.red,
+    Duration duration = const Duration(seconds: 4),
+  }) {
     _timer?.cancel();
+
     _message = message;
+    _backgroundColor = backgroundColor;
     _show = true;
     notifyListeners();
 
