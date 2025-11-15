@@ -660,6 +660,35 @@ class _BoardCardEndpoint {
     });
   }
 
+  _i3.Future<List<_i9.BoardCard>> getAllUserCards(
+    _i1.TestSessionBuilder sessionBuilder,
+    String token,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'boardCard',
+        method: 'getAllUserCards',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'boardCard',
+          methodName: 'getAllUserCards',
+          parameters: _i1.testObjectToJson({'token': token}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i9.BoardCard>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<_i9.BoardCard> updateBoardCard(
     _i1.TestSessionBuilder sessionBuilder,
     int cardId,
@@ -2635,6 +2664,39 @@ class _WorkspaceEndpoint {
     });
   }
 
+  _i3.Future<_i22.Workspace> getWorkspaceById(
+    _i1.TestSessionBuilder sessionBuilder,
+    String token,
+    int workspaceId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'workspace',
+        method: 'getWorkspaceById',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'workspace',
+          methodName: 'getWorkspaceById',
+          parameters: _i1.testObjectToJson({
+            'token': token,
+            'workspaceId': workspaceId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i22.Workspace>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<List<_i22.Workspace>> getUserWorkspace(
     _i1.TestSessionBuilder sessionBuilder,
     String token,
@@ -2670,6 +2732,7 @@ class _WorkspaceEndpoint {
     String token, {
     String? newName,
     String? newDes,
+    String? newColor,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2687,6 +2750,7 @@ class _WorkspaceEndpoint {
             'token': token,
             'newName': newName,
             'newDes': newDes,
+            'newColor': newColor,
           }),
           serializationManager: _serializationManager,
         );
