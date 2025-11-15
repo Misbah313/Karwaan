@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/attachment/attachment.dart';
 import 'package:karwaan_flutter/domain/models/attachment/upload_attachment_credentails.dart';
 import 'package:karwaan_flutter/domain/repository/attachment/attachment_repo.dart';

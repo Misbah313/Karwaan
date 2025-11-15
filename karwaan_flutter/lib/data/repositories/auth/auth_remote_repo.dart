@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/data/mappers/auth/auth_response_mapper.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_credentials.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
