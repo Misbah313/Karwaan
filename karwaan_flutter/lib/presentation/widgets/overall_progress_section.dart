@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/domain/models/board/overall_analytic_states.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/overall_analytic_cubit.dart';
-import 'package:karwaan_flutter/presentation/widgets/overall_progress_char.dart';
+import 'package:karwaan_flutter/presentation/widgets/utils/stl_overall_progress_char.dart';
+
 class OverallProgressSection extends StatefulWidget {
   const OverallProgressSection({super.key});
 
@@ -31,7 +32,8 @@ class _OverallProgressSectionState extends State<OverallProgressSection> {
             child: const CircularProgressIndicator(),
           );
         } else if (state is OverallAnalyticsLoaded) {
-          return OverallProgressChart(analytics: state.analytics);
+          return StlOverallProgressChar(analytics: state.analytics);
+          // OverallProgressChart(analytics: state.analytics);
         } else if (state is OverallAnalyticError) {
           return Container(
             height: 120,
@@ -39,8 +41,8 @@ class _OverallProgressSectionState extends State<OverallProgressSection> {
             child: Text(
               'Failed to load analytics',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.red,
-              ),
+                    color: Colors.red,
+                  ),
             ),
           );
         } else {
