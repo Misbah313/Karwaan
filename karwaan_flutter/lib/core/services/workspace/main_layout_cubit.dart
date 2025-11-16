@@ -8,14 +8,18 @@ class MainLayoutCubit extends Cubit<MainLayoutState> {
   }
 }
 
-abstract class MainLayoutState {}
+abstract class MainLayoutState {
+  String get currentMenu;
+}
 
 class MainLayoutInitial extends MainLayoutState {
-  final String currentMenu = 'Dashboard';
+  @override
+  String get currentMenu => 'Dashboard';
 }
 
 class MainLayoutMenuChanged extends MainLayoutState {
+  @override
   final String currentMenu;
-  
+
   MainLayoutMenuChanged(this.currentMenu);
 }
