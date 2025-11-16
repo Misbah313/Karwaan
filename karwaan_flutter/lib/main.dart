@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karwaan_flutter/core/services/client/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/workspace/main_layout_cubit.dart';
 import 'package:karwaan_flutter/core/theme/dark_mode.dart';
 import 'package:karwaan_flutter/core/theme/light_mode.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
@@ -36,7 +37,7 @@ import 'package:karwaan_flutter/presentation/cubits/auth/auth_gate.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  await dotenv.load(fileName: '.env'); 
+  await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
 
   final serverpodClientService =
@@ -73,6 +74,9 @@ void main() async {
           // Global AuthCubit
           create: (context) => AuthCubit(context.read<AuthRepo>())..checkAuth(),
         ),
+        BlocProvider<MainLayoutCubit>(
+          create: (context) => MainLayoutCubit(),
+        ),
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(create: (_) => BannerManager())
       ],
@@ -95,13 +99,12 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeNotifier.themeMode,
-      home: Stack(
-        children: [ AuthGate(
+      home: Stack(children: [
+        AuthGate(
           authRepo: authRepo,
         ),
         const GlobalBanner()
-        ]
-      ),
+      ]),
     );
   }
 }
