@@ -11,6 +11,7 @@ class OverallAnalyticsCubit extends Cubit<OverallAnalyticStates> {
   OverallAnalyticsCubit(this.boardRepo) : super(OverallAnalyticInitial());
 
   Future<void> getOverallAnalytics() async {
+    if (state is OverallAnalyticsLoaded) return;
     emit(OverallAnalyticsLoading());
     try {
       final analytics = await boardRepo.getOverAllAnalytics();
