@@ -12,13 +12,15 @@ class OverallProgressSection extends StatefulWidget {
 }
 
 class _OverallProgressSectionState extends State<OverallProgressSection> {
+  bool _hasFetched = false;
+
   @override
-  void initState() {
-    super.initState();
-    // Load overall analytics when section initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasFetched) {
       context.read<OverallAnalyticsCubit>().getOverallAnalytics();
-    });
+      _hasFetched = true;
+    }
   }
 
   @override
