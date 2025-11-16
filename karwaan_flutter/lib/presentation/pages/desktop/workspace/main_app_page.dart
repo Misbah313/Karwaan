@@ -86,8 +86,18 @@ class _MainAppPageState extends State<MainAppPage> {
         if (state is AuthLoading) {
           return Center(child: Lottie.asset('asset/ani/load.json'));
         } else if (state is AuthAuthenticated) {
-          return BlocProvider(
-            create: (context) => MainLayoutCubit(),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                  create: (_) =>
+                      OverallAnalyticsCubit(context.read<BoardRepo>())),
+              BlocProvider(
+                create: (context) => BoardCardCubit(
+                  context.read<BoardcardRepo>(),
+                  context.read<OverallAnalyticsCubit>(),
+                ),
+              ),
+            ],
             child: _buildAuthenticatedLayout(state.user),
           );
         }
@@ -98,41 +108,30 @@ class _MainAppPageState extends State<MainAppPage> {
   }
 
   Widget _buildAuthenticatedLayout(AuthUser user) {
-    return BlocProvider(
-      create: (context) => OverallAnalyticsCubit(context.read<BoardRepo>()),
-      child: BlocProvider(
-        create: (context) => BoardCardCubit(
-          context.read<BoardcardRepo>(),
-          context.read<OverallAnalyticsCubit>(),
-        ),
-        child: BlocBuilder<MainLayoutCubit, MainLayoutState>(
-          builder: (context, layoutState) {
-            final currentMenu = layoutState is MainLayoutMenuChanged
-                ? layoutState.currentMenu
-                : 'Dashboard';
+    return BlocBuilder<MainLayoutCubit, MainLayoutState>(
+      builder: (context, layoutState) {
+        final currentMenu = layoutState.currentMenu;
 
-            return Scaffold(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              body: Row(
-                children: [
-                  LeftSidebar(
-                    selectedMenu: currentMenu,
-                    navigationService: _appNavigationService,
-                  ),
-                  Expanded(
-                    child: MainContentArea(
-                      controller: _mainContentController,
-                      currentPageIndex: _getPageIndex(currentMenu),
-                      user: user,
-                    ),
-                  ),
-                  _buildRightSidebar(user, currentMenu),
-                ],
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          body: Row(
+            children: [
+              LeftSidebar(
+                selectedMenu: currentMenu,
+                navigationService: _appNavigationService,
               ),
-            );
-          },
-        ),
-      ),
+              Expanded(
+                child: MainContentArea(
+                  controller: _mainContentController,
+                  currentPageIndex: _getPageIndex(currentMenu),
+                  user: user,
+                ),
+              ),
+              _buildRightSidebar(user, currentMenu),
+            ],
+          ),
+        );
+      },
     );
   }
 
