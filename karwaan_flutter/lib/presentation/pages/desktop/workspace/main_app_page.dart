@@ -5,7 +5,10 @@ import 'package:karwaan_flutter/core/services/client/profile_image_service.dart'
 import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/core/services/workspace/app_naviagation_service.dart';
 import 'package:karwaan_flutter/core/services/workspace/logout_dialog_service.dart';
-import 'package:karwaan_flutter/core/services/workspace/main_layout_cubit.dart';
+import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/main_layout_cubit.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
 import 'package:karwaan_flutter/core/theme/theme_service.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
@@ -13,8 +16,10 @@ import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/auth/auth_state_check.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/overall_analytic_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_context_cubit.dart';
 import 'package:karwaan_flutter/presentation/widgets/layout/deskleft_side_bar.dart';
 import 'package:karwaan_flutter/presentation/widgets/layout/deskmain_content_area.dart';
 import 'package:karwaan_flutter/presentation/widgets/layout/deskright_side_bar.dart';
@@ -88,6 +93,25 @@ class _MainAppPageState extends State<MainAppPage> {
         } else if (state is AuthAuthenticated) {
           return MultiBlocProvider(
             providers: [
+              // auth & user
+              BlocProvider(create: (_) => WorkspaceContextCubit()),
+              Provider<AppNavigationService>(
+                create: (context) => _appNavigationService,
+              ),
+
+              // board features
+              BlocProvider(
+                create: (context) => BoardCubit(context.read<BoardRepo>()),
+              ),
+
+              BlocProvider(
+                create: (context) =>
+                    BoardMemberCubit(context.read<BoardRepo>()),
+              ),
+
+              BlocProvider(
+                create: (context) => LabelCubit(context.read<LabelRepo>()),
+              ),
               BlocProvider(
                   create: (_) =>
                       OverallAnalyticsCubit(context.read<BoardRepo>())),
@@ -97,6 +121,8 @@ class _MainAppPageState extends State<MainAppPage> {
                   context.read<OverallAnalyticsCubit>(),
                 ),
               ),
+
+              // other provider will be here
             ],
             child: _buildAuthenticatedLayout(state.user),
           );
