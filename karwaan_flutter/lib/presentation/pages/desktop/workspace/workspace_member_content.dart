@@ -51,11 +51,9 @@ class _WorkspaceMemberSectionState extends State<WorkspaceMemberSection> {
           _buildSectionTitle(context, 'Members'),
           const SizedBox(height: 16),
           _buildMemberList(context),
-          const SizedBox(height: 22),
-          _buildManagementInfo(context),
-          const SizedBox(height: 16),
+          const SizedBox(height: 15),
           _buildAddMemberSection(context),
-          const SizedBox(height: 16),
+          const SizedBox(height: 15),
           _buildLeaveWorkspace(context),
         ],
       ),
@@ -370,20 +368,6 @@ class _WorkspaceMemberSectionState extends State<WorkspaceMemberSection> {
             widget.dialogService.showLeaveConfirmationDialog(
                 context, widget.memberCubit, widget.workspaceId);
           },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildManagementInfo(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Member Management',
-            style: Theme.of(context).textTheme.bodyMedium),
-        Text(
-          'Click the ⋮ menu next to any member to change their role or remove them from the workspace.',
-          style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
     );
