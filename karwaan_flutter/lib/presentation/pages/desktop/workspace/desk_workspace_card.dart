@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:karwaan_flutter/core/services/workspace/workspace_card_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_card_cubit.dart';
 import 'package:karwaan_flutter/core/services/workspace/workspace_navigation_service.dart';
 import 'package:karwaan_flutter/core/services/workspace/workspace_option_service.dart';
 import 'package:karwaan_flutter/core/utils/banner/banner_manager.dart';
