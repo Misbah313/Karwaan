@@ -146,7 +146,7 @@ class BoardRemoteRepo extends BoardRepo {
               userName: e.userName,
               userEmail: e.email!,
               userRole: e.role,
-              joinedAt: e.joinedAt))
+              joinedAt: e.joinedAt, avatarUrl: e.avatarUrl))
           .toList();
     } catch (e) {
       debugPrint(
