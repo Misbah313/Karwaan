@@ -20,6 +20,7 @@ abstract class BoardMemberDetails
     this.email,
     required this.role,
     required this.joinedAt,
+    this.avatarUrl,
   });
 
   factory BoardMemberDetails({
@@ -29,6 +30,7 @@ abstract class BoardMemberDetails
     String? email,
     required String role,
     required DateTime joinedAt,
+    String? avatarUrl,
   }) = _BoardMemberDetailsImpl;
 
   factory BoardMemberDetails.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,6 +42,7 @@ abstract class BoardMemberDetails
       role: jsonSerialization['role'] as String,
       joinedAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['joinedAt']),
+      avatarUrl: jsonSerialization['avatarUrl'] as String?,
     );
   }
 
@@ -60,6 +63,8 @@ abstract class BoardMemberDetails
 
   DateTime joinedAt;
 
+  String? avatarUrl;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -73,6 +78,7 @@ abstract class BoardMemberDetails
     String? email,
     String? role,
     DateTime? joinedAt,
+    String? avatarUrl,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,6 +89,7 @@ abstract class BoardMemberDetails
       if (email != null) 'email': email,
       'role': role,
       'joinedAt': joinedAt.toJson(),
+      if (avatarUrl != null) 'avatarUrl': avatarUrl,
     };
   }
 
@@ -95,6 +102,7 @@ abstract class BoardMemberDetails
       if (email != null) 'email': email,
       'role': role,
       'joinedAt': joinedAt.toJson(),
+      if (avatarUrl != null) 'avatarUrl': avatarUrl,
     };
   }
 
@@ -138,6 +146,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
     String? email,
     required String role,
     required DateTime joinedAt,
+    String? avatarUrl,
   }) : super._(
           id: id,
           userId: userId,
@@ -145,6 +154,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
           email: email,
           role: role,
           joinedAt: joinedAt,
+          avatarUrl: avatarUrl,
         );
 
   /// Returns a shallow copy of this [BoardMemberDetails]
@@ -158,6 +168,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
     Object? email = _Undefined,
     String? role,
     DateTime? joinedAt,
+    Object? avatarUrl = _Undefined,
   }) {
     return BoardMemberDetails(
       id: id is int? ? id : this.id,
@@ -166,6 +177,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
       email: email is String? ? email : this.email,
       role: role ?? this.role,
       joinedAt: joinedAt ?? this.joinedAt,
+      avatarUrl: avatarUrl is String? ? avatarUrl : this.avatarUrl,
     );
   }
 }
@@ -193,6 +205,10 @@ class BoardMemberDetailsTable extends _i1.Table<int?> {
       'joinedAt',
       this,
     );
+    avatarUrl = _i1.ColumnString(
+      'avatarUrl',
+      this,
+    );
   }
 
   late final _i1.ColumnInt userId;
@@ -205,6 +221,8 @@ class BoardMemberDetailsTable extends _i1.Table<int?> {
 
   late final _i1.ColumnDateTime joinedAt;
 
+  late final _i1.ColumnString avatarUrl;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -213,6 +231,7 @@ class BoardMemberDetailsTable extends _i1.Table<int?> {
         email,
         role,
         joinedAt,
+        avatarUrl,
       ];
 }
 
