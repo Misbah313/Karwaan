@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:karwaan_flutter/core/services/workspace/workspace_card_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_card_cubit.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
