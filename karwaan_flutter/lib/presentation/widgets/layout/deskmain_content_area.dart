@@ -7,6 +7,7 @@ import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_analytics_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/recent_board_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/desktop/board/desk_board_page.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/board/desk_recent_board_section.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/workspace/desk_home_header.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/workspace/workspace_section.dart';
@@ -16,12 +17,11 @@ class MainContentArea extends StatelessWidget {
   final AuthUser user;
   final PageController controller;
 
-  const MainContentArea({
-    super.key,
-    required this.currentPageIndex,
-    required this.user,
-    required this.controller
-  });
+  const MainContentArea(
+      {super.key,
+      required this.currentPageIndex,
+      required this.user,
+      required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class MainContentArea extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildDashboardContent(context, user),
-        _buildBoardsPage(context),
+        const DeskBoardPage(),
         _buildSimplePage(context, 'Analytics Page'),
         _buildSimplePage(context, 'Teams Page'),
         _buildSimplePage(context, 'Settings Page'),
@@ -38,37 +38,37 @@ class MainContentArea extends StatelessWidget {
     );
   }
 
-  Widget _buildDashboardContent(BuildContext context,AuthUser user) {
-  return Column(
-    children: [
-      BlocProvider(
-        create: (context) => SearchCubit(
-          SearchUseCase(
-            boardRepo: context.read<BoardRepo>(),
-            boardcardRepo: context.read<BoardcardRepo>(),
+  Widget _buildDashboardContent(BuildContext context, AuthUser user) {
+    return Column(
+      children: [
+        BlocProvider(
+          create: (context) => SearchCubit(
+            SearchUseCase(
+              boardRepo: context.read<BoardRepo>(),
+              boardcardRepo: context.read<BoardcardRepo>(),
+            ),
           ),
+          child: DeskHomeHeader(user: user),
         ),
-        child: DeskHomeHeader(user: user),
-      ),
-      _buildDivider(context),
-      Expanded(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildWorkspaceSection(),
-                const SizedBox(height: 15),
-                _buildRecentBoardsSection(),
-              ],
+        _buildDivider(context),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildWorkspaceSection(),
+                  const SizedBox(height: 15),
+                  _buildRecentBoardsSection(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget _buildDivider(BuildContext context) {
     return Padding(
@@ -123,33 +123,6 @@ class MainContentArea extends StatelessWidget {
     );
   }
 
-  Widget _buildBoardsPage(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'All Boards',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ],
-          ),
-        ),
-        _buildDivider(context),
-        Expanded(
-          child: Center(
-            child: Text(
-              'All your boards content will appear here',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildSimplePage(BuildContext context, String title) {
     return Column(
