@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/core/services/workspace/app_naviagation_service.dart';
+import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_card_cubit.dart';
+import 'package:karwaan_flutter/core/services/workspace/workspace_member_use_case.dart';
+import 'package:karwaan_flutter/core/services/workspace/workspace_navigation_service.dart';
+import 'package:karwaan_flutter/core/services/workspace/workspace_option_service.dart';
+import 'package:karwaan_flutter/core/utils/banner/banner_manager.dart';
+import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_state.dart';
+import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
+import 'package:karwaan_flutter/domain/repository/workspace/workspace_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/workspace/desk_workspace_card.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/HexColor.dart';
-import 'package:karwaan_flutter/presentation/widgets/utils/constant.dart';
 import 'package:karwaan_flutter/presentation/widgets/utils/textfield.dart';
 import 'package:lottie/lottie.dart';
 
@@ -19,6 +28,7 @@ class WorkspaceSection extends StatefulWidget {
 
 class _WorkspaceSectionState extends State<WorkspaceSection> {
   bool _isCreatingWorkspace = false;
+  List<Workspace> _lastKnownWorkspaces = [];
   Widget _buildWorkspaceSection(List<Workspace> worksapces) {
     if (worksapces.isEmpty) {
       return _buildEmtpyWorkspaceAni(worksapces);
@@ -37,15 +47,14 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
               Text("Workspaces ${worksapces.length}",
                   style: Theme.of(context).textTheme.bodySmall),
               GestureDetector(
-                  onTap: _addWorkspaceDialog,
+                  onTap: _createWorkspaceDialog,
                   child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                          Theme.of(context).colorScheme.surface,
-                          Theme.of(context).colorScheme.onSurface
-                        ]),
+                        color: Colors.white.withValues(alpha: 0.07),
+                        border:
+                            Border.all(color: Theme.of(context).dividerColor),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
@@ -88,10 +97,13 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        Theme.of(context).colorScheme.surface,
-                        Theme.of(context).colorScheme.onSurface
-                      ]),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.black.withValues(alpha: 0.03),
+                      border: Border.all(
+                          color: Theme.of(context)
+                              .dividerColor
+                              .withValues(alpha: 0.5)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
@@ -102,10 +114,10 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
                         Text('Add',
                             style: Theme.of(context).textTheme.bodySmall)
                       ],
-                    ))),
+                    )))
           ],
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 10),
         SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
             child: GridView.builder(
@@ -117,40 +129,37 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
                   childAspectRatio: 1.2),
               itemCount: worksapces.length,
               itemBuilder: (context, index) {
-                return DeskWorkspaceCard(workspace: worksapces[index]);
+                return BlocProvider(
+                  create: (context) => WorkspaceCardCubit(
+                    getMembersUseCase: GetWorkspaceMembersUseCase(
+                      memberRepo: context.read<WorkspaceRepo>(),
+                    ),
+                    workspace: worksapces[index],
+                  ),
+                  child: DeskWorkspaceCard(
+                    workspace: worksapces[index],
+                    navigationService: WorkspaceNavigationServiceImpl(
+                        boardRepo: context.read<BoardRepo>(),
+                        appNavigationService:
+                            context.read<AppNavigationService>()),
+                    optionsService: WorkspaceOptionsServiceImpl(
+                      workspaceCubit: context.read<WorkspaceCubit>(),
+                      workspaceMemberCubit:
+                          context.read<WorkspaceMemberCubit>(),
+                    ),
+                  ),
+                );
               },
             ))
       ],
     );
   }
 
-  Widget _buildWorkspaceErrorState(String error) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-            side: BorderSide(color: Theme.of(context).colorScheme.primary)),
-        content: Text(
-          error,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Cancel",
-                style: Theme.of(context).textTheme.bodySmall,
-              )),
-        ],
-      ),
-    );
-    return Center(
-      child: Text('Failed'),
-    );
+  void _buildWorkspaceErrorState(String error) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<BannerManager>().show(error);
+    });
   }
 
   // worksapce create
@@ -238,26 +247,6 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
                                   text: 'Enter workspace name...',
                                   obsecureText: false,
                                   controller: nameController),
-                              // Container(
-                              //   decoration: BoxDecoration(
-                              //     color: Colors.white.withValues(alpha: 0.1),
-                              //     borderRadius: BorderRadius.circular(12),
-                              //     border: Border.all(
-                              //       color: Colors.white.withValues(alpha: 0.2),
-                              //     ),
-                              //   ),
-                              //   child:
-
-                              //   // TextField(
-                              //   //   controller: nameController,
-                              //   //   style: Theme.of(context).textTheme.bodyMedium,
-                              //   //   decoration: InputDecoration(
-                              //   //     hintText: 'Enter workspace name...',
-                              //   //     border: InputBorder.none,
-                              //   //     contentPadding: EdgeInsets.all(16),
-                              //   //   ),
-                              //   // ),
-                              // ),
 
                               const SizedBox(height: 24),
 
@@ -272,25 +261,6 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
                                   obsecureText: false,
                                   controller: desController,
                                   maxline: 3),
-                              // Container(
-                              //   decoration: BoxDecoration(
-                              //     color: Colors.white.withValues(alpha: 0.1),
-                              //     borderRadius: BorderRadius.circular(12),
-                              //     border: Border.all(
-                              //       color: Colors.white.withValues(alpha: 0.2),
-                              //     ),
-                              //   ),
-                              //   child: TextField(
-                              //     controller: desController,
-                              //     maxLines: 3,
-                              //     style: Theme.of(context).textTheme.bodyMedium,
-                              //     decoration: InputDecoration(
-                              //       hintText: "What's the workspace for?...",
-                              //       border: InputBorder.none,
-                              //       contentPadding: EdgeInsets.all(16),
-                              //     ),
-                              //   ),
-                              // ),
 
                               const SizedBox(height: 32),
 
@@ -356,17 +326,12 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
                             onPressed: _isCreatingWorkspace
                                 ? null
                                 : () async {
-                                    if (nameController.text.isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content:
-                                            Text('Workspace name is required!'),
-                                        backgroundColor: Colors.red,
-                                      ));
+                                    if (nameController.text.isEmpty ||
+                                        desController.text.isEmpty) {
+                                      context.read<BannerManager>().show(
+                                          'Workspace name & description is required!');
                                       return;
                                     }
-
-                                    // Use parent setState for the loading state
                                     setState(() {
                                       _isCreatingWorkspace = true;
                                     });
@@ -385,20 +350,12 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
 
                                       await cubit.createWorkspace(credentials);
                                       await cubit.getUserWorkspace();
-                                      Navigator.pop(context);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Text(
-                                            '🎉 Workspace created successfully!'),
-                                        backgroundColor: Colors.green,
-                                      ));
                                     } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                'Failed: ${e.toString()}')),
-                                      );
+                                      final mapper =
+                                          ExceptionMapper.toMessage(e);
+                                      context
+                                          .read<BannerManager>()
+                                          .show(mapper);
                                     } finally {
                                       setState(() {
                                         _isCreatingWorkspace = false;
@@ -559,10 +516,7 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: Theme.of(context).textTheme.bodySmall
-                ),
+                Text(name, style: Theme.of(context).textTheme.bodySmall),
                 SizedBox(height: 4),
                 Text(
                   isPrivate ? 'Personal workspace' : 'Team workspace',
@@ -583,156 +537,34 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
     );
   }
 
-  // add worksapce dialog
-  void _addWorkspaceDialog() {
-    final nameController = TextEditingController();
-    final desController = TextEditingController();
-    final cubit = context.read<WorkspaceCubit>();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        alignment: Alignment(0, 0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(
-          'Create new workspace',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
-          height: MediaQuery.of(context).size.height * 0.6,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Textfield(
-                  text: 'Workspace Name',
-                  obsecureText: false,
-                  controller: nameController),
-              middleSizedBox,
-              Textfield(
-                  text: 'Description',
-                  obsecureText: false,
-                  controller: desController,
-                  maxline: 4)
-            ],
-          ),
-        ),
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel',
-                  style: Theme.of(context).textTheme.titleSmall)),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
-              onPressed: () async {
-                if (nameController.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Workspace name is required!'),
-                    backgroundColor: Colors.red,
-                  ));
-                  return;
-                }
-
-                setState(() {
-                  _isCreatingWorkspace = true;
-                });
-
-                try {
-                  final credentilas = CreateWorkspaceCredentials(
-                      workspaceName: nameController.text.trim(),
-                      workspaceDescription: desController.text.trim(),
-                      createdAt: DateTime.now());
-
-                  await cubit.createWorkspace(credentilas);
-                  await cubit.getUserWorkspace();
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Workspace successfully created!'),
-                    backgroundColor: Colors.green,
-                  ));
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed: ${e.toString()}')));
-                } finally {
-                  setState(() {
-                    _isCreatingWorkspace = false;
-                  });
-                }
-              },
-              child: _isCreatingWorkspace
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text('Create',
-                      style: Theme.of(context).textTheme.bodySmall))
-        ],
-      ),
-    );
-  }
-
-  // unExpected state
-  Widget _unExpectedState() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-          title: Text(
-            'Unexpected behaviour',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: Text(
-                "Something went worng. Please check your network or retry again.",
-                style: Theme.of(context).textTheme.bodySmall),
-          ),
-          actionsPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          actions: [
-            ElevatedButton.icon(
-              onPressed: () =>
-                  context.read<WorkspaceCubit>().getUserWorkspace(),
-              icon: Icon(Icons.refresh, size: 18),
-              label: Text('Retry'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey.shade400,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ]),
-    );
-    return Center(
-      child: Text('Failed'),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WorkspaceCubit, WorkspaceState>(
-      builder: (context, state) {
-        if (state is WorkspaceLoading) {
-          return Lottie.asset('asset/ani/load.json');
-        } else if (state is WorkspaceListLoaded) {
-          return _buildWorkspaceSection(state.workspaces);
-        } else if (state is WorkspaceError) {
-          return _buildWorkspaceErrorState(state.error);
-        } else {
-          return _unExpectedState();
+    return BlocListener<WorkspaceCubit, WorkspaceState>(
+      listener: (context, state) {
+        if (state is WorkspaceError) {
+          _buildWorkspaceErrorState(state.error);
+        } else if (state is WorkspaceCreated) {
+          Navigator.pop(context);
+          context.read<BannerManager>().show(
+              'Workpace ${state.workspaceName} created successfully.',
+              backgroundColor: Colors.green);
         }
       },
+      child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
+        buildWhen: (previous, current) {
+          return current is WorkspaceLoading || current is WorkspaceListLoaded;
+        },
+        builder: (context, state) {
+          if (state is WorkspaceLoading) {
+            return Lottie.asset('asset/ani/load.json');
+          } else if (state is WorkspaceListLoaded) {
+            _lastKnownWorkspaces = state.workspaces;
+            return _buildWorkspaceSection(_lastKnownWorkspaces);
+          } else {
+            return _buildWorkspaceSection(_lastKnownWorkspaces);
+          }
+        },
+      ),
     );
   }
 }
