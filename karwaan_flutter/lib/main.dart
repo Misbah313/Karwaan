@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karwaan_flutter/core/services/client/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
-import 'package:karwaan_flutter/core/services/workspace/main_layout_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/main_layout_cubit.dart';
 import 'package:karwaan_flutter/core/theme/dark_mode.dart';
 import 'package:karwaan_flutter/core/theme/light_mode.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
@@ -94,17 +94,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = context.watch<ThemeNotifier>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeNotifier.themeMode,
-      home: Stack(children: [
-        AuthGate(
-          authRepo: authRepo,
-        ),
-        const GlobalBanner()
-      ]),
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child!,
+
+            const GlobalBanner(),
+          ],
+        );
+      },
+      home: AuthGate(
+        authRepo: authRepo,
+      ),
     );
   }
 }
