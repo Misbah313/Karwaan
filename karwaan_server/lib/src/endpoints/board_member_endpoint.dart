@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:karwaan_server/src/endpoints/file_endpoint.dart';
 import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
@@ -205,12 +208,29 @@ class BoardMemberEndpoint extends Endpoint {
       for (final member in fetchedBoard) {
         final user = users.firstWhere((element) => element.id == member.user);
 
+        String? avatarBase64;
+        if (user.profileImage != null && user.profileImage!.isNotEmpty) {
+          try {
+            // used the same FileEndpoint to get the image bytes
+            final fileEndpoint = FileEndpoint();
+            final imageBytes = await fileEndpoint.serveProfilePicture(
+                session, user.profileImage!);
+
+            // Convert to base64 
+            final base64Image = base64Encode(imageBytes);
+            avatarBase64 = 'data:image/jpeg;base64,$base64Image';
+          } catch (e) {
+            // null if failed
+            session.log('Failed to get base64 image for user ${user.id}: $e');
+          }
+        }
         detailedMembers.add(BoardMemberDetails(
             userId: user.id!,
             userName: user.name,
             role: member.role!,
             joinedAt: member.joinedAt,
-            email: user.email));
+            email: user.email,
+            avatarUrl: avatarBase64));
       }
 
       return detailedMembers;
