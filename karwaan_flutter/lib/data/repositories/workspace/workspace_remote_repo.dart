@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/workspace/create_workspace_credentials.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace.dart';
 import 'package:karwaan_flutter/domain/models/workspace/workspace_change_role_member_model.dart';
@@ -20,7 +20,9 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
     try {
       final workspace = await _clientService.createWorkspace(
           workspaceCredential.workspaceName,
-          workspaceCredential.workspaceDescription);
+          workspaceCredential.workspaceDescription,
+          backgroundColor: workspaceCredential.backgroundColor,
+          isPrivate: workspaceCredential.isPrivate);
       if (workspace.id == null) {
         throw Exception('Server returned null workspace id!');
       }
@@ -29,7 +31,9 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
           id: workspace.id!,
           createdAt: workspaceCredential.createdAt,
           workspaceName: workspace.name,
-          workspaceDescription: workspace.description ?? '');
+          workspaceDescription: workspace.description ?? '',
+          backgroundColor: workspace.backgroundColor ?? '#6B7280',
+          isPrivate: workspace.isPrivate ?? false);
     } catch (e) {
       debugPrint(
           'Failed to create workspace form remote repo: ${e.toString()}');
@@ -47,7 +51,9 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
                 id: e.id!,
                 createdAt: e.createdAt,
                 workspaceName: e.name,
-                workspaceDescription: e.description ?? ''),
+                workspaceDescription: e.description ?? '',
+                backgroundColor: e.backgroundColor ?? '#6B7280',
+                isPrivate: e.isPrivate ?? false),
           )
           .toList();
     } catch (e) {
@@ -64,6 +70,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
       final updatedWorkspace = await _clientService.updateWorkspace(
           workspaceCredential.workspaceName,
           workspaceCredential.workspaceDescription,
+          workspaceCredential.backgroundColor,
           workspaceCredential.id);
 
       return Workspace(
@@ -148,7 +155,8 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
                 userId: e.userId,
                 userName: e.userName,
                 role: e.role,
-                joinedAt: e.joinedAt),
+                joinedAt: e.joinedAt,
+                avatarUrl: e.avatarUrl),
           )
           .toList();
     } catch (e) {
@@ -163,7 +171,7 @@ class WorkspaceRemoteRepo extends WorkspaceRepo {
     try {
       final member = await _clientService.changeMemberRole(
           credential.targetUserId, credential.workspaceId, credential.newRole);
-          debugPrint('Changing member role from the remote repo!');
+      debugPrint('Changing member role from the remote repo!');
 
       if (member.id == null) {
         throw Exception('Server returned member without id!');

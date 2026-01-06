@@ -13,6 +13,9 @@ dependencies:
   test: ^1.26.2
   mocktail: ^1.0.4
   path: ^1.9.1
+  googleapis: ^14.0.0
+  http: ^1.5.0
+  serverpod_auth_server: ^2.9.1
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'

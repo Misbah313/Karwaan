@@ -9,9 +9,12 @@
 # Configuration for the main API server.
 apiServer:
   port: 8080
-  publicHost: 0.0.0.0
+  publicHost: localhost
   publicPort: 8080
   publicScheme: http
+  allowedOrigins:
+    - http://localhost:49660
+    - http://localhost:8082
 
 # Configuration for the Insights server.
 insightsServer:
@@ -23,10 +26,14 @@ insightsServer:
 # Configuration for the web server.
 webServer:
   port: 8082
-  publicHost: 10.169.70.89
+  publicHost: localhost
   publicPort: 8082
   publicScheme: http
-  corsOriginRegex: 'http://localhost:[\d]*|http://10.169.70.89:[\d]*|http://10.226.253.89:[\d]*|http://192.168.\d+.\d+:[\d]*'
+  allowedOrigins:
+    - http://localhost:49660
+    - http://localhost:8082
+    - http://10.169.70.89:8082
+    - http://10.226.253.89:8082
 
 # This is the database setup for your server.
 database:

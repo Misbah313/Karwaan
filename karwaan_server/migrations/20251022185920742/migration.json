@@ -1,0 +1,34 @@
+{
+  "actions": [
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "workspace",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "backgroundColor",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "isPrivate",
+            "columnType": 1,
+            "isNullable": true,
+            "dartType": "bool?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

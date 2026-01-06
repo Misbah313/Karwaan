@@ -6,3 +6,4 @@ fields:
   email: String?
   role: String
   joinedAt: DateTime
+  avatarUrl: String?

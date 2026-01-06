@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:karwaan_server/src/endpoints/file_endpoint.dart';
 import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
@@ -11,6 +14,17 @@ class WorkspaceMemberEndpoint extends Endpoint {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
       throw AppAuthException(message: 'No user or expired token!');
+    }
+
+    // NEW: Check if workspace is private
+    final workspace = await Workspace.db.findById(session, workspaceId);
+    if (workspace == null) {
+      throw AppNotFoundException(resourceType: 'Workspace');
+    }
+
+    if (workspace.isPrivate == true) {
+      throw AppPermissionException(
+          message: 'This is a personal workspace. Cannot add members.');
     }
 
     // confirm current user workspace membership
@@ -114,7 +128,7 @@ class WorkspaceMemberEndpoint extends Endpoint {
     await WorkspaceMember.db.deleteRow(session, targetMember);
   }
 
-  // get workspace members
+  // get workspace members - UPDATED VERSION WITH BASE64 IMAGES
   Future<List<WorkspaceMemberDetails>> getWorkspaceMember(
       Session session, int workspaceId, String token) async {
     // validate token(get user)
@@ -152,12 +166,32 @@ class WorkspaceMemberEndpoint extends Endpoint {
     for (final member in members) {
       final user = users.firstWhere((element) => element.id == member.user);
 
+      // Get profile image as base64 instead of filename
+      String? avatarBase64;
+      if (user.profileImage != null && user.profileImage!.isNotEmpty) {
+        try {
+          // Use the same FileEndpoint to get the image bytes
+          final fileEndpoint = FileEndpoint();
+          final imageBytes = await fileEndpoint.serveProfilePicture(
+              session, user.profileImage!);
+
+          // Convert to base64 like the frontend does
+          final base64Image = base64Encode(imageBytes);
+          avatarBase64 = 'data:image/jpeg;base64,$base64Image';
+        } catch (e) {
+          session.log('Failed to get base64 image for user ${user.id}: $e');
+          // If image loading fails, avatarBase64 remains null
+        }
+      }
+
       detailedMembers.add(WorkspaceMemberDetails(
           userId: user.id!,
           userName: user.name,
           role: member.role!,
           joinedAt: member.joinedAt,
-          email: user.email));
+          email: user.email,
+          avatarUrl: avatarBase64 // ← NOW BASE64 INSTEAD OF FILENAME
+          ));
     }
 
     return detailedMembers;
@@ -287,6 +321,17 @@ class WorkspaceMemberEndpoint extends Endpoint {
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
       throw AppAuthException(message: 'No user or expired token!');
+    }
+
+    // NEW: Check if workspace is private
+    final workspace = await Workspace.db.findById(session, workspaceId);
+    if (workspace == null) {
+      throw AppNotFoundException(resourceType: 'Workspace');
+    }
+
+    if (workspace.isPrivate == true) {
+      throw AppPermissionException(
+          message: 'This is a personal workspace. Cannot add members.');
     }
 
     // Step 2: Confirm current user is admin/owner (existing logic)

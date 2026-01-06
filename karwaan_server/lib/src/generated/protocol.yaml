@@ -1,3 +1,7 @@
+analytics:
+  - getBoardAnalytics:
+  - getAnalyticsForMultiBoards:
+  - getOverAllAnalytics:
 attachment:
   - uploadAttachment:
   - listAttachments:
@@ -9,6 +13,7 @@ authentication:
 boardCard:
   - createBoardCard:
   - getListByBoardCard:
+  - getAllUserCards:
   - updateBoardCard:
   - deleteBoardCard:
 board:
@@ -54,11 +59,18 @@ file:
   - uploadProfilePicture:
   - serveProfilePicture:
   - deleteProfilePicture:
+googleIntegration:
+  - integrateGoogleUser:
+  - findOrCreateUserFromGoogle:
+  - generateSecureToken:
 label:
   - createLabel:
   - getLabelsForBoard:
   - updateLabel:
   - deleteLabel:
+recenBoard:
+  - trackBoardAccess:
+  - getRecentBoards:
 token:
   - validateToken:
   - logout:
@@ -71,6 +83,7 @@ user:
   - getUserTheme:
 workspace:
   - createWorkspace:
+  - getWorkspaceById:
   - getUserWorkspace:
   - updateWorkspace:
   - deleteWorkspace:

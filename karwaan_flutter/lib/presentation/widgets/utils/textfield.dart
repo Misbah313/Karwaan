@@ -4,11 +4,13 @@ class Textfield extends StatefulWidget {
   final String text;
   final bool obsecureText;
   final TextEditingController controller;
+  final int maxline;
   const Textfield({
     super.key,
     required this.text,
     required this.obsecureText,
     required this.controller,
+    this.maxline = 1,
   });
 
   @override
@@ -18,14 +20,15 @@ class Textfield extends StatefulWidget {
 class _TextfieldState extends State<Textfield> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: TextField(
+    return  TextField(
         controller: widget.controller,
         obscureText: widget.obsecureText,
-        style: Theme.of(context).textTheme.titleMedium,
-        cursorColor: Theme.of(context).dividerColor,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 16),
+        cursorColor: Theme.of(context).dividerColor.withValues(alpha: 0.7),
+        maxLines: widget.maxline,
         decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: Theme.of(context).dividerColor,
@@ -50,7 +53,6 @@ class _TextfieldState extends State<Textfield> {
           hintText: widget.text,
           hintStyle: Theme.of(context).textTheme.bodyMedium,
         ),
-      ),
-    );
+      );
   }
 }

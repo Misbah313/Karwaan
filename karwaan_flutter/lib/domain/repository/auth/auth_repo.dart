@@ -14,6 +14,8 @@ abstract class AuthRepo {
 
   Future<AuthUser> loginUser(AuthCredential credential);
 
+  Future<AuthUser> googleAuth();
+  
   Future<AuthUser?> validateToken(String token);
 
   Future<void> logoutUser(String token);

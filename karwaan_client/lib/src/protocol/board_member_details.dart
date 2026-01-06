@@ -19,6 +19,7 @@ abstract class BoardMemberDetails implements _i1.SerializableModel {
     this.email,
     required this.role,
     required this.joinedAt,
+    this.avatarUrl,
   });
 
   factory BoardMemberDetails({
@@ -28,6 +29,7 @@ abstract class BoardMemberDetails implements _i1.SerializableModel {
     String? email,
     required String role,
     required DateTime joinedAt,
+    String? avatarUrl,
   }) = _BoardMemberDetailsImpl;
 
   factory BoardMemberDetails.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,6 +41,7 @@ abstract class BoardMemberDetails implements _i1.SerializableModel {
       role: jsonSerialization['role'] as String,
       joinedAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['joinedAt']),
+      avatarUrl: jsonSerialization['avatarUrl'] as String?,
     );
   }
 
@@ -57,6 +60,8 @@ abstract class BoardMemberDetails implements _i1.SerializableModel {
 
   DateTime joinedAt;
 
+  String? avatarUrl;
+
   /// Returns a shallow copy of this [BoardMemberDetails]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -67,6 +72,7 @@ abstract class BoardMemberDetails implements _i1.SerializableModel {
     String? email,
     String? role,
     DateTime? joinedAt,
+    String? avatarUrl,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -77,6 +83,7 @@ abstract class BoardMemberDetails implements _i1.SerializableModel {
       if (email != null) 'email': email,
       'role': role,
       'joinedAt': joinedAt.toJson(),
+      if (avatarUrl != null) 'avatarUrl': avatarUrl,
     };
   }
 
@@ -96,6 +103,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
     String? email,
     required String role,
     required DateTime joinedAt,
+    String? avatarUrl,
   }) : super._(
           id: id,
           userId: userId,
@@ -103,6 +111,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
           email: email,
           role: role,
           joinedAt: joinedAt,
+          avatarUrl: avatarUrl,
         );
 
   /// Returns a shallow copy of this [BoardMemberDetails]
@@ -116,6 +125,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
     Object? email = _Undefined,
     String? role,
     DateTime? joinedAt,
+    Object? avatarUrl = _Undefined,
   }) {
     return BoardMemberDetails(
       id: id is int? ? id : this.id,
@@ -124,6 +134,7 @@ class _BoardMemberDetailsImpl extends BoardMemberDetails {
       email: email is String? ? email : this.email,
       role: role ?? this.role,
       joinedAt: joinedAt ?? this.joinedAt,
+      avatarUrl: avatarUrl is String? ? avatarUrl : this.avatarUrl,
     );
   }
 }

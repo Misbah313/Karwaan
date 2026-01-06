@@ -1,0 +1,9 @@
+class: BoardAnalytics
+table: board_analytics
+fields:
+  boardId: int, relation(parent=board)
+  totalCards: int
+  completedCards: int
+  completionPercentage: double
+  cardPerList: Map<String, int>?
+  lastUpdate: DateTime

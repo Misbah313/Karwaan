@@ -12,4 +12,13 @@ class Board {
       required this.createAt,
       // required this.createdBy
       });
+
+Board copyWith({
+  int? id,
+  String? boardName,
+  String? boardDescription,
+  DateTime? createAt,
+}) {
+  return Board(id: id ?? this.id, boardName: boardName ?? this.boardName, boardDescription: boardDescription ?? this.boardDescription, createAt: createAt ?? this.createAt);
+}
 }

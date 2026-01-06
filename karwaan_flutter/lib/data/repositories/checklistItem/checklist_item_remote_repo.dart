@@ -1,5 +1,5 @@
 import 'package:flutter/rendering.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/checklistItem/checklist_item.dart';
 import 'package:karwaan_flutter/domain/models/checklistItem/create_checklist_item_credentails.dart';
 import 'package:karwaan_flutter/domain/models/checklistItem/update_checklist_item_credentails.dart';

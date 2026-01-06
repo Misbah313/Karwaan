@@ -6,17 +6,20 @@ ThemeData darkTheme = ThemeData(
     scaffoldBackgroundColor: Colors.grey.shade800,
     // app theme
     colorScheme: ColorScheme.dark(
-      primary: Colors.grey.shade700,
-      surface: Colors.grey.shade900,
-      onSurface: Colors.grey.shade600,
-      secondary: Colors.blueGrey.shade800,
-      onSecondary: Colors.grey.shade800,
-    ),
+        primary: Colors.grey.shade700,
+        surface: Colors.grey.shade900,
+        onSurface: Colors.grey.shade600,
+        secondary: Colors.blueGrey.shade800,
+        onSecondary: Colors.grey.shade800,
+        onPrimaryContainer: Colors.grey[850],
+        onSecondaryContainer: Colors.black),
 
     // text theme
     textTheme: TextTheme(
         bodyLarge: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold, color: Colors.grey.shade300, fontSize: 25),
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade300,
+            fontSize: 25),
         displayMedium: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             color: Colors.grey.shade500,
@@ -27,10 +30,18 @@ ThemeData darkTheme = ThemeData(
         titleLarge: GoogleFonts.alef(color: Colors.grey.shade400),
         titleMedium: GoogleFonts.alef(
             fontWeight: FontWeight.w600, color: Colors.grey.shade300),
-        titleSmall: GoogleFonts.alef(color: Colors.grey.shade500)),
+        titleSmall: GoogleFonts.alef(color: Colors.grey.shade500),
+        displayLarge: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            color: Colors.grey.shade300),
+        displaySmall: GoogleFonts.poppins(
+            fontWeight: FontWeight.normal,
+            fontSize: 10,
+            color: Colors.grey.shade400)),
 
     // icon theme
-    iconTheme: IconThemeData(color: Colors.grey.shade500),
+    iconTheme: IconThemeData(color: Colors.grey.shade400),
 
     // divder theme
     dividerColor: Colors.grey.shade500,

@@ -47,9 +47,10 @@ class BoardLastOwner extends BoardMemberState {
 }
 
 class BoardMemberRoleChanging extends BoardMemberState {
+  final List<BoardMemberDetails> currentMembers;
   final int targetUserId;
 
-  BoardMemberRoleChanging(this.targetUserId);
+  BoardMemberRoleChanging(this.targetUserId, this.currentMembers);
 }
 
 class BoardMemberRoleChanged extends BoardMemberState {
@@ -64,4 +65,33 @@ class BoardMemberRoleChangingError extends BoardMemberState {
   final String error;
 
   BoardMemberRoleChangingError(this.error, this.userToChangeRoleId);
+}
+
+// state for optimized methods
+
+class BoardMemberRemoving extends BoardMemberState {
+  final List<BoardMemberDetails> currentMembers;
+  final int userId;
+  BoardMemberRemoving(this.currentMembers, this.userId);
+}
+
+class BoardMemberAdding extends BoardMemberState {
+  final List<BoardMemberDetails> currentMembers;
+  BoardMemberAdding(this.currentMembers);
+}
+
+// success state for optimized states
+class BoardMemberRoleChangedSuccessfully extends BoardMemberState {
+  final List<BoardMemberDetails> updatedMembers;
+  BoardMemberRoleChangedSuccessfully(this.updatedMembers);
+}
+
+class BoardMemberAddedSuccessfully extends BoardMemberState {
+  final List<BoardMemberDetails> updatedMembers;
+  BoardMemberAddedSuccessfully(this.updatedMembers);
+}
+
+class BoardMemberRemovedSuccessfully extends BoardMemberState {
+  final List<BoardMemberDetails> updatedMembers;
+  BoardMemberRemovedSuccessfully(this.updatedMembers);
 }

@@ -1,0 +1,102 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "over_all_analytics",
+        "dartName": "OverAllAnalytics",
+        "module": "karwaan",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('over_all_analytics_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "userId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "totalBoard",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "totalCard",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "completedCards",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "completionPercentage",
+            "columnType": 3,
+            "isNullable": false,
+            "dartType": "double"
+          },
+          {
+            "name": "cardsPerWorkspace",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,int>?"
+          },
+          {
+            "name": "cardsPerStatus",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,int>?"
+          },
+          {
+            "name": "lastUpdate",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "over_all_analytics_fk_0",
+            "columns": [
+              "userId"
+            ],
+            "referenceTable": "user",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "over_all_analytics_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

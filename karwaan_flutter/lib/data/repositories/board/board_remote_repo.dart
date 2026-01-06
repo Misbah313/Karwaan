@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/board/board.dart';
+import 'package:karwaan_flutter/domain/models/board/board_analytics.dart';
 import 'package:karwaan_flutter/domain/models/board/board_credentials.dart';
 import 'package:karwaan_flutter/domain/models/board/board_details.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member.dart';
@@ -8,6 +9,7 @@ import 'package:karwaan_flutter/domain/models/board/board_member_change_role_mod
 import 'package:karwaan_flutter/domain/models/board/board_member_credentails.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_details.dart';
 import 'package:karwaan_flutter/domain/models/board/create_board_credentials.dart';
+import 'package:karwaan_flutter/domain/models/board/overall_analytics.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 
 class BoardRemoteRepo extends BoardRepo {
@@ -144,7 +146,7 @@ class BoardRemoteRepo extends BoardRepo {
               userName: e.userName,
               userEmail: e.email!,
               userRole: e.role,
-              joinedAt: e.joinedAt))
+              joinedAt: e.joinedAt, avatarUrl: e.avatarUrl))
           .toList();
     } catch (e) {
       debugPrint(
@@ -173,6 +175,88 @@ class BoardRemoteRepo extends BoardRepo {
       await _clientService.leaveBoard(boardId);
     } catch (e) {
       debugPrint('Leaving board from remote repo error: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> trackRecentBoard(int boardId) async {
+    try {
+      await _clientService.trackUserBoard(boardId);
+    } catch (e) {
+      debugPrint('Tracking board filled from remote');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Board>> getUserRecentBoards() async {
+    try {
+      final boards = await _clientService.getUserRecentBoards();
+      return boards
+          .map((m) => Board(
+              id: m.id!,
+              boardName: m.name,
+              boardDescription: m.description,
+              createAt: m.createdAt))
+          .toList(); 
+    } catch (e) {
+      debugPrint('get user recent boards failed: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<BoardAnalytics> getBoardAnalytics(int boardId) async {
+    try {
+      final analytics = await _clientService.getBoardAnalytics(boardId);
+      return BoardAnalytics(
+          boardId: boardId,
+          totalCards: analytics.totalCards,
+          completedCards: analytics.completedCards,
+          completionPercentage: analytics.completionPercentage,
+          lastUpdate: analytics.lastUpdate);
+    } catch (e) {
+      debugPrint('analytics failed from remote: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<BoardAnalytics>> getAnalyticsForMultiBoards(
+      List<int> boardIds) async {
+    try {
+      final analyticsList =
+          await _clientService.getAnalyticsForMultiBoards(boardIds);
+      return analyticsList
+          .map((analytics) => BoardAnalytics(
+                boardId: analytics.boardId,
+                totalCards: analytics.totalCards,
+                completedCards: analytics.completedCards,
+                completionPercentage: analytics.completionPercentage,
+                cardPerList: analytics.cardPerList,
+                lastUpdate: analytics.lastUpdate,
+              ))
+          .toList();
+    } catch (e) {
+      debugPrint('get multi analytics failed from remote: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<OverallAnalytics> getOverAllAnalytics() async {
+    try {
+      final overall = await _clientService.getOverAllAnalytics();
+      return OverallAnalytics(
+          userId: overall.userId,
+          totalCards: overall.totalCard,
+          totalBoard: overall.totalBoard,
+          compeletedCards: overall.completedCards,
+          completionPercentage: overall.completionPercentage,
+          lastUpdate: overall.lastUpdate);
+    } catch (e) {
+      debugPrint('overall analytics failed from remote: $e');
       rethrow;
     }
   }

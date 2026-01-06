@@ -19,6 +19,8 @@ abstract class Workspace
     this.description,
     required this.createdAt,
     required this.ownerId,
+    this.backgroundColor,
+    this.isPrivate,
   });
 
   factory Workspace({
@@ -27,6 +29,8 @@ abstract class Workspace
     String? description,
     required DateTime createdAt,
     required int ownerId,
+    String? backgroundColor,
+    bool? isPrivate,
   }) = _WorkspaceImpl;
 
   factory Workspace.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,6 +41,8 @@ abstract class Workspace
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       ownerId: jsonSerialization['ownerId'] as int,
+      backgroundColor: jsonSerialization['backgroundColor'] as String?,
+      isPrivate: jsonSerialization['isPrivate'] as bool?,
     );
   }
 
@@ -55,6 +61,10 @@ abstract class Workspace
 
   int ownerId;
 
+  String? backgroundColor;
+
+  bool? isPrivate;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -67,6 +77,8 @@ abstract class Workspace
     String? description,
     DateTime? createdAt,
     int? ownerId,
+    String? backgroundColor,
+    bool? isPrivate,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -76,6 +88,8 @@ abstract class Workspace
       if (description != null) 'description': description,
       'createdAt': createdAt.toJson(),
       'ownerId': ownerId,
+      if (backgroundColor != null) 'backgroundColor': backgroundColor,
+      if (isPrivate != null) 'isPrivate': isPrivate,
     };
   }
 
@@ -87,6 +101,8 @@ abstract class Workspace
       if (description != null) 'description': description,
       'createdAt': createdAt.toJson(),
       'ownerId': ownerId,
+      if (backgroundColor != null) 'backgroundColor': backgroundColor,
+      if (isPrivate != null) 'isPrivate': isPrivate,
     };
   }
 
@@ -129,12 +145,16 @@ class _WorkspaceImpl extends Workspace {
     String? description,
     required DateTime createdAt,
     required int ownerId,
+    String? backgroundColor,
+    bool? isPrivate,
   }) : super._(
           id: id,
           name: name,
           description: description,
           createdAt: createdAt,
           ownerId: ownerId,
+          backgroundColor: backgroundColor,
+          isPrivate: isPrivate,
         );
 
   /// Returns a shallow copy of this [Workspace]
@@ -147,6 +167,8 @@ class _WorkspaceImpl extends Workspace {
     Object? description = _Undefined,
     DateTime? createdAt,
     int? ownerId,
+    Object? backgroundColor = _Undefined,
+    Object? isPrivate = _Undefined,
   }) {
     return Workspace(
       id: id is int? ? id : this.id,
@@ -154,6 +176,9 @@ class _WorkspaceImpl extends Workspace {
       description: description is String? ? description : this.description,
       createdAt: createdAt ?? this.createdAt,
       ownerId: ownerId ?? this.ownerId,
+      backgroundColor:
+          backgroundColor is String? ? backgroundColor : this.backgroundColor,
+      isPrivate: isPrivate is bool? ? isPrivate : this.isPrivate,
     );
   }
 }
@@ -176,6 +201,14 @@ class WorkspaceTable extends _i1.Table<int?> {
       'ownerId',
       this,
     );
+    backgroundColor = _i1.ColumnString(
+      'backgroundColor',
+      this,
+    );
+    isPrivate = _i1.ColumnBool(
+      'isPrivate',
+      this,
+    );
   }
 
   late final _i1.ColumnString name;
@@ -186,6 +219,10 @@ class WorkspaceTable extends _i1.Table<int?> {
 
   late final _i1.ColumnInt ownerId;
 
+  late final _i1.ColumnString backgroundColor;
+
+  late final _i1.ColumnBool isPrivate;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -193,6 +230,8 @@ class WorkspaceTable extends _i1.Table<int?> {
         description,
         createdAt,
         ownerId,
+        backgroundColor,
+        isPrivate,
       ];
 }
 

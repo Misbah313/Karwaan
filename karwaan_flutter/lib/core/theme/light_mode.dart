@@ -6,12 +6,13 @@ ThemeData lightTheme = ThemeData(
     scaffoldBackgroundColor: Colors.grey.shade300,
     // app theme
     colorScheme: ColorScheme.light(
-      primary: Color(0xFFD6D6D6),
-      secondary: Colors.blueGrey.shade300,
-      onSecondary: Colors.grey.shade300,
-      surface: Colors.grey.shade400,
-      onSurface: Colors.grey.shade300,
-    ),
+        primary: Color(0xFFD6D6D6),
+        secondary: Colors.blueGrey.shade300,
+        onSecondary: Colors.grey.shade300,
+        surface: Colors.grey.shade400,
+        onSurface: Colors.grey.shade300,
+        onPrimaryContainer: Colors.grey[350],
+        onSecondaryContainer: Colors.grey[250]),
 
     // text theme
     textTheme: TextTheme(
@@ -19,7 +20,10 @@ ThemeData lightTheme = ThemeData(
             fontWeight: FontWeight.bold,
             color: Colors.grey.shade800,
             fontSize: 25),
-            displayMedium: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.grey.shade500, fontSize: 20),
+        displayMedium: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade500,
+            fontSize: 20),
         bodyMedium: GoogleFonts.alef(
             color: Colors.grey.shade700, fontWeight: FontWeight.w500),
         bodySmall: GoogleFonts.alef(color: Colors.grey.shade600),
@@ -27,10 +31,18 @@ ThemeData lightTheme = ThemeData(
             fontWeight: FontWeight.bold, color: Colors.grey),
         titleMedium: GoogleFonts.alef(
             fontWeight: FontWeight.w600, color: Colors.grey.shade600),
-        titleSmall: GoogleFonts.alef(color: Colors.grey)),
+        titleSmall: GoogleFonts.alef(color: Colors.grey),
+        displayLarge: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            color: Colors.grey.shade800),
+        displaySmall: GoogleFonts.poppins(
+            fontSize: 10,
+            fontWeight: FontWeight.normal,
+            color: Colors.grey.shade700)),
 
     // icon themes
-    iconTheme: IconThemeData(color: Colors.grey.shade500),
+    iconTheme: IconThemeData(color: Colors.grey.shade700),
 
     // divider theme
     dividerColor: Colors.grey.shade500,

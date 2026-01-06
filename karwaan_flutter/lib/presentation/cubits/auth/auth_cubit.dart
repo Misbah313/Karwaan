@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:karwaan_flutter/core/services/auth_token_storage_helper.dart';
+import 'package:karwaan_flutter/core/services/client/auth_token_storage_helper.dart';
 import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_credentials.dart';
 import 'package:karwaan_flutter/domain/repository/auth/auth_repo.dart';
@@ -36,6 +36,23 @@ class AuthCubit extends Cubit<AuthStateCheck> {
     try {
       await authRepo.registerUser(credential, name);
       emit(RegisterationSuccess(credential.email));
+    } catch (e) {
+      emit(AuthError(ExceptionMapper.toMessage(e)));
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  // google auth
+  Future<void> googleAuth() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    emit(AuthLoading());
+
+    try {
+      final user = await authRepo.googleAuth();
+      emit(AuthAuthenticated(user));
     } catch (e) {
       emit(AuthError(ExceptionMapper.toMessage(e)));
       rethrow;

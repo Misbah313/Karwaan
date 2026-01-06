@@ -67,8 +67,14 @@ void main() {
       final session = sessionBuilder.build();
 
       // create workspace
-      final workspace = await endpoints.workspace
-          .createWorkspace(sessionBuilder, 'Workspace', 'dec', ownerToken);
+      final workspace = await endpoints.workspace.createWorkspace(
+        sessionBuilder,
+        'Workspace',
+        'dec',
+        ownerToken,
+        backgroundColor: '#6B7280',
+        isPrivate: false,
+      );
 
       // create the board
       final board = await endpoints.board.createBoard(
@@ -91,8 +97,14 @@ void main() {
 
     test('getUserBoard', () async {
       // create workspace
-      final createdWorkspace = await endpoints.workspace
-          .createWorkspace(sessionBuilder, 'Workspace', 'Wdec', ownerToken);
+      final createdWorkspace = await endpoints.workspace.createWorkspace(
+        sessionBuilder,
+        'Workspace',
+        'Wdec',
+        ownerToken,
+        backgroundColor: '#6B7280',
+        isPrivate: false,
+      );
 
       // create board
       final createdBoard = await endpoints.board.createBoard(
@@ -129,8 +141,14 @@ void main() {
 
     test('getUserBoards', () async {
       // create worksapce
-      final createdWorkspace = await endpoints.workspace
-          .createWorkspace(sessionBuilder, 'Workspace', 'Wdec', ownerToken);
+      final createdWorkspace = await endpoints.workspace.createWorkspace(
+        sessionBuilder,
+        'Workspace',
+        'Wdec',
+        ownerToken,
+        backgroundColor: '#6B7280',
+        isPrivate: false,
+      );
 
       // create1 board
       final createdBoard = await endpoints.board.createBoard(
@@ -163,8 +181,14 @@ void main() {
     test('updateBoard', () async {
       final session = sessionBuilder.build();
       // create parent workspace
-      final workspace = await endpoints.workspace
-          .createWorkspace(sessionBuilder, 'Workspace', 'Wdec', ownerToken);
+      final workspace = await endpoints.workspace.createWorkspace(
+        sessionBuilder,
+        'Workspace',
+        'Wdec',
+        ownerToken,
+        backgroundColor: '#6B7280',
+        isPrivate: false,
+      );
 
       // create board
       final board = await endpoints.board.createBoard(
@@ -188,8 +212,14 @@ void main() {
     test('deleteBoard', () async {
       final session = sessionBuilder.build();
       // crate parent workspace
-      final workspace = await endpoints.workspace
-          .createWorkspace(sessionBuilder, 'Workspace', 'Wdec', ownerToken);
+      final workspace = await endpoints.workspace.createWorkspace(
+        sessionBuilder,
+        'Workspace',
+        'Wdec',
+        ownerToken,
+        backgroundColor: '#6B7280',
+        isPrivate: false,
+      );
 
       // create board
       final board = await endpoints.board.createBoard(

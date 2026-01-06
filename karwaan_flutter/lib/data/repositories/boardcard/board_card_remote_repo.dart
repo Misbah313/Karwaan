@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card_credentails.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/create_board_card_credentails.dart';
@@ -46,6 +46,28 @@ class BoardCardRemoteRepo extends BoardcardRepo {
     } catch (e) {
       debugPrint(
           'Board card fetching failed from remote repo: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<BoardCard>> getAllUserCards() async {
+    try {
+      final cards = await _clientService.getAllUserCards();
+      debugPrint('Raw cards from service: ${cards.length}');
+      final mapppedCards = cards
+          .map((e) => BoardCard(
+              id: e.id!,
+              boardListId: e.list,
+              title: e.title,
+              description: e.description ?? '',
+              createdAt: e.createdAt,
+              isCompleted: e.isCompleted))
+          .toList();
+      debugPrint('mapped cards: ${mapppedCards.length}');
+      return mapppedCards;
+    } catch (e) {
+      debugPrint('cards fetching failed from remote repo: $e');
       rethrow;
     }
   }

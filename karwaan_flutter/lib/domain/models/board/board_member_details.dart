@@ -4,11 +4,13 @@ class BoardMemberDetails {
   final String userEmail;
   final String userRole;
   final DateTime joinedAt;
+  final String? avatarUrl;
 
   BoardMemberDetails(
       {required this.userId,
       required this.userName,
       required this.userEmail,
       required this.userRole,
-      required this.joinedAt});
+      required this.joinedAt,
+      this.avatarUrl});
 }

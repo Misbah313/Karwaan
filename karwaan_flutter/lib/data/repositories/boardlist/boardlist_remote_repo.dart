@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:karwaan_flutter/core/services/serverpod_client_service.dart';
+import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/boardlist.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/boardlist_credentails.dart';
 import 'package:karwaan_flutter/domain/models/boardlist/create_board_list_credentails.dart';

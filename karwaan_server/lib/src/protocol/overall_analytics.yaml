@@ -1,0 +1,11 @@
+class: OverAllAnalytics
+table: over_all_analytics
+fields:
+  userId: int, relation(parent=user)
+  totalBoard: int
+  totalCard: int
+  completedCards: int
+  completionPercentage: double
+  cardsPerWorkspace: Map<String, int>?
+  cardsPerStatus: Map<String, int>?
+  lastUpdate: DateTime

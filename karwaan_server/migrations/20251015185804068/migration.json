@@ -1,0 +1,90 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "board_analytics",
+        "dartName": "BoardAnalytics",
+        "module": "karwaan",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('board_analytics_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "boardId",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "totalCards",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "completedCards",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "int"
+          },
+          {
+            "name": "completionPercentage",
+            "columnType": 3,
+            "isNullable": false,
+            "dartType": "double"
+          },
+          {
+            "name": "cardPerList",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,int>?"
+          },
+          {
+            "name": "lastUpdate",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "board_analytics_fk_0",
+            "columns": [
+              "boardId"
+            ],
+            "referenceTable": "board",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "board_analytics_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
