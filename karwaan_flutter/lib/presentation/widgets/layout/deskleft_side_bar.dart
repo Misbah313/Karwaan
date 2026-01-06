@@ -2,7 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:karwaan_flutter/core/services/workspace/app_naviagation_service.dart';
+import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_context_cubit.dart';
 import 'package:karwaan_flutter/presentation/widgets/side_bar_item.dart';
+import 'package:provider/provider.dart';
 
 class LeftSidebar extends StatelessWidget {
   final String selectedMenu;
@@ -81,7 +83,12 @@ class LeftSidebar extends StatelessWidget {
               icon: item.icon,
               label: item.label,
               selected: selectedMenu == item.label,
-              onTap: () => navigationService.navigateToPage(item.index, item.label),
+              onTap: () {
+                if (item.label == "Boards") {
+                  context.read<WorkspaceContextCubit>().clearCurrentWorkspace();
+                }
+                navigationService.navigateToPage(item.index, item.label);
+              },
             ),
             const SizedBox(height: 10),
           ],
