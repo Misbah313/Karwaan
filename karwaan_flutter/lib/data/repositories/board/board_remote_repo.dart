@@ -199,7 +199,7 @@ class BoardRemoteRepo extends BoardRepo {
               boardName: m.name,
               boardDescription: m.description,
               createAt: m.createdAt))
-          .toList(); // ← Add .toList() here
+          .toList(); 
     } catch (e) {
       debugPrint('get user recent boards failed: ${e.toString()}');
       rethrow;
@@ -234,7 +234,7 @@ class BoardRemoteRepo extends BoardRepo {
                 totalCards: analytics.totalCards,
                 completedCards: analytics.completedCards,
                 completionPercentage: analytics.completionPercentage,
-                cardPerList: analytics.cardPerList, // ADD THIS
+                cardPerList: analytics.cardPerList,
                 lastUpdate: analytics.lastUpdate,
               ))
           .toList();
