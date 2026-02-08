@@ -5,6 +5,7 @@ class BoardAnalytics {
   final double completionPercentage;
   final Map<String, int>? cardPerList;
   final DateTime lastUpdate;
+  final String? boardName;
 
   BoardAnalytics(
       {required this.boardId,
@@ -12,5 +13,6 @@ class BoardAnalytics {
       required this.completedCards,
       required this.completionPercentage,
       this.cardPerList,
-      required this.lastUpdate});
+      required this.lastUpdate,
+      this.boardName});
 }

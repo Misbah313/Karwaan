@@ -2,6 +2,7 @@ class: BoardAnalytics
 table: board_analytics
 fields:
   boardId: int, relation(parent=board)
+  boardName: String?
   totalCards: int
   completedCards: int
   completionPercentage: double

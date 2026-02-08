@@ -10,32 +10,37 @@ abstract class AppNavigationService {
 
 class AppNavigationServiceImpl implements AppNavigationService {
   final PageController mainContentController;
-  final PageController sidebarController;
+  // final PageController sidebarController;
   final Function(String) onMenuChange;
   final LogoutDialogService logoutDialogService;
 
   AppNavigationServiceImpl({
     required this.mainContentController,
-    required this.sidebarController,
+    // required this.sidebarController,
     required this.onMenuChange,
     required this.logoutDialogService,
   });
 
   @override
   void navigateToPage(int index, String menuName) {
+
     onMenuChange(menuName);
     
-    mainContentController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    Future.delayed(Duration.zero, () {
+      if (mainContentController.hasClients) {
+        mainContentController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
 
-    sidebarController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
+    // sidebarController.animateToPage(
+    //   index,
+    //   duration: const Duration(milliseconds: 400),
+    //   curve: Curves.easeInOut,
+    // );
   }
 
   @override

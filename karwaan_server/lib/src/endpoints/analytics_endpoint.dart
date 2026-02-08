@@ -23,6 +23,9 @@ class AnalyticsEndpoint extends Endpoint {
     }
 
     try {
+      // fetch the board by id to access its name
+      final board = await Board.db.findById(session, boardId);
+      final String? fetchedBoardName = board?.name;
       // get all boardlist in this board
       final boardlist = await BoardList.db.find(
         session,
@@ -31,6 +34,7 @@ class AnalyticsEndpoint extends Endpoint {
       if (boardlist.isEmpty) {
         return BoardAnalytics(
             boardId: boardId,
+            boardName: fetchedBoardName,
             totalCards: 0,
             completedCards: 0,
             completionPercentage: 0.0,
@@ -58,6 +62,7 @@ class AnalyticsEndpoint extends Endpoint {
       // return the analytics
       return BoardAnalytics(
           boardId: boardId,
+          boardName: fetchedBoardName,
           totalCards: totalCards,
           completedCards: completedTasks,
           completionPercentage: completionPercentages,
@@ -77,8 +82,8 @@ class AnalyticsEndpoint extends Endpoint {
   }
 
   // get analytics for multiple boards(for dashboard boards)
-  Future<List<BoardAnalytics>> getAnalyticsForMultiBoards(
-      Session session, List<int> boardIds, String token) async {
+  Future<List<BoardAnalytics>> getAnalyticsForMultiBoards(Session session,
+      List<int> boardIds, String token) async {
     // get the current user
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
@@ -86,10 +91,11 @@ class AnalyticsEndpoint extends Endpoint {
     }
 
     final results = <BoardAnalytics>[];
-
+    
     for (final boardId in boardIds) {
       try {
-        final analytics = await getBoardAnalytics(session, boardId, token);
+        final analytics =
+            await getBoardAnalytics(session, boardId, token);
         results.add(analytics);
       } catch (e) {
         // Skip failed boards but continue with others

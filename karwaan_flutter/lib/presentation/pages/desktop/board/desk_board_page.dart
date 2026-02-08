@@ -1,3 +1,8 @@
+// DeskBoardPage operates in two explicit modes:
+// - BoardPageMode.workspaceScoped: boards limited to a workspace
+// - BoardPageMode.global: all boards user is a member of
+//
+// Mode semantics intentionally mirror previous workspaceId == null behavior.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/core/services/board/board_options_service.dart';
@@ -6,8 +11,11 @@ import 'package:karwaan_flutter/domain/models/board/board_state.dart';
 import 'package:karwaan_flutter/domain/models/board/board_wrapper.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_preview_analytics_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_preview_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_context_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/desktop/board/board_page_mode.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/board/create_desk_board_dialog.dart';
 
 class DeskBoardPage extends StatefulWidget {
@@ -45,6 +53,7 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
 
   void _onWorkspaceChanged(BuildContext context, WorkspaceContextState state) {
     _fetchForWorkspace(state.workspaceId);
+    context.read<BoardPreviewCubit>().clear();
   }
 
   void _onBoardStateChanged(BuildContext context, BoardState state) {
@@ -91,13 +100,28 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
           listener: _onWorkspaceChanged,
         ),
         BlocListener<BoardCubit, BoardState>(listener: _onBoardStateChanged),
+        BlocListener<BoardPreviewCubit, int?>(
+          listenWhen: (previous, current) => previous != current,
+          listener: (context, boardId) {
+            final analyticsCubit = context.read<BoardPreviewAnalyticsCubit>();
+
+            if (boardId == null) {
+              analyticsCubit.clear();
+            } else {
+              analyticsCubit.loadForBoard(boardId);
+            }
+          },
+        )
       ],
       child: BlocBuilder<WorkspaceContextCubit, WorkspaceContextState>(
         builder: (context, workspace) {
           final hasSpecificWorkspace = workspace.workspaceId != null;
+          final mode = workspace.workspaceId != null
+              ? BoardPageMode.workspaceScoped
+              : BoardPageMode.global;
           return Column(
             children: [
-              _buildHeader(workspace, hasSpecificWorkspace),
+              _buildHeader(workspace, hasSpecificWorkspace, mode),
               _buildDivider(context),
               Expanded(
                 child: BlocBuilder<BoardCubit, BoardState>(
@@ -110,7 +134,7 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
                     // ALWAYS show cached boards if available (even on error)
                     if (_cachedBoards.isNotEmpty) {
                       return _buildBoardsList(_cachedBoards,
-                          workspaceId: workspace.workspaceId);
+                          workspaceId: workspace.workspaceId, mode: mode);
                     }
 
                     // Only show loading/empty states when NO cached data
@@ -120,7 +144,7 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
 
                     if (state is BoardError) {
                       // Error already shown in banner by listener
-                      return _buildEmptyState(workspace.workspaceId);
+                      return _buildEmptyState(workspace.workspaceId, mode);
                     }
 
                     if (state is BoardsFromWorkspaceLoaded &&
@@ -129,18 +153,18 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
                       final wrapped =
                           state.boards.map((b) => BoardWrapper(b)).toList();
                       return _buildBoardsList(wrapped,
-                          workspaceId: workspace.workspaceId);
+                          workspaceId: workspace.workspaceId, mode: mode);
                     }
 
                     if (state is BoardlistLoaded &&
                         workspace.workspaceId == null) {
                       final wrapped =
                           state.boards.map((b) => BoardWrapper(b)).toList();
-                      return _buildBoardsList(wrapped);
+                      return _buildBoardsList(wrapped, mode: mode);
                     }
 
                     // Default empty state
-                    return _buildEmptyState(workspace.workspaceId);
+                    return _buildEmptyState(workspace.workspaceId, mode);
                   },
                 ),
               ),
@@ -152,8 +176,8 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
   }
 
   // --- UI helpers ---
-  Widget _buildHeader(
-          WorkspaceContextState workspaceState, bool hasSpecificWorkspace) =>
+  Widget _buildHeader(WorkspaceContextState workspaceState,
+          bool hasSpecificWorkspace, BoardPageMode mode) =>
       Container(
         padding: const EdgeInsets.all(20),
         margin: EdgeInsets.all(16),
@@ -171,13 +195,13 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      hasSpecificWorkspace
+                      mode == BoardPageMode.workspaceScoped
                           ? workspaceState.workspaceName!
                           : 'All Boards',
                       style: Theme.of(context).textTheme.bodyLarge),
                   const SizedBox(height: 8),
                   Text(
-                      hasSpecificWorkspace
+                      mode == BoardPageMode.workspaceScoped
                           ? workspaceState.workspaceDescription!
                           : 'Boards you are member/a member to its parent workspace.',
                       style: Theme.of(context).textTheme.bodySmall),
@@ -185,8 +209,9 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
               ),
             ),
             SizedBox(width: 20),
-            _buildCreateBoardButton(
-                hasSpecificWorkspace ? workspaceState.workspaceId : null),
+            _buildCreateBoardButton(mode == BoardPageMode.workspaceScoped
+                ? workspaceState.workspaceId
+                : null),
           ],
         ),
       );
@@ -214,18 +239,29 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
     );
   }
 
-  Widget _buildBoardsList(List<BoardWrapper> boards, {int? workspaceId}) {
-    if (boards.isEmpty) return _buildEmptyState(workspaceId);
+  Widget _buildBoardsList(List<BoardWrapper> boards,
+      {int? workspaceId, required BoardPageMode mode}) {
+    final selectedBoardId = context.watch<BoardPreviewCubit>().state;
+    if (boards.isEmpty) return _buildEmptyState(workspaceId, mode);
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: boards.length,
       itemBuilder: (context, i) {
         final board = boards[i];
+        final isSelected = board.id == selectedBoardId;
         return Card(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                  color: isSelected
+                      ? Colors.blue.shade500.withValues(alpha: 0.4)
+                      : Colors.transparent)),
           elevation: 0,
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.black.withValues(alpha: 0.04),
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.08)
+              : Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.04),
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: Container(
@@ -258,28 +294,26 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
   Widget _buildLoadingState() =>
       const Center(child: CircularProgressIndicator());
 
-  Widget _buildEmptyState(int? workspaceId) => Center(
+  Widget _buildEmptyState(int? workspaceId, BoardPageMode mode) => Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.dashboard_outlined,
-              size: 64,
-              color: Theme.of(context)
-                  .iconTheme.color),
+              size: 64, color: Theme.of(context).iconTheme.color),
           const SizedBox(height: 16),
           Text(
-              workspaceId != null
+              mode == BoardPageMode.workspaceScoped
                   ? 'No boards in this workspace'
                   : 'No boards found',
               style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 8),
           Text(
-            workspaceId != null
+            mode == BoardPageMode.workspaceScoped
                 ? 'Create your first board to get started'
                 : 'No boards found. Enter a workspace to create boards.',
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          if (workspaceId != null)
+          if (mode == BoardPageMode.workspaceScoped)
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     elevation: 0,
@@ -295,7 +329,7 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
                             .withValues(alpha: 0.5)),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10))),
-                onPressed: () => _showCreateBoardDialog(workspaceId),
+                onPressed: () => _showCreateBoardDialog(workspaceId!),
                 child: Text(
                   'Create Board',
                   style: Theme.of(context).textTheme.bodySmall,
@@ -316,8 +350,10 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
     final bannerManager = context.read<BannerManager>();
     showDialog(
       context: context,
-      builder: (context) =>
-          CreateBoardDialog(workspaceId: workspaceId, boardCubit: boardCubit, bannerManager: bannerManager),
+      builder: (context) => CreateBoardDialog(
+          workspaceId: workspaceId,
+          boardCubit: boardCubit,
+          bannerManager: bannerManager),
     );
   }
 
@@ -332,6 +368,9 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
     optionService.showOptionsDialog(context: context, board: board);
   }
 
-  void _navigateToBoard(dynamic board) =>
-      context.read<BannerManager>().show('Board navigation coming soon!');
+  void _navigateToBoard(dynamic board) {
+    context.read<BannerManager>().show('Double Click To Navigate.',
+        backgroundColor: Theme.of(context).colorScheme.primary);
+    context.read<BoardPreviewCubit>().selectBoard(board.id);
+  }
 }

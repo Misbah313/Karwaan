@@ -5,32 +5,37 @@ import 'package:karwaan_flutter/domain/models/workspace/workspace_member_details
 class MemberAvatar extends StatelessWidget {
   final WorkspaceMemberDetail member;
   final MemberService memberService;
+  final double? size; 
 
   const MemberAvatar({
     super.key,
     required this.member,
     required this.memberService,
+    this.size, 
   });
 
   @override
   Widget build(BuildContext context) {
+    final double avatarSize = size ?? 40.0; 
+
     return CircleAvatar(
-      radius: 20,
-      backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+      radius: avatarSize / 2,
+      backgroundColor:
+          Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
       child: member.avatarUrl != null && member.avatarUrl!.isNotEmpty
-          ? _buildNetworkAvatar()
+          ? _buildNetworkAvatar(avatarSize)
           : _buildFallbackAvatar(),
     );
   }
 
-  Widget _buildNetworkAvatar() {
+  Widget _buildNetworkAvatar(double avatarSize) {
     final imageBytes = memberService.base64ToImage(member.avatarUrl!);
-    
+
     return ClipOval(
       child: Image.memory(
         imageBytes,
-        width: 40,
-        height: 40,
+        width: avatarSize,
+        height: avatarSize,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return _buildFallbackAvatar();

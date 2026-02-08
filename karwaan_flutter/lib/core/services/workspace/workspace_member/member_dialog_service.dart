@@ -152,7 +152,7 @@ class MemberDialogServiceImpl implements MemberDialogService {
                         backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
                       child: Text(
-                        'Send Invite',
+                        'Add',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
