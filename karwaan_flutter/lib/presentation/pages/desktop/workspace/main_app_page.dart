@@ -5,8 +5,11 @@ import 'package:karwaan_flutter/core/services/client/profile_image_service.dart'
 import 'package:karwaan_flutter/core/services/client/serverpod_client_service.dart';
 import 'package:karwaan_flutter/core/services/workspace/app_naviagation_service.dart';
 import 'package:karwaan_flutter/core/services/workspace/logout_dialog_service.dart';
+import 'package:karwaan_flutter/core/services/workspace/workspace_member/member_service.dart';
 import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_preview_analytics_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_preview_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/main_layout_cubit.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
@@ -20,6 +23,7 @@ import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/overall_analytic_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardcard/board_card_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_context_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/desktop/board/board_page_rightside_bar.dart';
 import 'package:karwaan_flutter/presentation/widgets/layout/deskleft_side_bar.dart';
 import 'package:karwaan_flutter/presentation/widgets/layout/deskmain_content_area.dart';
 import 'package:karwaan_flutter/presentation/widgets/layout/deskright_side_bar.dart';
@@ -35,16 +39,18 @@ class MainAppPage extends StatefulWidget {
 
 class _MainAppPageState extends State<MainAppPage> {
   final PageController _mainContentController = PageController();
-  final PageController _sidebarController = PageController();
+  // final PageController _sidebarController = PageController();
 
   late ProfileImageService _profileImageService;
   late AppThemeService _appThemeService;
   late LogoutDialogService _logoutDialogService;
   late AppNavigationService _appNavigationService;
+  late BoardPreviewCubit _previewCubit;
 
   @override
   void initState() {
     super.initState();
+    _previewCubit = BoardPreviewCubit();
     _initializeServices();
   }
 
@@ -62,7 +68,6 @@ class _MainAppPageState extends State<MainAppPage> {
     _logoutDialogService = LogoutDialogServiceImpl(authCubit: authCubit);
     _appNavigationService = AppNavigationServiceImpl(
       mainContentController: _mainContentController,
-      sidebarController: _sidebarController,
       onMenuChange: _handleMenuChange,
       logoutDialogService: _logoutDialogService,
     );
@@ -75,7 +80,7 @@ class _MainAppPageState extends State<MainAppPage> {
   @override
   void dispose() {
     _mainContentController.dispose();
-    _sidebarController.dispose();
+    // _sidebarController.dispose();
     super.dispose();
   }
 
@@ -93,8 +98,9 @@ class _MainAppPageState extends State<MainAppPage> {
         } else if (state is AuthAuthenticated) {
           return MultiBlocProvider(
             providers: [
+              BlocProvider.value(value: _previewCubit),
               // auth & user
-              BlocProvider(create: (_) => WorkspaceContextCubit()),
+              BlocProvider(create: (_) => WorkspaceContextCubit(_previewCubit)),
               Provider<AppNavigationService>(
                 create: (context) => _appNavigationService,
               ),
@@ -121,6 +127,10 @@ class _MainAppPageState extends State<MainAppPage> {
                   context.read<OverallAnalyticsCubit>(),
                 ),
               ),
+              BlocProvider(
+                create: (context) =>
+                    BoardPreviewAnalyticsCubit(context.read<BoardRepo>()),
+              )
 
               // other provider will be here
             ],
@@ -162,25 +172,43 @@ class _MainAppPageState extends State<MainAppPage> {
   }
 
   Widget _buildRightSidebar(AuthUser user, String currentMenu) {
+    final sideBar = _getSideBarForPage(currentMenu, user);
+
+    if (sideBar == null) {
+      return const SizedBox.shrink();
+    }
+
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.25,
-      child: PageView(
-        controller: _sidebarController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          DashboardRightSidebar(
-            user: user,
-            profileImageService: _profileImageService,
-            navigationService: _appNavigationService,
-            themeService: _appThemeService,
-          ),
-          _buildSimpleRightSidebar('Boards Sidebar'),
-          _buildSimpleRightSidebar('Analytics Sidebar'),
-          _buildSimpleRightSidebar('Teams Sidebar'),
-          _buildSimpleRightSidebar('Settings Sidebar'),
-        ],
-      ),
-    );
+        width: MediaQuery.of(context).size.width * 0.25, child: sideBar
+        );
+  }
+
+  Widget? _getSideBarForPage(String pageName, AuthUser user) {
+    switch (pageName) {
+      case 'Dashboard':
+        return DashboardRightSidebar(
+          user: user,
+          profileImageService: _profileImageService,
+          navigationService: _appNavigationService,
+          themeService: _appThemeService,
+        );
+      case 'Boards':
+        return BoardPageRightsideBar(
+          user: user,
+          profileImageService: _profileImageService,
+          navigationService: _appNavigationService,
+          themeService: _appThemeService,
+          memberService: MemberService(),
+        );
+      case 'Analysis':
+        return null;
+      case 'Teams':
+        return _buildSimpleRightSidebar('Teams in person');
+      case 'Settings':
+        return _buildSimpleRightSidebar('Fast settings');
+      default:
+        return null;
+    }
   }
 
   Widget _buildSimpleRightSidebar(String title) {
