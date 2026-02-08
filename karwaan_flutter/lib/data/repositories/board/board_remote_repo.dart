@@ -212,9 +212,11 @@ class BoardRemoteRepo extends BoardRepo {
       final analytics = await _clientService.getBoardAnalytics(boardId);
       return BoardAnalytics(
           boardId: boardId,
+          boardName: analytics.boardName,
           totalCards: analytics.totalCards,
           completedCards: analytics.completedCards,
           completionPercentage: analytics.completionPercentage,
+          cardPerList: analytics.cardPerList,
           lastUpdate: analytics.lastUpdate);
     } catch (e) {
       debugPrint('analytics failed from remote: $e');
