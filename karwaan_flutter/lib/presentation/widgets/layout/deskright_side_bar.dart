@@ -5,7 +5,7 @@ import 'package:karwaan_flutter/core/services/workspace/app_naviagation_service.
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 import 'package:karwaan_flutter/presentation/widgets/focus_time_calendar.dart';
-import 'package:karwaan_flutter/presentation/widgets/overall_progress_section.dart';
+import 'package:karwaan_flutter/presentation/widgets/dashboard_overall_progress_section.dart';
 import 'package:karwaan_flutter/presentation/widgets/profile_avatar.dart';
 import 'package:provider/provider.dart'; // Add this import
 
