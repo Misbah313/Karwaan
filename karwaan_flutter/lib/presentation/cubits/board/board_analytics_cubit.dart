@@ -17,4 +17,13 @@ class BoardAnalyticsCubit extends Cubit<BoardAnalyticsState> {
       emit(BoardAnalyticError(ExceptionMapper.toMessage(e)));
     }
   }
+
+  Future<void> getBoardAnalytics(int boardId) async {
+    try {
+      final boardAnalytics = await boardRepo.getBoardAnalytics(boardId);
+      emit(BoardAnalyticsLoaded(boardAnalytics));
+    } catch (e) {
+      emit(BoardAnalyticError(ExceptionMapper.toMessage(e)));
+    }
+  }
 }
