@@ -15,6 +15,7 @@ abstract class BoardAnalytics implements _i1.SerializableModel {
   BoardAnalytics._({
     this.id,
     required this.boardId,
+    this.boardName,
     required this.totalCards,
     required this.completedCards,
     required this.completionPercentage,
@@ -25,6 +26,7 @@ abstract class BoardAnalytics implements _i1.SerializableModel {
   factory BoardAnalytics({
     int? id,
     required int boardId,
+    String? boardName,
     required int totalCards,
     required int completedCards,
     required double completionPercentage,
@@ -36,6 +38,7 @@ abstract class BoardAnalytics implements _i1.SerializableModel {
     return BoardAnalytics(
       id: jsonSerialization['id'] as int?,
       boardId: jsonSerialization['boardId'] as int,
+      boardName: jsonSerialization['boardName'] as String?,
       totalCards: jsonSerialization['totalCards'] as int,
       completedCards: jsonSerialization['completedCards'] as int,
       completionPercentage:
@@ -57,6 +60,8 @@ abstract class BoardAnalytics implements _i1.SerializableModel {
 
   int boardId;
 
+  String? boardName;
+
   int totalCards;
 
   int completedCards;
@@ -73,6 +78,7 @@ abstract class BoardAnalytics implements _i1.SerializableModel {
   BoardAnalytics copyWith({
     int? id,
     int? boardId,
+    String? boardName,
     int? totalCards,
     int? completedCards,
     double? completionPercentage,
@@ -84,6 +90,7 @@ abstract class BoardAnalytics implements _i1.SerializableModel {
     return {
       if (id != null) 'id': id,
       'boardId': boardId,
+      if (boardName != null) 'boardName': boardName,
       'totalCards': totalCards,
       'completedCards': completedCards,
       'completionPercentage': completionPercentage,
@@ -104,6 +111,7 @@ class _BoardAnalyticsImpl extends BoardAnalytics {
   _BoardAnalyticsImpl({
     int? id,
     required int boardId,
+    String? boardName,
     required int totalCards,
     required int completedCards,
     required double completionPercentage,
@@ -112,6 +120,7 @@ class _BoardAnalyticsImpl extends BoardAnalytics {
   }) : super._(
           id: id,
           boardId: boardId,
+          boardName: boardName,
           totalCards: totalCards,
           completedCards: completedCards,
           completionPercentage: completionPercentage,
@@ -126,6 +135,7 @@ class _BoardAnalyticsImpl extends BoardAnalytics {
   BoardAnalytics copyWith({
     Object? id = _Undefined,
     int? boardId,
+    Object? boardName = _Undefined,
     int? totalCards,
     int? completedCards,
     double? completionPercentage,
@@ -135,6 +145,7 @@ class _BoardAnalyticsImpl extends BoardAnalytics {
     return BoardAnalytics(
       id: id is int? ? id : this.id,
       boardId: boardId ?? this.boardId,
+      boardName: boardName is String? ? boardName : this.boardName,
       totalCards: totalCards ?? this.totalCards,
       completedCards: completedCards ?? this.completedCards,
       completionPercentage: completionPercentage ?? this.completionPercentage,
