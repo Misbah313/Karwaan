@@ -1,9 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_preview_cubit.dart';
 
 class WorkspaceContextCubit extends Cubit<WorkspaceContextState> {
-  WorkspaceContextCubit() : super(WorkspaceContextState());
+  final BoardPreviewCubit previewCubit;
+  WorkspaceContextCubit(this.previewCubit) : super(WorkspaceContextState());
 
   void setCurrentWorkspace(int id, String name, String description) {
+    previewCubit.clear();
     emit(WorkspaceContextState(
       workspaceId: id,
       workspaceName: name,
