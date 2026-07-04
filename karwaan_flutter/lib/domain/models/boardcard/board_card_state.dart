@@ -1,4 +1,6 @@
+import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 import 'package:karwaan_flutter/domain/models/boardcard/board_card.dart';
+import 'package:karwaan_flutter/domain/models/boardcard/board_card_assignment.dart';
 
 abstract class BoardCardState {}
 
@@ -34,4 +36,17 @@ class BoardCardError extends BoardCardState {
   final String error;
 
   BoardCardError(this.error);
+}
+
+// card assignement
+class BoardCardAssignmentsLoading extends BoardCardState {}
+
+class BoardCardAssignmentsLoaded extends BoardCardState {
+  final List<BoardCardAssignment> assignments;
+  BoardCardAssignmentsLoaded(this.assignments);
+}
+
+class BoardCardAssigneesLoaded extends BoardCardState {
+  final List<AuthUser> assigness;
+  BoardCardAssigneesLoaded(this.assigness);
 }

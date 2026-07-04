@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/data/mappers/auth/error/exception_mapper.dart';
 import 'package:karwaan_flutter/domain/models/label/create_label_credentails.dart';
+import 'package:karwaan_flutter/domain/models/label/label.dart';
 import 'package:karwaan_flutter/domain/models/label/label_state.dart';
 import 'package:karwaan_flutter/domain/models/label/update_label_credentails.dart';
 import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
@@ -25,13 +26,15 @@ class LabelCubit extends Cubit<LabelState> {
   }
 
   // get labels for board
-  Future<void> getLabelsForBoard(int boardId) async {
+  Future<List<Label>> getLabelsForBoard(int boardId) async {
     emit(LabelLoading());
     try {
       final label = await labelRepo.getLabelsForBoard(boardId);
       emit(LabelListLoaded(label));
+      return label;
     } catch (e) {
       emit(LabelError(ExceptionMapper.toMessage(e)));
+      rethrow;
     }
   }
 

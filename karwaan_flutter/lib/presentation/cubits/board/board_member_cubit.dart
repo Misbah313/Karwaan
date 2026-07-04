@@ -34,13 +34,15 @@ class BoardMemberCubit extends Cubit<BoardMemberState> {
   }
 
   // get board members
-  Future<void> getBoardMembers(int boardId) async {
+  Future<List<BoardMemberDetails>> getBoardMembers(int boardId) async {
     emit(BoardMemberLoading());
     try {
       final members = await boardRepo.getBoardMembers(boardId);
       emit(BoardMemberLoaded(members));
+      return members;
     } catch (e) {
       emit(BoardMemberError(ExceptionMapper.toMessage(e)));
+      rethrow;
     }
   }
 

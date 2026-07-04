@@ -1,0 +1,7 @@
+class: BoardCardAssignment
+table: board_card_assignment
+fields:
+  card: int, relation(parent=board_card)
+  user: int, relation(parent=user)
+  assignedBy: int, relation(parent=user)
+  assignedAt: DateTime

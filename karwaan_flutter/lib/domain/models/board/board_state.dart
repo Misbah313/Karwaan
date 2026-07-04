@@ -9,6 +9,8 @@ class BoardLoading extends BoardState {}
 
 class BoardUpdated extends BoardState {}
 
+class BoardLoaded extends BoardState {}
+
 class BoardlistLoaded extends BoardState {
   final List<Board> boards;
 

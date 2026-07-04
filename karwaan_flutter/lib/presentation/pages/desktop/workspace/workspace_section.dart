@@ -45,7 +45,7 @@ class _WorkspaceSectionState extends State<WorkspaceSection> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Workspaces ${worksapces.length}",
-                  style: Theme.of(context).textTheme.bodySmall),
+                  style: Theme.of(context).textTheme.bodyMedium),
               GestureDetector(
                   onTap: _createWorkspaceDialog,
                   child: Container(

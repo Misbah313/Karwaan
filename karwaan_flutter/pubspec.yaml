@@ -83,6 +83,8 @@ flutter:
     - asset/images/webkarwaan.png
     - asset/images/karwaan1.png
     - asset/ani/w-members.json
+    - asset/images/k-light.png
+    - asset/images/k-dark.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

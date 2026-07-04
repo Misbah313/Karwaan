@@ -428,6 +428,16 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String?>(),
               nullable: true,
             ),
+            'assignedUserIds': _i1.ParameterDescription(
+              name: 'assignedUserIds',
+              type: _i1.getType<List<int>?>(),
+              nullable: true,
+            ),
+            'assignedLabelIds': _i1.ParameterDescription(
+              name: 'assignedLabelIds',
+              type: _i1.getType<List<int>?>(),
+              nullable: true,
+            ),
           },
           call: (
             _i1.Session session,
@@ -439,6 +449,8 @@ class Endpoints extends _i1.EndpointDispatch {
             params['token'],
             params['title'],
             dec: params['dec'],
+            assignedUserIds: params['assignedUserIds'],
+            assignedLabelIds: params['assignedLabelIds'],
           ),
         ),
         'getListByBoardCard': _i1.MethodConnector(
@@ -547,6 +559,112 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['boardCard'] as _i5.BoardCardEndpoint).deleteBoardCard(
             session,
             params['cardId'],
+            params['token'],
+          ),
+        ),
+        'assignUsersToCard': _i1.MethodConnector(
+          name: 'assignUsersToCard',
+          params: {
+            'cardId': _i1.ParameterDescription(
+              name: 'cardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'userIds': _i1.ParameterDescription(
+              name: 'userIds',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i5.BoardCardEndpoint)
+                  .assignUsersToCard(
+            session,
+            params['cardId'],
+            params['token'],
+            params['userIds'],
+          ),
+        ),
+        'removeUserFromCard': _i1.MethodConnector(
+          name: 'removeUserFromCard',
+          params: {
+            'cardId': _i1.ParameterDescription(
+              name: 'cardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'userIds': _i1.ParameterDescription(
+              name: 'userIds',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i5.BoardCardEndpoint)
+                  .removeUserFromCard(
+            session,
+            params['cardId'],
+            params['token'],
+            params['userIds'],
+          ),
+        ),
+        'getCardAssignees': _i1.MethodConnector(
+          name: 'getCardAssignees',
+          params: {
+            'cardId': _i1.ParameterDescription(
+              name: 'cardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i5.BoardCardEndpoint)
+                  .getCardAssignees(
+            session,
+            params['cardId'],
+            params['token'],
+          ),
+        ),
+        'getMyAssignedCards': _i1.MethodConnector(
+          name: 'getMyAssignedCards',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['boardCard'] as _i5.BoardCardEndpoint)
+                  .getMyAssignedCards(
+            session,
             params['token'],
           ),
         ),
@@ -1797,6 +1915,104 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['token'],
             limit: params['limit'],
+          ),
+        ),
+        'pinBoard': _i1.MethodConnector(
+          name: 'pinBoard',
+          params: {
+            'boardId': _i1.ParameterDescription(
+              name: 'boardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recenBoard'] as _i16.RecenBoardEndpoint).pinBoard(
+            session,
+            params['boardId'],
+            params['token'],
+          ),
+        ),
+        'unpinBoard': _i1.MethodConnector(
+          name: 'unpinBoard',
+          params: {
+            'boardId': _i1.ParameterDescription(
+              name: 'boardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recenBoard'] as _i16.RecenBoardEndpoint).unpinBoard(
+            session,
+            params['boardId'],
+            params['token'],
+          ),
+        ),
+        'getPinnedBoards': _i1.MethodConnector(
+          name: 'getPinnedBoards',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recenBoard'] as _i16.RecenBoardEndpoint)
+                  .getPinnedBoards(
+            session,
+            params['token'],
+            limit: params['limit'],
+          ),
+        ),
+        'isBoardPinned': _i1.MethodConnector(
+          name: 'isBoardPinned',
+          params: {
+            'boardId': _i1.ParameterDescription(
+              name: 'boardId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['recenBoard'] as _i16.RecenBoardEndpoint)
+                  .isBoardPinned(
+            session,
+            params['boardId'],
+            params['token'],
           ),
         ),
       },

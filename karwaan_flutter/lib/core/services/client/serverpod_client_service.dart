@@ -660,6 +660,67 @@ class ServerpodClientService {
     }
   }
 
+  // pin board
+  Future<void> pinBoard(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final pin = await client.recenBoard.pinBoard(boardId, token);
+      return pin;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // unpin board
+  Future<void> unpinBoard(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final unpin = await client.recenBoard.unpinBoard(boardId, token);
+      return unpin;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get pinned boards
+  Future<List<Board>> getPinnedBoards() async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final pinnedBoards =
+          await client.recenBoard.getPinnedBoards(token, limit: 5);
+      return pinnedBoards;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // check if the board is pinned
+  Future<bool> isBoardPinned(int boardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      final result = await client.recenBoard.isBoardPinned(boardId, token);
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // ========================================================= BOARD LIST ==================================================== //
 
   // create board list
@@ -727,15 +788,19 @@ class ServerpodClientService {
 
   // create board card
   Future<BoardCard> createBoardCard(
-      int boardlistId, String title, String description) async {
+      int boardlistId, String title, String description,
+      {List<int>? assignedUserIds, List<int>? assignedLabelIds}) async {
     try {
       final token = await _authTokenStorage.getToken();
       if (token == null) {
         throw Exception('Please login first!');
       }
 
-      final card =
-          await client.boardCard.createBoardCard(boardlistId, token, title);
+      final card = await client.boardCard.createBoardCard(
+          boardlistId, token, title,
+          dec: description,
+          assignedUserIds: assignedUserIds,
+          assignedLabelIds: assignedLabelIds);
       return card;
     } catch (e) {
       rethrow;
@@ -799,6 +864,63 @@ class ServerpodClientService {
       }
 
       return await client.boardCard.deleteBoardCard(cardId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // assign user
+  Future<List<BoardCardAssignment>> assignUsersToCard(
+      int cardId, List<int> userIds) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.boardCard.assignUsersToCard(cardId, token, userIds);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // remove user
+  Future<bool> removeUsersFromCard(int cardId, List<int> userIds) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.boardCard.removeUserFromCard(cardId, token, userIds);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get users assigned to card
+  Future<List<User>> getCardAssignees(int cardId) async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.boardCard.getCardAssignees(cardId, token);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // my assigness!
+  Future<List<BoardCard>> getMyAssignedCards() async {
+    try {
+      final token = await _authTokenStorage.getToken();
+      if (token == null) {
+        throw Exception('Please login first!');
+      }
+
+      return await client.boardCard.getMyAssignedCards(token);
     } catch (e) {
       rethrow;
     }
@@ -1082,7 +1204,7 @@ class ServerpodClientService {
   // ========================================================================= COMMENT ========================================================== //
 
   // create comment
-  Future<Comment> createComment(int cardId, String content) async {
+  Future<CommentWithAuthor> createComment(int cardId, String content) async {
     try {
       final token = await _authTokenStorage.getToken();
       if (token == null) {

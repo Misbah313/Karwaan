@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 
 class CommentEndpoint extends Endpoint {
   // create comment on card
-  Future<Comment> createComment(
+  Future<CommentWithAuthor> createComment(
       Session session, String token, int cardId, String content) async {
     // validate token(Get the current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
@@ -56,7 +56,14 @@ class CommentEndpoint extends Endpoint {
       if (inserted.id == null) {
         throw RandomAppException(message: 'Comment id is null after creation!');
       }
-      return inserted;
+      final author = await User.db.findById(session, currentUser.id!);
+      return CommentWithAuthor(
+          id: inserted.id!,
+          card: inserted.card,
+          authorId: inserted.author,
+          authorName: author?.name ?? 'Unknown',
+          content: inserted.content,
+          createdAt: inserted.createdAt);
     } catch (e) {
       if (e is AppAuthException ||
           e is AppNotFoundException ||

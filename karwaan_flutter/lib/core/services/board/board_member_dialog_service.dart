@@ -54,8 +54,13 @@ class BoardMemberDialogServiceImpl implements BoardMemberDialogService {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text('Change Role for ${member.userName}',
+              Column(
+                mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Change Role for ${member.userName}',
                   style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: 16),
               Text('Current role: ${member.userRole}',
@@ -98,6 +103,10 @@ class BoardMemberDialogServiceImpl implements BoardMemberDialogService {
                 }).toList(),
                 onChanged: (value) => selectedRole = value,
               ),
+             
+                ],
+              ),
+
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -291,6 +300,7 @@ class BoardMemberDialogServiceImpl implements BoardMemberDialogService {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // header
                     Column(

@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:karwaan_flutter/domain/models/board/board.dart';
+import 'package:karwaan_flutter/core/services/client/profile_image_service.dart';
+import 'package:karwaan_flutter/core/utils/search_function/search_cubit.dart';
+import 'package:karwaan_flutter/core/utils/search_function/search_use_case.dart';
+import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 import 'package:karwaan_flutter/domain/models/board/board_analytics.dart';
+import 'package:karwaan_flutter/domain/models/board/board_wrapper.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
-import 'package:karwaan_flutter/presentation/cubits/board/board_analytics_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/pinn_board_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/boardcard/card_assignee_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
-import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_gate.dart';
+import 'package:karwaan_flutter/presentation/cubits/comment/comment_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
+import 'package:karwaan_flutter/presentation/pages/desktop/board_list/desk_boardlist.dart';
 
-class DeskBoardPage extends StatelessWidget {
-  final Board board;
+class DeskBoardCard extends StatelessWidget {
+  final BoardWrapper board;
   final BoardAnalytics? analytics;
-  const DeskBoardPage({super.key, required this.board, this.analytics});
+  final AuthUser currentUser;
+  final ProfileImageService imageService;
+  const DeskBoardCard(
+      {super.key,
+      required this.board,
+      this.analytics,
+      required this.currentUser,
+      required this.imageService});
 
   // build header with the menu button
   Widget _buildHeader(BuildContext context) {
@@ -24,20 +39,16 @@ class DeskBoardPage extends StatelessWidget {
           Expanded(
               child: ListTile(
             title: SizedBox(
-              child: Text(board.boardName,
+              child: Text(board.name,
                   style: Theme.of(context).textTheme.bodyLarge,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis),
             ),
-            subtitle: Text(board.boardDescription,
+            subtitle: Text(board.description,
                 style: Theme.of(context).textTheme.bodyMedium,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis),
           )),
-          IconButton(
-              onPressed: () => _showBoardMenu(context),
-              icon: Icon(Icons.more_vert,
-                  color: Theme.of(context).iconTheme.color)),
         ],
       ),
     );
@@ -51,11 +62,13 @@ class DeskBoardPage extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            gradient: LinearGradient(colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.onSurface
-            ])),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withAlpha(13)
+              : Colors.black.withAlpha(5),
+          border:
+              Border.all(color: Theme.of(context).dividerColor.withAlpha(102)),
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
           children: [
             // Animated progress bar
@@ -129,7 +142,7 @@ class DeskBoardPage extends StatelessWidget {
               Icon(Icons.calendar_today,
                   size: 16, color: Theme.of(context).iconTheme.color),
               SizedBox(width: 4),
-              Text('Created At ${_formatDate(board.createAt)}',
+              Text('Created At ${_formatDate(board.createdAt)}',
                   style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
@@ -140,64 +153,63 @@ class DeskBoardPage extends StatelessWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  // show workspace menu
-  void _showBoardMenu(BuildContext context) {
-    showBottomSheet(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      context: context,
-      builder: (bottomSheetContext) {
-        return Text('empyt');
-        // BoardMenu(
-        //   board: board,
-        // );
-      },
-    );
-  }
-
-  void _refreshThisBoard(BuildContext context) {
-    context.read<BoardAnalyticsCubit>().getAnalyticsForMultiBoards([board.id]);
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         // Use service directly instead of cubit for tracking
         await context.read<BoardRepo>().trackRecentBoard(board.id);
+        final labelCubit = context.read<LabelCubit>();
+        final commentCubit = context.read<CommentCubit>();
+        final cardAssigneeCubit = context.read<CardAssigneeCubit>();
 
         // navigate to the board list page
         Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BlocProvider<BoardlistCubit>(
-              create: (context) =>
-                  BoardlistCubit(context.read<BoardlistRepo>()),
-              child: BoardlistGate(
-                boardlistRepo: context.read<BoardlistRepo>(),
-                boardId: board.id,
-                boardcardRepo: context.read<BoardcardRepo>(),
-                boardName: board.boardName,
+            context,
+            MaterialPageRoute(
+              builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) =>
+                        BoardlistCubit(context.read<BoardlistRepo>()),
+                  ),
+                  BlocProvider(
+                    create: (context) =>
+                        BoardMemberCubit(context.read<BoardRepo>()),
+                  ),
+                  BlocProvider(
+                    create: (context) =>
+                        PinnedBoardCubit(context.read<BoardRepo>()),
+                  )
+                ],
+                child: BlocProvider(
+                    create: (context) => SearchCubit(SearchUseCase(
+                        boardRepo: context.read<BoardRepo>(),
+                        boardcardRepo: context.read<BoardcardRepo>())),
+                    child: DeskBoardlist(
+                      user: currentUser,
+                      imageService: imageService,
+                      board: board,
+                      boardId: board.id,
+                      boardcardRepo: context.read<BoardcardRepo>(),
+                      labelCubit: labelCubit,
+                      commentCubit: commentCubit,
+                      cardAssigneeCubit: cardAssigneeCubit,
+                    )),
               ),
-            ),
-          ),
-        ).then((_) {
-          _refreshThisBoard(context);
-        });
+            ));
       },
       child: Container(
         constraints: BoxConstraints(minHeight: 150),
         width: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.onSurface
-          ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(color: Colors.blueGrey.shade100, blurRadius: 6)
-          ],
-        ),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withAlpha(13)
+                : Colors.black.withAlpha(5),
+            border: Border.all(
+                color: Theme.of(context).dividerColor.withAlpha(102)),
+            borderRadius: BorderRadius.circular(12)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

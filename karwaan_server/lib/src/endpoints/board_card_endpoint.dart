@@ -1,3 +1,4 @@
+import 'package:karwaan_server/src/endpoints/card_label_endpoint.dart';
 import 'package:karwaan_server/src/endpoints/role_check.dart';
 import 'package:karwaan_server/src/endpoints/token_endpoint.dart';
 import 'package:karwaan_server/src/generated/protocol.dart';
@@ -7,7 +8,9 @@ class BoardCardEndpoint extends Endpoint {
   // create card
   Future<BoardCard> createBoardCard(
       Session session, int boardListId, String token, String title,
-      {String? dec}) async {
+      {String? dec,
+      List<int>? assignedUserIds,
+      List<int>? assignedLabelIds}) async {
     // validate token(get current user)
     final currentUser = await TokenEndpoint().validateToken(session, token);
     if (currentUser == null || currentUser.id == null) {
@@ -39,6 +42,21 @@ class BoardCardEndpoint extends Endpoint {
 
       // insert the created card into the db
       final insertedCard = await BoardCard.db.insertRow(session, card);
+
+      if (assignedUserIds != null && assignedUserIds.isNotEmpty) {
+        await assignUsersToCard(
+            session, insertedCard.id!, token, assignedUserIds);
+      }
+
+      if (assignedLabelIds != null && assignedLabelIds.isNotEmpty) {
+        for (final assignLabelId in assignedLabelIds) {
+          await CardLabelEndpoint().assignLableToCard(
+              session, assignLabelId, insertedCard.id!, token);
+        }
+      }
+      if (assignedLabelIds != null && assignedLabelIds.length > 4) {
+        throw RandomAppException(message: 'Max 4 labels allowed per card');
+      }
       return insertedCard;
     } catch (e) {
       if (e is AppAuthException ||
@@ -87,7 +105,17 @@ class BoardCardEndpoint extends Endpoint {
         orderBy: (c) => c.createdAt,
       );
 
-      return fetch;
+      final cardsWithAssignees = <BoardCard>[];
+      for (final card in fetch) {
+        final assignments = await BoardCardAssignment.db
+            .find(session, where: (a) => a.card.equals(card.id!));
+        final assignedUserIds = assignments.map((a) => a.user).toList();
+
+        final cardWithAssignees = card.copyWith(assignedUsers: assignedUserIds);
+        cardsWithAssignees.add(cardWithAssignees);
+      }
+
+      return cardsWithAssignees;
     } catch (e) {
       if (e is AppAuthException ||
           e is AppNotFoundException ||
@@ -144,7 +172,18 @@ class BoardCardEndpoint extends Endpoint {
       final cards = await BoardCard.db.find(session,
           where: (p0) => p0.list.inSet(boardlistIds),
           orderBy: (p0) => p0.createdAt);
-      return cards;
+
+      final cardsWithAssignees = <BoardCard>[];
+      for (final card in cards) {
+        final assignments = await BoardCardAssignment.db
+            .find(session, where: (a) => a.card.equals(card.id!));
+
+        final assignedUserIds = assignments.map((a) => a.user).toList();
+
+        final cardWithAssignees = card.copyWith(assignedUsers: assignedUserIds);
+        cardsWithAssignees.add(cardWithAssignees);
+      }
+      return cardsWithAssignees;
     } catch (e) {
       if (e is AppAuthException ||
           e is AppNotFoundException ||
@@ -279,6 +318,279 @@ class BoardCardEndpoint extends Endpoint {
         rethrow;
       }
       throw AppException(message: 'Failed to delete card. Please try again.');
+    }
+  }
+
+  // assign users to a card
+  Future<List<BoardCardAssignment>> assignUsersToCard(
+      Session session, int cardId, String token, List<int> userIds) async {
+    final currentUser = await TokenEndpoint().validateToken(session, token);
+    if (currentUser == null || currentUser.id == null) {
+      throw AppAuthException(message: 'No user or expired token!');
+    }
+
+    // fetch cards
+    final card = await BoardCard.db.findById(session, cardId);
+    if (card == null) {
+      throw AppNotFoundException(resourceType: 'Card');
+    }
+
+    // check permission
+    final boardList = await BoardList.db.findById(session, card.list);
+    if (boardList == null) {
+      throw AppNotFoundException(resourceType: 'Boardlist');
+    }
+
+    final membership = await BoardMember.db.findFirstRow(session,
+        where: (m) =>
+            m.board.equals(boardList.board) & m.user.equals(currentUser.id!));
+    if (membership == null) {
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
+    }
+
+    final assignements = <BoardCardAssignment>[];
+
+    try {
+      // process each user
+      for (final userId in userIds) {
+        // check for user
+        final userToAssing = await User.db.findById(session, userId);
+        if (userToAssing == null) {
+          throw AppNotFoundException(resourceType: 'User');
+        }
+
+        // check for user membership in parent board
+        final userMembership = await BoardMember.db.findFirstRow(session,
+            where: (m) =>
+                m.board.equals(boardList.board) & m.user.equals(userId));
+        if (userMembership == null) {
+          throw AppPermissionException(
+              message:
+                  'User ID $userId is not a member of this board and cannot be assigned!');
+        }
+
+        // check if already assigned
+        final existingAssignment = await BoardCardAssignment.db.findFirstRow(
+            session,
+            where: (m) => m.card.equals(cardId) & m.user.equals(userId));
+        if (existingAssignment == null) {
+          final assignment = BoardCardAssignment(
+              card: cardId,
+              user: userId,
+              assignedBy: currentUser.id!,
+              assignedAt: DateTime.now());
+
+          final inserted =
+              await BoardCardAssignment.db.insertRow(session, assignment);
+          assignements.add(inserted);
+        }
+      }
+
+      if (assignements.isNotEmpty) {
+        final allAssignments = await BoardCardAssignment.db
+            .find(session, where: (a) => a.card.equals(cardId));
+        final allAssignedUserIds = allAssignments.map((a) => a.user).toList();
+
+        final card = await BoardCard.db.findById(session, cardId);
+        if (card != null) {
+          final updatedCard = card.copyWith(assignedUsers: allAssignedUserIds);
+          await BoardCard.db.updateRow(session, updatedCard);
+        }
+      }
+
+      return assignements;
+    } catch (e) {
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(message: 'Failed to assign user. Please try again.');
+    }
+  }
+
+  // remove user from a card
+  Future<bool> removeUserFromCard(
+      Session session, int cardId, String token, List<int> userIds) async {
+    final currentUser = await TokenEndpoint().validateToken(session, token);
+    if (currentUser == null || currentUser.id == null) {
+      throw AppAuthException(message: 'No user or expired token!');
+    }
+
+    // fetch the card
+    final card = await BoardCard.db.findById(session, cardId);
+    if (card == null) {
+      throw AppNotFoundException(resourceType: 'Card');
+    }
+
+    // Check permission
+    final boardList = await BoardList.db.findById(session, card.list);
+    if (boardList == null) {
+      throw AppNotFoundException(resourceType: 'Boardlist');
+    }
+
+    final membership = await BoardMember.db.findFirstRow(
+      session,
+      where: (m) =>
+          m.board.equals(boardList.board) & m.user.equals(currentUser.id!),
+    );
+    if (membership == null) {
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
+    }
+
+    // Optional: Only allow removing assignments if you're the one who assigned them or you're an admin/owner
+    // For now, allow any board member to remove assignments
+    try {
+      for (final userId in userIds) {
+        await BoardCardAssignment.db.deleteWhere(
+          session,
+          where: (a) => a.card.equals(cardId) & a.user.equals(userId),
+        );
+      }
+
+      final remainingAssignments = await BoardCardAssignment.db
+          .find(session, where: (a) => a.card.equals(cardId));
+      final remaingUserIds = remainingAssignments.map((a) => a.user).toList();
+
+      final card = await BoardCard.db.findById(session, cardId);
+      if (card != null) {
+        final updatedCard = card.copyWith(assignedUsers: remaingUserIds);
+        await BoardCard.db.updateRow(session, updatedCard);
+      }
+
+      return true;
+    } catch (e) {
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to remove assigned user. Please try again.');
+    }
+  }
+
+// Get all assigned users for a card with details
+  Future<List<User>> getCardAssignees(
+    Session session,
+    int cardId,
+    String token,
+  ) async {
+    // Validate token
+    final currentUser = await TokenEndpoint().validateToken(session, token);
+    if (currentUser == null || currentUser.id == null) {
+      throw AppAuthException(message: 'No user or expired token!');
+    }
+
+    // Fetch card
+    final card = await BoardCard.db.findById(session, cardId);
+    if (card == null) {
+      throw AppNotFoundException(resourceType: 'Card');
+    }
+
+    // Check permission
+    final boardList = await BoardList.db.findById(session, card.list);
+    if (boardList == null) {
+      throw AppNotFoundException(resourceType: 'Boardlist');
+    }
+
+    final membership = await BoardMember.db.findFirstRow(
+      session,
+      where: (m) =>
+          m.board.equals(boardList.board) & m.user.equals(currentUser.id!),
+    );
+    if (membership == null) {
+      throw AppPermissionException(
+          message: 'You are not a member of the parent board!');
+    }
+
+    try {
+      // Get all assignments for this card
+      final assignments = await BoardCardAssignment.db.find(
+        session,
+        where: (a) => a.card.equals(cardId),
+      );
+
+      if (assignments.isEmpty) {
+        return [];
+      }
+
+      // Get all user IDs
+      final userIds = assignments.map((a) => a.user).toSet();
+
+      // Fetch all users
+      final users = await User.db.find(
+        session,
+        where: (u) => u.id.inSet(userIds),
+      );
+
+      return users;
+    } catch (e) {
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to fetch assigned users. Please try again.');
+    }
+  }
+
+// Get all cards assigned to current user
+  Future<List<BoardCard>> getMyAssignedCards(
+    Session session,
+    String token,
+  ) async {
+    // Validate token
+    final currentUser = await TokenEndpoint().validateToken(session, token);
+    if (currentUser == null || currentUser.id == null) {
+      throw AppAuthException(message: 'No user or expired token!');
+    }
+
+    try {
+      // Get all assignments for this user
+      final assignments = await BoardCardAssignment.db.find(
+        session,
+        where: (a) => a.user.equals(currentUser.id!),
+      );
+
+      if (assignments.isEmpty) {
+        return [];
+      }
+
+      final cardIds = assignments.map((a) => a.card).toSet();
+
+      // Get all cards
+      final cards = await BoardCard.db.find(
+        session,
+        where: (c) => c.id.inSet(cardIds),
+        orderBy: (c) => c.createdAt,
+      );
+
+      final cardsWithAssignees = <BoardCard>[];
+      for (final card in cards) {
+        final cardAssignments = await BoardCardAssignment.db
+            .find(session, where: (a) => a.card.equals(card.id!));
+        final assignedUserIds = cardAssignments.map((a) => a.user).toList();
+        final cardWithAssignees = card.copyWith(assignedUsers: assignedUserIds);
+        cardsWithAssignees.add(cardWithAssignees);
+      }
+
+      return cardsWithAssignees;
+    } catch (e) {
+      if (e is AppAuthException ||
+          e is AppNotFoundException ||
+          e is AppPermissionException ||
+          e is RandomAppException) {
+        rethrow;
+      }
+      throw AppException(
+          message: 'Failed to fetch your assigned cards. Please try again.');
     }
   }
 }

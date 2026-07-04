@@ -14,7 +14,7 @@ class CommentForCardListLoaded extends CommentState {
 }
 
 class CommentCreated extends CommentState {
-  final Comment comment;
+  final CommentWithAuthor comment;
 
   CommentCreated(this.comment);
 }
