@@ -38,8 +38,10 @@ class _EditableFieldWithSaveState extends State<EditableFieldWithSave> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
+        Flexible(
+          fit: FlexFit.loose,
           child: TextFormField(
             maxLines: widget.maxLines,
             style: Theme.of(context).textTheme.bodyMedium,

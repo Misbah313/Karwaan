@@ -6,10 +6,15 @@ import 'package:karwaan_flutter/core/services/client/serverpod_client_service.da
 import 'package:karwaan_flutter/core/services/workspace/app_naviagation_service.dart';
 import 'package:karwaan_flutter/core/services/workspace/logout_dialog_service.dart';
 import 'package:karwaan_flutter/core/services/workspace/workspace_member/member_service.dart';
+import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
+import 'package:karwaan_flutter/domain/repository/comment/comment_repo.dart';
 import 'package:karwaan_flutter/domain/repository/label/label_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_preview_analytics_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_preview_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/boardcard/card_assignee_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/comment/comment_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/main_layout_cubit.dart';
 import 'package:karwaan_flutter/core/theme/theme_notifier.dart';
@@ -119,6 +124,9 @@ class _MainAppPageState extends State<MainAppPage> {
                 create: (context) => LabelCubit(context.read<LabelRepo>()),
               ),
               BlocProvider(
+                create: (context) => CommentCubit(context.read<CommentRepo>()),
+              ),
+              BlocProvider(
                   create: (_) =>
                       OverallAnalyticsCubit(context.read<BoardRepo>())),
               BlocProvider(
@@ -130,9 +138,19 @@ class _MainAppPageState extends State<MainAppPage> {
               BlocProvider(
                 create: (context) =>
                     BoardPreviewAnalyticsCubit(context.read<BoardRepo>()),
-              )
+              ),
+              BlocProvider(
+                create: (context) =>
+                    BoardlistCubit(context.read<BoardlistRepo>()),
+              ),
 
-              // other provider will be here
+              BlocProvider(
+                create: (context) => CardAssigneeCubit(
+                    context.read<BoardcardRepo>(),
+                    context.read<BoardCardCubit>()),
+              ),
+
+              // search cubit
             ],
             child: _buildAuthenticatedLayout(state.user),
           );
@@ -161,6 +179,7 @@ class _MainAppPageState extends State<MainAppPage> {
                   controller: _mainContentController,
                   currentPageIndex: _getPageIndex(currentMenu),
                   user: user,
+                  imageService: _profileImageService,
                 ),
               ),
               _buildRightSidebar(user, currentMenu),
@@ -179,8 +198,7 @@ class _MainAppPageState extends State<MainAppPage> {
     }
 
     return SizedBox(
-        width: MediaQuery.of(context).size.width * 0.25, child: sideBar
-        );
+        width: MediaQuery.of(context).size.width * 0.25, child: sideBar);
   }
 
   Widget? _getSideBarForPage(String pageName, AuthUser user) {

@@ -3,23 +3,43 @@
 // - BoardPageMode.global: all boards user is a member of
 //
 // Mode semantics intentionally mirror previous workspaceId == null behavior.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:karwaan_flutter/core/services/board/board_options_service.dart';
+import 'package:karwaan_flutter/core/services/client/profile_image_service.dart';
 import 'package:karwaan_flutter/core/utils/banner/banner_manager.dart';
+import 'package:karwaan_flutter/core/utils/search_function/search_cubit.dart';
+import 'package:karwaan_flutter/core/utils/search_function/search_use_case.dart';
+import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 import 'package:karwaan_flutter/domain/models/board/board_state.dart';
 import 'package:karwaan_flutter/domain/models/board/board_wrapper.dart';
+import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
+import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
+import 'package:karwaan_flutter/domain/repository/boardlist/boardlist_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_member_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_preview_analytics_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_preview_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/pinn_board_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/boardcard/card_assignee_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/boardlist/boardlist_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/comment/comment_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/label/label_cubit.dart';
 import 'package:karwaan_flutter/presentation/cubits/workspace/workspace_context_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/board/board_page_mode.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/board/create_desk_board_dialog.dart';
+import 'package:karwaan_flutter/presentation/pages/desktop/board_list/desk_boardlist.dart';
+import 'package:karwaan_flutter/presentation/widgets/board/board_list_item.dart';
 
 class DeskBoardPage extends StatefulWidget {
-  const DeskBoardPage({super.key});
+  final AuthUser currentUser;
+  final ProfileImageService imageService;
+  const DeskBoardPage({
+    super.key,
+    required this.currentUser,
+    required this.imageService,
+  });
   @override
   State<DeskBoardPage> createState() => _DeskBoardPageState();
 }
@@ -244,49 +264,17 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
     final selectedBoardId = context.watch<BoardPreviewCubit>().state;
     if (boards.isEmpty) return _buildEmptyState(workspaceId, mode);
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(10),
       itemCount: boards.length,
       itemBuilder: (context, i) {
         final board = boards[i];
         final isSelected = board.id == selectedBoardId;
-        return Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                  color: isSelected
-                      ? Colors.blue.shade500.withValues(alpha: 0.4)
-                      : Colors.transparent)),
-          elevation: 0,
-          color: isSelected
-              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.08)
-              : Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : Colors.black.withValues(alpha: 0.04),
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(Icons.dashboard,
-                  color: Theme.of(context).iconTheme.color),
-            ),
-            title:
-                Text(board.name, style: Theme.of(context).textTheme.bodyMedium),
-            subtitle: Text(
-              board.description,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.more_vert,
-                  color: Theme.of(context).iconTheme.color),
-              onPressed: () => _showBoardOptions(board, workspaceId),
-            ),
-            onTap: () => _navigateToBoard(board),
-          ),
-        );
+        return BoardListItem(
+            board: board,
+            isSelected: isSelected,
+            onTap: () => _previewBoard(board),
+            onDoubleTap: () => _navigateToFullBoard(board),
+            onOptions: () => _showBoardOptions(board, workspaceId));
       },
     );
   }
@@ -368,9 +356,52 @@ class _DeskBoardPageState extends State<DeskBoardPage> {
     optionService.showOptionsDialog(context: context, board: board);
   }
 
-  void _navigateToBoard(dynamic board) {
-    context.read<BannerManager>().show('Double Click To Navigate.',
-        backgroundColor: Theme.of(context).colorScheme.primary);
+  void _previewBoard(BoardWrapper board) {
     context.read<BoardPreviewCubit>().selectBoard(board.id);
+    context.read<BannerManager>().show(
+        '💡 Double-click to open board in full view',
+        backgroundColor:
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+        duration: Duration(seconds: 5));
+  }
+
+  void _navigateToFullBoard(BoardWrapper board) {
+    final labelCubit = context.read<LabelCubit>();
+    final commentCubit = context.read<CommentCubit>();
+    final cardAssigneeCubit = context.read<CardAssigneeCubit>();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) =>
+                    BoardlistCubit(context.read<BoardlistRepo>()),
+              ),
+              BlocProvider(
+                create: (context) =>
+                    BoardMemberCubit(context.read<BoardRepo>()),
+              ),
+              BlocProvider(
+                create: (context) =>
+                    PinnedBoardCubit(context.read<BoardRepo>()),
+              )
+            ],
+            child: BlocProvider(
+                create: (context) => SearchCubit(SearchUseCase(
+                    boardRepo: context.read<BoardRepo>(),
+                    boardcardRepo: context.read<BoardcardRepo>())),
+                child: DeskBoardlist(
+                  user: widget.currentUser,
+                  imageService: widget.imageService,
+                  board: board,
+                  boardId: board.id,
+                  boardcardRepo: context.read<BoardcardRepo>(),
+                  labelCubit: labelCubit,
+                  commentCubit: commentCubit,
+                  cardAssigneeCubit: cardAssigneeCubit,
+                )),
+          ),
+        ));
   }
 }

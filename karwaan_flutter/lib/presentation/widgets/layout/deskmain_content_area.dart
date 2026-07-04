@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:karwaan_flutter/core/services/client/profile_image_service.dart';
 import 'package:karwaan_flutter/core/utils/search_function/search_cubit.dart';
 import 'package:karwaan_flutter/core/utils/search_function/search_use_case.dart';
 import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
 import 'package:karwaan_flutter/domain/repository/boardcard/boardcard_repo.dart';
 import 'package:karwaan_flutter/presentation/cubits/board/board_analytics_cubit.dart';
-import 'package:karwaan_flutter/presentation/cubits/board/recent_board_cubit.dart';
+import 'package:karwaan_flutter/presentation/cubits/board/pinn_board_cubit.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/board/desk_board_page.dart';
-import 'package:karwaan_flutter/presentation/pages/desktop/board/desk_recent_board_section.dart';
+import 'package:karwaan_flutter/presentation/pages/desktop/workspace/dashboard_pinned_board_section.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/workspace/desk_home_header.dart';
 import 'package:karwaan_flutter/presentation/pages/desktop/workspace/workspace_section.dart';
 
@@ -16,12 +17,14 @@ class MainContentArea extends StatelessWidget {
   final int currentPageIndex;
   final AuthUser user;
   final PageController controller;
+  final ProfileImageService imageService;
 
   const MainContentArea(
       {super.key,
       required this.currentPageIndex,
       required this.user,
-      required this.controller});
+      required this.controller,
+      required this.imageService});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,10 @@ class MainContentArea extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildDashboardContent(context, user),
-        const DeskBoardPage(),
+        DeskBoardPage(
+          currentUser: user,
+          imageService: imageService,
+        ),
         _buildSimplePage(context, 'Analytics Page'),
         _buildSimplePage(context, 'Teams Page'),
         _buildSimplePage(context, 'Settings Page'),
@@ -60,7 +66,7 @@ class MainContentArea extends StatelessWidget {
                 children: [
                   _buildWorkspaceSection(),
                   const SizedBox(height: 15),
-                  _buildRecentBoardsSection(),
+                  _buildPinnedBoardsSection(),
                 ],
               ),
             ),
@@ -94,8 +100,7 @@ class MainContentArea extends StatelessWidget {
     );
   }
 
-  ///
-  Widget _buildRecentBoardsSection() {
+  Widget _buildPinnedBoardsSection() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,20 +114,19 @@ class MainContentArea extends StatelessWidget {
                     context.read<BoardRepo>(),
                   ),
                 ),
-                BlocProvider<RecentBoardCubit>(
-                  create: (context) => RecentBoardCubit(
+                BlocProvider<PinnedBoardCubit>(
+                  create: (context) => PinnedBoardCubit(
                     context.read<BoardRepo>(),
                   ),
                 ),
               ],
-              child: RecentBoardsSection(),
+              child: PinnedBoardsSection(currentUser: user, imageService: imageService,),
             ),
           ),
         ),
       ],
     );
   }
-
 
   Widget _buildSimplePage(BuildContext context, String title) {
     return Column(

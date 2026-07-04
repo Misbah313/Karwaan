@@ -5,12 +5,16 @@ class Textfield extends StatefulWidget {
   final bool obsecureText;
   final TextEditingController controller;
   final int maxline;
+  final void Function(String)? onChanged;
+  final void Function(String)? onSubmit;
   const Textfield({
     super.key,
     required this.text,
     required this.obsecureText,
     required this.controller,
     this.maxline = 1,
+    this.onChanged,
+    this.onSubmit
   });
 
   @override
@@ -21,6 +25,8 @@ class _TextfieldState extends State<Textfield> {
   @override
   Widget build(BuildContext context) {
     return  TextField(
+      onSubmitted: widget.onSubmit,
+      onChanged: widget.onChanged,
         controller: widget.controller,
         obscureText: widget.obsecureText,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 16),

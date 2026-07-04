@@ -147,10 +147,12 @@ class _DeskWorkspaceCardState extends State<DeskWorkspaceCard> {
 
   Widget _buildMemberSection(BuildContext context, WorkspaceCardState state) {
     if (state is WorkspaceCardLoaded) {
-      final avatarUrls = state.members
-          .where((member) =>
-              member.avatarUrl != null && member.avatarUrl!.isNotEmpty)
-          .map((member) => member.avatarUrl!)
+      final members = state.members;
+      final avatarUrls =
+          members.map((member) => member.avatarUrl ?? '').toList();
+
+      final userNames = state.members
+          .map((member) => member.userName) // Adjust based on your model
           .toList();
 
       return Row(
@@ -159,6 +161,7 @@ class _DeskWorkspaceCardState extends State<DeskWorkspaceCard> {
           Container(
             constraints: BoxConstraints(maxWidth: 120),
             child: BubbleAvatarGroup(
+              userNames: userNames,
               imageURL: avatarUrls,
               maxDisplay: 3,
               avatarSize: 30,
@@ -209,6 +212,7 @@ class _DeskWorkspaceCardState extends State<DeskWorkspaceCard> {
       children: [
         BubbleAvatarGroup(
           imageURL: [],
+          userNames: [],
           maxDisplay: 4,
           avatarSize: 28,
           overlapAmount: 18,

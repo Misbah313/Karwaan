@@ -53,12 +53,12 @@ class LeftSidebar extends StatelessWidget {
     return Column(
       children: [
         // Karwaan logo
-        Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
-          child: Image.asset(
-            'asset/images/webkarwaan.png',
-            fit: BoxFit.contain,
-          ),
+        CircleAvatar(
+          radius: 40,
+          backgroundImage: AssetImage(
+              Theme.of(context).brightness == Brightness.dark
+                  ? 'asset/images/k-dark.png'
+                  : 'asset/images/k-light.png'),
         ),
         const SizedBox(height: 40),
         _buildMenuItems(context),

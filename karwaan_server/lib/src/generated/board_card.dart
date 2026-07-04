@@ -22,6 +22,7 @@ abstract class BoardCard
     required this.createdAt,
     this.position,
     required this.isCompleted,
+    this.assignedUsers,
   });
 
   factory BoardCard({
@@ -33,6 +34,7 @@ abstract class BoardCard
     required DateTime createdAt,
     int? position,
     required bool isCompleted,
+    List<int>? assignedUsers,
   }) = _BoardCardImpl;
 
   factory BoardCard.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -46,6 +48,9 @@ abstract class BoardCard
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       position: jsonSerialization['position'] as int?,
       isCompleted: jsonSerialization['isCompleted'] as bool,
+      assignedUsers: (jsonSerialization['assignedUsers'] as List?)
+          ?.map((e) => e as int)
+          .toList(),
     );
   }
 
@@ -70,6 +75,8 @@ abstract class BoardCard
 
   bool isCompleted;
 
+  List<int>? assignedUsers;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -85,6 +92,7 @@ abstract class BoardCard
     DateTime? createdAt,
     int? position,
     bool? isCompleted,
+    List<int>? assignedUsers,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -97,6 +105,7 @@ abstract class BoardCard
       'createdAt': createdAt.toJson(),
       if (position != null) 'position': position,
       'isCompleted': isCompleted,
+      if (assignedUsers != null) 'assignedUsers': assignedUsers?.toJson(),
     };
   }
 
@@ -111,6 +120,7 @@ abstract class BoardCard
       'createdAt': createdAt.toJson(),
       if (position != null) 'position': position,
       'isCompleted': isCompleted,
+      if (assignedUsers != null) 'assignedUsers': assignedUsers?.toJson(),
     };
   }
 
@@ -156,6 +166,7 @@ class _BoardCardImpl extends BoardCard {
     required DateTime createdAt,
     int? position,
     required bool isCompleted,
+    List<int>? assignedUsers,
   }) : super._(
           id: id,
           title: title,
@@ -165,6 +176,7 @@ class _BoardCardImpl extends BoardCard {
           createdAt: createdAt,
           position: position,
           isCompleted: isCompleted,
+          assignedUsers: assignedUsers,
         );
 
   /// Returns a shallow copy of this [BoardCard]
@@ -180,6 +192,7 @@ class _BoardCardImpl extends BoardCard {
     DateTime? createdAt,
     Object? position = _Undefined,
     bool? isCompleted,
+    Object? assignedUsers = _Undefined,
   }) {
     return BoardCard(
       id: id is int? ? id : this.id,
@@ -190,6 +203,9 @@ class _BoardCardImpl extends BoardCard {
       createdAt: createdAt ?? this.createdAt,
       position: position is int? ? position : this.position,
       isCompleted: isCompleted ?? this.isCompleted,
+      assignedUsers: assignedUsers is List<int>?
+          ? assignedUsers
+          : this.assignedUsers?.map((e0) => e0).toList(),
     );
   }
 }
@@ -224,6 +240,10 @@ class BoardCardTable extends _i1.Table<int?> {
       'isCompleted',
       this,
     );
+    assignedUsers = _i1.ColumnSerializable(
+      'assignedUsers',
+      this,
+    );
   }
 
   late final _i1.ColumnString title;
@@ -240,6 +260,8 @@ class BoardCardTable extends _i1.Table<int?> {
 
   late final _i1.ColumnBool isCompleted;
 
+  late final _i1.ColumnSerializable assignedUsers;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -250,6 +272,7 @@ class BoardCardTable extends _i1.Table<int?> {
         createdAt,
         position,
         isCompleted,
+        assignedUsers,
       ];
 }
 

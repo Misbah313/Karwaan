@@ -1,0 +1,6 @@
+class: PinnedBoard
+table: pinned_boards
+fields:
+  userId: int
+  boardId: int
+  pinnedAt: DateTime

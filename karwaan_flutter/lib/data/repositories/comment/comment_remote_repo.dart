@@ -12,15 +12,21 @@ class CommentRemoteRepo extends CommentRepo {
   CommentRemoteRepo(this._clientService);
 
   @override
-  Future<Comment> createComment(CreateCommentCredentails credentails) async {
+  Future<CommentWithAuthor> createComment(
+      CreateCommentCredentails credentails) async {
     try {
       final created = await _clientService.createComment(
           credentails.cardId, credentails.content);
       if (created.id == null) {
         throw Exception('Server returned null id!');
       }
-      return Comment(
-          id: created.id, content: created.content, author: created.author);
+      return CommentWithAuthor(
+          id: created.id,
+          cardId: created.card,
+          authorId: created.authorId,
+          authorName: created.authorName,
+          content: created.content,
+          createdAt: created.createdAt);
     } catch (e) {
       debugPrint('Failed from remote repo: ${e.toString()}');
       rethrow;
@@ -32,7 +38,14 @@ class CommentRemoteRepo extends CommentRepo {
     try {
       final comments = await _clientService.getCommentsForCard(cardId);
       return comments
-          .map((e) => CommentWithAuthor(id: e.id, cardId: e.card, authorId: e.authorId, authorName: e.authorName, content: e.content, createdAt: e.createdAt)).toList();
+          .map((e) => CommentWithAuthor(
+              id: e.id,
+              cardId: e.card,
+              authorId: e.authorId,
+              authorName: e.authorName,
+              content: e.content,
+              createdAt: e.createdAt))
+          .toList();
     } catch (e) {
       debugPrint('Failed from remote repo " ${e.toString()}');
       rethrow;

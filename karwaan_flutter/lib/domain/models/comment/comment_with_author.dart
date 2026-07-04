@@ -13,4 +13,20 @@ class CommentWithAuthor {
       required this.authorName,
       required this.content,
       required this.createdAt});
+
+  CommentWithAuthor copyWith(
+      {int? id,
+      int? cardId,
+      int? authorId,
+      String? authorName,
+      String? content,
+      DateTime? createdAt}) {
+    return CommentWithAuthor(
+        id: id ?? this.id,
+        cardId: cardId ?? this.cardId,
+        authorId: authorId ?? this.authorId,
+        authorName: authorName ?? this.authorName,
+        content: content ?? this.content,
+        createdAt: createdAt ?? this.createdAt);
+  }
 }

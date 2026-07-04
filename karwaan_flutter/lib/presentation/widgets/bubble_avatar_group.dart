@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class BubbleAvatarGroup extends StatelessWidget {
   final List<String> imageURL;
+  final List<String> userNames; // ← Add this
   final int maxDisplay;
   final double avatarSize;
   final double overlapAmount;
@@ -11,12 +12,17 @@ class BubbleAvatarGroup extends StatelessWidget {
   const BubbleAvatarGroup({
     super.key,
     required this.imageURL,
+    required this.userNames, // ← Make it required
     this.maxDisplay = 3,
-    this.avatarSize = 40, // Increased for better quality
+    this.avatarSize = 40,
     this.overlapAmount = 24,
   });
 
-  Widget _buildSingleAvatar(String imageURL, BuildContext context) {
+  Widget _buildSingleAvatar({
+    required String imageURL,
+    required String userName,
+    required BuildContext context,
+  }) {
     final hasImage = imageURL.isNotEmpty && imageURL != 'null';
 
     return Container(
@@ -27,7 +33,7 @@ class BubbleAvatarGroup extends StatelessWidget {
         border: Border.all(color: Colors.white, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 2,
             offset: Offset(0, 1),
           ),
@@ -35,27 +41,28 @@ class BubbleAvatarGroup extends StatelessWidget {
       ),
       child: ClipOval(
         child: hasImage
-            ? _buildAvatarImage(imageURL, context)
-            : _buildFallbackAvatar(context),
+            ? _buildAvatarImage(imageURL, userName, context)
+            : _buildFallbackAvatar(userName, context), // ← Pass userName
       ),
     );
   }
 
-  Widget _buildAvatarImage(String imageURL, BuildContext context) {
+  Widget _buildAvatarImage(
+      String imageURL, String userName, BuildContext context) {
     return Image(
       image: _getImageProvider(imageURL),
       width: avatarSize,
       height: avatarSize,
       fit: BoxFit.cover,
       filterQuality: FilterQuality.high,
-      gaplessPlayback: true, // Prevents flickering
+      gaplessPlayback: true,
       errorBuilder: (context, error, stackTrace) {
         debugPrint('Image loading failed: $error');
-        return _buildFallbackAvatar(context);
+        return _buildFallbackAvatar(
+            userName, context); // ← Show letter on error
       },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
-        // Show loading indicator while image loads
         return Container(
           color: Colors.grey.shade200,
           child: Center(
@@ -76,13 +83,21 @@ class BubbleAvatarGroup extends StatelessWidget {
     );
   }
 
-  Widget _buildFallbackAvatar(BuildContext context) {
+  Widget _buildFallbackAvatar(String userName, BuildContext context) {
     return Container(
-      color: Colors.grey.shade300,
-      child: Icon(
-        Icons.person,
-        size: avatarSize * 0.6,
-        color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.7),
+      color: Theme.of(context)
+          .colorScheme
+          .secondary
+          .withValues(alpha: 0.5),
+      child: Center(
+        child: Text(
+          userName.isNotEmpty ? userName[0].toUpperCase() : '?',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: avatarSize * 0.4,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -93,12 +108,12 @@ class BubbleAvatarGroup extends StatelessWidget {
         final decodedBytes = _decodeImage(imageData);
         return MemoryImage(decodedBytes);
       } catch (e) {
-        return AssetImage('asset/images/logo.png');
+        return const AssetImage('asset/images/logo.png');
       }
     } else if (imageData.startsWith('http')) {
       return NetworkImage(imageData);
     } else {
-      return AssetImage('asset/images/logo.png');
+      return const AssetImage('asset/images/logo.png');
     }
   }
 
@@ -116,7 +131,7 @@ class BubbleAvatarGroup extends StatelessWidget {
           '+$count',
           style: TextStyle(
             color: Colors.white,
-            fontSize: avatarSize * 0.25, // Slightly smaller for better fit
+            fontSize: avatarSize * 0.25,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -132,7 +147,13 @@ class BubbleAvatarGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayAvatars = imageURL.take(maxDisplay).toList();
+    // Make sure lists are same length
+    assert(imageURL.length == userNames.length,
+        'imageURL and userNames must have same length');
+
+    final displayCount = imageURL.length.clamp(0, maxDisplay);
+    final displayUrls = imageURL.take(displayCount).toList();
+    final displayNames = userNames.take(displayCount).toList();
     final remainingCount = imageURL.length - maxDisplay;
 
     return SizedBox(
@@ -140,16 +161,20 @@ class BubbleAvatarGroup extends StatelessWidget {
       child: Stack(
         children: [
           // Display avatars
-          for (int i = 0; i < displayAvatars.length; i++)
+          for (int i = 0; i < displayUrls.length; i++)
             Positioned(
               left: i * overlapAmount,
-              child: _buildSingleAvatar(displayAvatars[i], context),
+              child: _buildSingleAvatar(
+                imageURL: displayUrls[i],
+                userName: displayNames[i],
+                context: context,
+              ),
             ),
 
           // Counter for remaining avatars
           if (remainingCount > 0)
             Positioned(
-              left: displayAvatars.length * overlapAmount,
+              left: displayUrls.length * overlapAmount,
               child: _buildCounterBubble(remainingCount),
             ),
         ],

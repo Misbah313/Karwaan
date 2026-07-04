@@ -8,3 +8,5 @@ fields:
   createdAt: DateTime
   position: int?
   isCompleted: bool
+  assignedUsers: List<int>?
+  # assignedLabels: List<int>?

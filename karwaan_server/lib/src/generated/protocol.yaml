@@ -16,6 +16,10 @@ boardCard:
   - getAllUserCards:
   - updateBoardCard:
   - deleteBoardCard:
+  - assignUsersToCard:
+  - removeUserFromCard:
+  - getCardAssignees:
+  - getMyAssignedCards:
 board:
   - createBoard:
   - getUserBoard:
@@ -71,6 +75,10 @@ label:
 recenBoard:
   - trackBoardAccess:
   - getRecentBoards:
+  - pinBoard:
+  - unpinBoard:
+  - getPinnedBoards:
+  - isBoardPinned:
 token:
   - validateToken:
   - logout:

@@ -8,6 +8,7 @@ import 'package:karwaan_flutter/domain/models/board/board_member.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_change_role_model.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_credentails.dart';
 import 'package:karwaan_flutter/domain/models/board/board_member_details.dart';
+import 'package:karwaan_flutter/domain/models/board/board_wrapper.dart';
 import 'package:karwaan_flutter/domain/models/board/create_board_credentials.dart';
 import 'package:karwaan_flutter/domain/models/board/overall_analytics.dart';
 import 'package:karwaan_flutter/domain/repository/board/board_repo.dart';
@@ -146,7 +147,8 @@ class BoardRemoteRepo extends BoardRepo {
               userName: e.userName,
               userEmail: e.email!,
               userRole: e.role,
-              joinedAt: e.joinedAt, avatarUrl: e.avatarUrl))
+              joinedAt: e.joinedAt,
+              avatarUrl: e.avatarUrl))
           .toList();
     } catch (e) {
       debugPrint(
@@ -199,7 +201,7 @@ class BoardRemoteRepo extends BoardRepo {
               boardName: m.name,
               boardDescription: m.description,
               createAt: m.createdAt))
-          .toList(); 
+          .toList();
     } catch (e) {
       debugPrint('get user recent boards failed: ${e.toString()}');
       rethrow;
@@ -259,6 +261,52 @@ class BoardRemoteRepo extends BoardRepo {
           lastUpdate: overall.lastUpdate);
     } catch (e) {
       debugPrint('overall analytics failed from remote: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> pinBoard(int boardId) async {
+    try {
+      await _clientService.pinBoard(boardId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> unpinBoard(int boardId) async {
+    try {
+      await _clientService.unpinBoard(boardId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<BoardWrapper>> getPinnedBoards() async {
+    try {
+      final pinned = await _clientService.getPinnedBoards();
+      final convertedBoards = pinned
+          .map((serverBoard) => Board(
+              id: serverBoard.id!,
+              boardName: serverBoard.name,
+              boardDescription: serverBoard.description,
+              createAt: serverBoard.createdAt))
+          .toList();
+      return convertedBoards.map((board) => BoardWrapper(board)).toList();
+    } catch (e) {
+      debugPrint('get pinned boards failed: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> isBoardPinned(int baordId) async {
+    try {
+      final result = await _clientService.isBoardPinned(baordId);
+      return result;
+    } catch (e) {
       rethrow;
     }
   }

@@ -49,4 +49,45 @@ class BoardlistCubit extends Cubit<BoardlistState> {
       emit(BoardlistError(ExceptionMapper.toMessage(e)));
     }
   }
+
+  Future<void> updateBoardListOptimized(
+      BoardlistCredentails credentails, int boardId) async {
+    try {
+      await boardlistRepo.updateBoardList(credentails);
+
+      if (state is BoardlistLoaded) {
+        final currentState = state as BoardlistLoaded;
+        final updatedList = currentState.boardlist.map((lists) {
+          if (lists.id == credentails.id) {
+            return lists.copyWith(boardlistTitle: credentails.newTitle);
+          }
+
+          return lists;
+        }).toList();
+        emit(BoardlistLoaded(updatedList));
+      } else {
+        await listBoardLists(boardId);
+      }
+    } catch (e) {
+      emit(BoardlistError(ExceptionMapper.toMessage(e)));
+    }
+  }
+
+  Future<void> deleteBoardListOptimized(int boardlistId, int boardId) async {
+    try {
+      await boardlistRepo.deleteBoardList(boardlistId);
+
+      if (state is BoardlistLoaded) {
+        final currentState = state as BoardlistLoaded;
+        final updatedLists = currentState.boardlist
+            .where((list) => list.id != boardlistId)
+            .toList();
+        emit(BoardlistLoaded(updatedLists));
+      } else {
+        await listBoardLists(boardId);
+      }
+    } catch (e) {
+      emit(BoardlistError(ExceptionMapper.toMessage(e)));
+    }
+  }
 }

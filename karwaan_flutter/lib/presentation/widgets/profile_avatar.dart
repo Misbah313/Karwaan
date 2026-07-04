@@ -7,11 +7,12 @@ import 'package:karwaan_flutter/domain/models/auth/auth_user.dart';
 class ProfileAvatar extends StatelessWidget {
   final AuthUser user;
   final ProfileImageService profileImageService;
-
+  final double? size;
   const ProfileAvatar({
     super.key,
     required this.user,
     required this.profileImageService,
+    this.size
   });
 
   @override
@@ -37,9 +38,10 @@ class ProfileAvatar extends StatelessWidget {
   }
 
   Widget _buildLoadingAvatar(BuildContext context) {
+    final double avatarSize = size ?? 40.0;
     return SizedBox(
-      width: 40,
-      height: 40,
+      width: avatarSize,
+      height: avatarSize,
       child: CircleAvatar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: CircularProgressIndicator(
@@ -51,9 +53,10 @@ class ProfileAvatar extends StatelessWidget {
   }
 
   Widget _buildDefaultAvatar(BuildContext context) {
+    final double avatarSize = size ?? 40.0;
     return SizedBox(
-      width: 40,
-      height: 40,
+      width: avatarSize,
+      height: avatarSize,
       child: CircleAvatar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: Icon(
@@ -66,10 +69,11 @@ class ProfileAvatar extends StatelessWidget {
   }
 
   Widget _buildNetworkAvatar(BuildContext context, String imageData) {
+    final double avatarSize = size ?? 40.0;
     try {
       return SizedBox(
-        width: 40,
-        height: 40,
+        width: avatarSize,
+        height: avatarSize,
         child: CircleAvatar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           backgroundImage: MemoryImage(_decodeImageData(imageData)),
